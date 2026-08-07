@@ -1,0 +1,113 @@
+{
+  "id": "ddbb30ef-1df1-4c85-a169-e2498ddd8628",
+  "name": "Prepare major incident stakeholder briefs",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Prepare major incident stakeholder briefs\n\nTurns operational incident facts into a severity decision and a consistent stakeholder communication plan.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
+        "height": 300,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "b03917ee-5822-4953-a386-b37aa4a6f180",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/operations/major-incident-stakeholder-brief",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "ee10b969-7597-4f78-a49a-0248f33a5345",
+      "name": "Receive request",
+      "webhookId": "821b9e1f-e07c-44ed-a16b-cabdcce03d79"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"incidentId\",\"service\",\"startedAt\",\"summary\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"customersAffected\",\n    \"operator\": \"gte\",\n    \"value\": 100,\n    \"points\": 30,\n    \"reason\": \"At least 100 customers affected\"\n  },\n  {\n    \"field\": \"revenueImpact\",\n    \"operator\": \"truthy\",\n    \"points\": 35,\n    \"reason\": \"Revenue operations are affected\"\n  },\n  {\n    \"field\": \"dataRisk\",\n    \"operator\": \"truthy\",\n    \"points\": 50,\n    \"reason\": \"Potential data exposure or integrity risk\"\n  },\n  {\n    \"field\": \"workaroundAvailable\",\n    \"operator\": \"falsy\",\n    \"points\": 20,\n    \"reason\": \"No workaround is available\"\n  },\n  {\n    \"field\": \"regulatoryNotificationPossible\",\n    \"operator\": \"truthy\",\n    \"points\": 45,\n    \"reason\": \"Regulatory notification may be required\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"standard_operations_update\",\"medium\":\"activate_incident_command\",\"high\":\"activate_executive_and_legal_response\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'major-incident-stakeholder-brief',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Create the stakeholder brief\",\"Assign the next-update owner and deadline\",\"Require incident commander approval before external communication\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "978bf3c4-48bc-4b29-a1b1-2a4470d72d6d",
+      "name": "Evaluate policy signals",
+      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        80
+      ],
+      "id": "bc54c6b4-e1b5-4576-ad03-57d76562ccef",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}

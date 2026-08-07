@@ -1,0 +1,31 @@
+name: Workflow bug
+description: Report incorrect behavior or an adoption problem
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: input
+    id: workflow
+    attributes:
+      label: Workflow path
+      placeholder: workflows/finance/invoice-exception-triage
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: n8n version
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Remove secrets, personal data, customer data, internal URLs, and credential identifiers.
+    validations:
+      required: true

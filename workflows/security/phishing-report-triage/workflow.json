@@ -1,0 +1,113 @@
+{
+  "id": "7c2ba27c-4ebd-4e4c-aa62-d6140fbd1641",
+  "name": "Triage employee phishing reports",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Triage employee phishing reports\n\nScores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
+        "height": 300,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "d4e2649b-a964-4047-a463-ba5f40f8eafc",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/security/phishing-report-triage",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "594a2f57-6a4c-45db-a2d9-aae8f23b3529",
+      "name": "Receive request",
+      "webhookId": "d6ff840a-a29e-4b32-a490-e9a21f7a12ff"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"reportId\",\"reporterId\",\"sender\",\"subject\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"credentialRequested\",\n    \"operator\": \"truthy\",\n    \"points\": 40,\n    \"reason\": \"Message requests credentials\"\n  },\n  {\n    \"field\": \"suspiciousAttachment\",\n    \"operator\": \"truthy\",\n    \"points\": 35,\n    \"reason\": \"Suspicious attachment present\"\n  },\n  {\n    \"field\": \"executiveImpersonation\",\n    \"operator\": \"truthy\",\n    \"points\": 30,\n    \"reason\": \"Executive impersonation detected\"\n  },\n  {\n    \"field\": \"linkClicked\",\n    \"operator\": \"truthy\",\n    \"points\": 55,\n    \"reason\": \"A user clicked the reported link\"\n  },\n  {\n    \"field\": \"multipleRecipients\",\n    \"operator\": \"truthy\",\n    \"points\": 25,\n    \"reason\": \"Possible campaign affects multiple recipients\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"queue_analyst_review\",\"medium\":\"expedite_investigation\",\"high\":\"initiate_containment_review\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'phishing-report-triage',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Create a case in the security queue\",\"Preserve message evidence\",\"Require analyst approval before quarantine or account actions\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "d40c959e-462f-4bd6-a913-e1d7aea82a76",
+      "name": "Evaluate policy signals",
+      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        80
+      ],
+      "id": "d2f545a8-2cdf-4f04-a1d2-39353212a2e1",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}

@@ -1,0 +1,113 @@
+{
+  "id": "4d4430b2-7048-4929-ac1f-95134102fba2",
+  "name": "Route enterprise service desk incidents",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Route enterprise service desk incidents\n\nAssigns incident priority from impact, urgency, affected users, outage state, and executive visibility.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
+        "height": 300,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "ae3a7965-cdd3-494a-ac0b-b12cda5abf4f",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/information-technology/service-desk-priority-routing",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "d8921fa0-41e4-4741-a9bb-0ac6ded525f6",
+      "name": "Receive request",
+      "webhookId": "795b15c6-2cca-473a-a09f-5b63c2ceee68"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"ticketId\",\"category\",\"summary\",\"affectedUsers\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"serviceDown\",\n    \"operator\": \"truthy\",\n    \"points\": 45,\n    \"reason\": \"Business service is unavailable\"\n  },\n  {\n    \"field\": \"securityImpact\",\n    \"operator\": \"truthy\",\n    \"points\": 55,\n    \"reason\": \"Potential security impact\"\n  },\n  {\n    \"field\": \"executiveAffected\",\n    \"operator\": \"truthy\",\n    \"points\": 15,\n    \"reason\": \"Executive user affected\"\n  },\n  {\n    \"field\": \"revenueImpact\",\n    \"operator\": \"truthy\",\n    \"points\": 35,\n    \"reason\": \"Incident affects revenue operations\"\n  },\n  {\n    \"field\": \"workaroundAvailable\",\n    \"operator\": \"falsy\",\n    \"points\": 20,\n    \"reason\": \"No workaround is available\"\n  },\n  {\n    \"field\": \"affectedUsers\",\n    \"operator\": \"gt\",\n    \"value\": 100,\n    \"points\": 30,\n    \"reason\": \"More than 100 users affected\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"route_standard_queue\",\"medium\":\"assign_priority_support\",\"high\":\"open_major_incident\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'service-desk-priority-routing',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Create or update the ITSM incident\",\"Page the on-call team for major incidents\",\"Start stakeholder communications with a human owner\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "fd9397f6-ce72-47ea-a057-f2182d497cdb",
+      "name": "Evaluate policy signals",
+      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        80
+      ],
+      "id": "ebfb8ea5-d264-43ff-aad6-a41b0c70399c",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}

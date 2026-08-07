@@ -1,0 +1,92 @@
+[
+  {
+    "department": "finance",
+    "slug": "invoice-exception-triage",
+    "name": "Triage enterprise invoice exceptions",
+    "summary": "Scores invoice exceptions and routes clean invoices, finance reviews, and payment holds through a consistent policy.",
+    "owner": "Accounts Payable Operations",
+    "metric": "Minutes of manual review avoided per invoice",
+    "path": "workflows/finance/invoice-exception-triage"
+  },
+  {
+    "department": "human-resources",
+    "slug": "employee-access-request-triage",
+    "name": "Triage employee access requests",
+    "summary": "Classifies employee access requests using role, privilege, environment, and approval signals before provisioning begins.",
+    "owner": "People Operations and Identity Management",
+    "metric": "Access-request cycle time",
+    "path": "workflows/human-resources/employee-access-request-triage"
+  },
+  {
+    "department": "information-technology",
+    "slug": "service-desk-priority-routing",
+    "name": "Route enterprise service desk incidents",
+    "summary": "Assigns incident priority from impact, urgency, affected users, outage state, and executive visibility.",
+    "owner": "IT Service Management",
+    "metric": "Mean time to assignment",
+    "path": "workflows/information-technology/service-desk-priority-routing"
+  },
+  {
+    "department": "security",
+    "slug": "phishing-report-triage",
+    "name": "Triage employee phishing reports",
+    "summary": "Scores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.",
+    "owner": "Security Operations",
+    "metric": "Minutes from report to analyst triage",
+    "path": "workflows/security/phishing-report-triage"
+  },
+  {
+    "department": "sales",
+    "slug": "enterprise-lead-routing",
+    "name": "Route enterprise sales leads",
+    "summary": "Scores enterprise leads using account fit, buying intent, geography, engagement, and consent before assignment.",
+    "owner": "Revenue Operations",
+    "metric": "Speed to lead for qualified accounts",
+    "path": "workflows/sales/enterprise-lead-routing"
+  },
+  {
+    "department": "marketing",
+    "slug": "campaign-lead-compliance-gate",
+    "name": "Gate campaign leads for compliant follow-up",
+    "summary": "Checks consent, suppression, geography, engagement, and target-account status before campaign follow-up.",
+    "owner": "Marketing Operations",
+    "metric": "Compliant leads processed per campaign",
+    "path": "workflows/marketing/campaign-lead-compliance-gate"
+  },
+  {
+    "department": "customer-success",
+    "slug": "customer-risk-escalation",
+    "name": "Escalate at-risk enterprise customers",
+    "summary": "Combines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response.",
+    "owner": "Customer Success Operations",
+    "metric": "At-risk accounts engaged before renewal",
+    "path": "workflows/customer-success/customer-risk-escalation"
+  },
+  {
+    "department": "legal",
+    "slug": "contract-intake-routing",
+    "name": "Route enterprise contract requests",
+    "summary": "Routes contract intake using document type, value, jurisdiction, data access, and non-standard terms.",
+    "owner": "Legal Operations",
+    "metric": "Contract request time to first review",
+    "path": "workflows/legal/contract-intake-routing"
+  },
+  {
+    "department": "procurement",
+    "slug": "vendor-risk-intake",
+    "name": "Triage enterprise vendor risk",
+    "summary": "Scores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence.",
+    "owner": "Procurement Operations",
+    "metric": "Vendor request time to correct review path",
+    "path": "workflows/procurement/vendor-risk-intake"
+  },
+  {
+    "department": "operations",
+    "slug": "major-incident-stakeholder-brief",
+    "name": "Prepare major incident stakeholder briefs",
+    "summary": "Turns operational incident facts into a severity decision and a consistent stakeholder communication plan.",
+    "owner": "Business Operations and Incident Command",
+    "metric": "Minutes from incident declaration to first stakeholder brief",
+    "path": "workflows/operations/major-incident-stakeholder-brief"
+  }
+]

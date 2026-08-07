@@ -1,0 +1,40 @@
+name: Enterprise workflow request
+description: Propose a business workflow for the catalog
+title: "[Workflow]: "
+labels: [workflow-request]
+body:
+  - type: input
+    id: department
+    attributes:
+      label: Department or function
+      placeholder: Finance, Security, Legal, Sales, IT
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Business problem
+      description: Describe the current process, delay, risk, or recurring manual work.
+    validations:
+      required: true
+  - type: textarea
+    id: systems
+    attributes:
+      label: Systems involved
+      description: Name likely triggers, systems of record, and destinations.
+    validations:
+      required: true
+  - type: textarea
+    id: approvals
+    attributes:
+      label: Human approvals and risk
+      description: Which actions must remain under human authority?
+    validations:
+      required: true
+  - type: input
+    id: metric
+    attributes:
+      label: Success metric
+      placeholder: Time to assignment, errors avoided, conversion rate
+    validations:
+      required: true

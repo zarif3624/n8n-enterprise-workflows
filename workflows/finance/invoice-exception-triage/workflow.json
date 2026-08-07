@@ -1,0 +1,113 @@
+{
+  "id": "d05469c2-618b-40fc-add5-40b5686df024",
+  "name": "Triage enterprise invoice exceptions",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Triage enterprise invoice exceptions\n\nScores invoice exceptions and routes clean invoices, finance reviews, and payment holds through a consistent policy.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
+        "height": 300,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "a8a00ea8-3b28-4b7b-adac-5b1037cb605a",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/finance/invoice-exception-triage",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "2042a833-63b5-4b20-a9d3-bd401a23f89c",
+      "name": "Receive request",
+      "webhookId": "a8642b7e-4e58-49bc-ae69-46d7ad8aa28e"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"invoiceId\",\"vendorId\",\"amount\",\"currency\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"purchaseOrderId\",\n    \"operator\": \"missing\",\n    \"points\": 25,\n    \"reason\": \"Purchase order is missing\"\n  },\n  {\n    \"field\": \"duplicateDetected\",\n    \"operator\": \"truthy\",\n    \"points\": 50,\n    \"reason\": \"Potential duplicate invoice\"\n  },\n  {\n    \"field\": \"amountMismatchPercent\",\n    \"operator\": \"gt\",\n    \"value\": 2,\n    \"points\": 25,\n    \"reason\": \"Invoice and purchase order differ by more than 2%\"\n  },\n  {\n    \"field\": \"restrictedVendor\",\n    \"operator\": \"truthy\",\n    \"points\": 60,\n    \"reason\": \"Vendor appears on a restricted list\"\n  },\n  {\n    \"field\": \"newBankDetails\",\n    \"operator\": \"truthy\",\n    \"points\": 35,\n    \"reason\": \"Payment destination changed\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"continue_standard_processing\",\"medium\":\"route_to_finance_review\",\"high\":\"hold_payment_and_escalate\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'invoice-exception-triage',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Persist the decision in the ERP or AP queue\",\"Require human approval for payment holds\",\"Notify the invoice owner with matched policy reasons\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "94608390-0907-4463-a1b3-9467d9179f42",
+      "name": "Evaluate policy signals",
+      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        80
+      ],
+      "id": "4f3985d9-80dd-45d1-a8a6-9420c974eab1",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}

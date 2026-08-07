@@ -1,0 +1,113 @@
+{
+  "id": "e8d3680d-4c1e-4dff-a2dc-7795de144f28",
+  "name": "Triage enterprise vendor risk",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Triage enterprise vendor risk\n\nScores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
+        "height": 300,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "f5446453-8450-4e09-a0e5-3d5b6560f3c0",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/procurement/vendor-risk-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "d6fce435-e212-4996-a1e9-6c9754677b72",
+      "name": "Receive request",
+      "webhookId": "b8108e28-8ff0-4853-a343-7057d9c0279b"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"requestId\",\"vendorName\",\"annualSpend\",\"businessOwner\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"handlesPersonalData\",\n    \"operator\": \"truthy\",\n    \"points\": 30,\n    \"reason\": \"Vendor handles personal data\"\n  },\n  {\n    \"field\": \"businessCritical\",\n    \"operator\": \"truthy\",\n    \"points\": 30,\n    \"reason\": \"Vendor supports a critical business process\"\n  },\n  {\n    \"field\": \"foreignDataHosting\",\n    \"operator\": \"truthy\",\n    \"points\": 25,\n    \"reason\": \"Data is hosted in another jurisdiction\"\n  },\n  {\n    \"field\": \"subprocessors\",\n    \"operator\": \"truthy\",\n    \"points\": 20,\n    \"reason\": \"Vendor relies on subprocessors\"\n  },\n  {\n    \"field\": \"soc2Available\",\n    \"operator\": \"falsy\",\n    \"points\": 25,\n    \"reason\": \"SOC 2 evidence is unavailable\"\n  },\n  {\n    \"field\": \"annualSpend\",\n    \"operator\": \"gte\",\n    \"value\": 100000,\n    \"points\": 20,\n    \"reason\": \"High annual spend\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"start_standard_procurement\",\"medium\":\"add_security_or_privacy_review\",\"high\":\"open_full_vendor_due_diligence\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'vendor-risk-intake',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Create the vendor record\",\"Assign required control owners\",\"Block purchase-order creation until mandatory approvals complete\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "26353c15-8fe6-4ec8-a15c-1ac61ef4be90",
+      "name": "Evaluate policy signals",
+      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        80
+      ],
+      "id": "25572fbc-19ea-4ee1-a83e-ac8a0e7b1edd",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}

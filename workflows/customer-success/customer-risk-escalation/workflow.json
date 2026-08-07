@@ -1,0 +1,113 @@
+{
+  "id": "4273724d-c63e-4f65-a4f2-c3bbb838013a",
+  "name": "Escalate at-risk enterprise customers",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Escalate at-risk enterprise customers\n\nCombines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
+        "height": 300,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "836b8150-40d1-4562-a32f-9ad0e0ba558a",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/customer-success/customer-risk-escalation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "16f2d7cc-231b-4968-a055-85a513055aeb",
+      "name": "Receive request",
+      "webhookId": "480e77c0-0b4c-4525-a6bd-8601c2550339"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"accountId\",\"accountName\",\"arr\",\"renewalDays\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"usageDropPercent\",\n    \"operator\": \"gte\",\n    \"value\": 30,\n    \"points\": 30,\n    \"reason\": \"Usage dropped at least 30%\"\n  },\n  {\n    \"field\": \"criticalTickets\",\n    \"operator\": \"gte\",\n    \"value\": 2,\n    \"points\": 30,\n    \"reason\": \"Multiple critical support tickets\"\n  },\n  {\n    \"field\": \"negativeSentiment\",\n    \"operator\": \"truthy\",\n    \"points\": 25,\n    \"reason\": \"Negative customer sentiment detected\"\n  },\n  {\n    \"field\": \"championLeft\",\n    \"operator\": \"truthy\",\n    \"points\": 35,\n    \"reason\": \"Customer champion departed\"\n  },\n  {\n    \"field\": \"execSponsorMissing\",\n    \"operator\": \"truthy\",\n    \"points\": 20,\n    \"reason\": \"No executive sponsor is mapped\"\n  },\n  {\n    \"field\": \"renewalDays\",\n    \"operator\": \"lt\",\n    \"value\": 60,\n    \"points\": 20,\n    \"reason\": \"Renewal is less than 60 days away\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"continue_success_plan\",\"medium\":\"open_risk_workstream\",\"high\":\"launch_executive_save_plan\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'customer-risk-escalation',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Update customer health in the CS platform\",\"Assign a named intervention owner\",\"Require executive review before commercial concessions\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "e8d0ff40-e56b-4451-a1dc-693801ea6fe4",
+      "name": "Evaluate policy signals",
+      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        80
+      ],
+      "id": "408ccc43-ebb8-4ced-a555-e6288b8d7a58",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}

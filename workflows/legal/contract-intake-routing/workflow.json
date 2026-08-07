@@ -1,0 +1,113 @@
+{
+  "id": "cc924e76-3d9a-4ddd-ae4f-6fe7dcb16bb0",
+  "name": "Route enterprise contract requests",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Route enterprise contract requests\n\nRoutes contract intake using document type, value, jurisdiction, data access, and non-standard terms.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
+        "height": 300,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "291aea1c-0e72-43da-ae38-cae361e5bcde",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/legal/contract-intake-routing",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "766ac6fa-aac5-4f84-aa5a-8302b205e322",
+      "name": "Receive request",
+      "webhookId": "1a062b93-221a-4448-a630-a61b99f1c8e2"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"requestId\",\"contractType\",\"counterparty\",\"contractValue\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"nonStandardTerms\",\n    \"operator\": \"truthy\",\n    \"points\": 30,\n    \"reason\": \"Non-standard terms requested\"\n  },\n  {\n    \"field\": \"personalData\",\n    \"operator\": \"truthy\",\n    \"points\": 25,\n    \"reason\": \"Agreement involves personal data\"\n  },\n  {\n    \"field\": \"crossBorderData\",\n    \"operator\": \"truthy\",\n    \"points\": 30,\n    \"reason\": \"Cross-border data transfer involved\"\n  },\n  {\n    \"field\": \"autoRenewal\",\n    \"operator\": \"truthy\",\n    \"points\": 15,\n    \"reason\": \"Automatic renewal clause present\"\n  },\n  {\n    \"field\": \"regulatedIndustry\",\n    \"operator\": \"truthy\",\n    \"points\": 30,\n    \"reason\": \"Counterparty operates in a regulated industry\"\n  },\n  {\n    \"field\": \"contractValue\",\n    \"operator\": \"gte\",\n    \"value\": 250000,\n    \"points\": 25,\n    \"reason\": \"High-value agreement\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"use_standard_legal_queue\",\"medium\":\"assign_specialist_review\",\"high\":\"open_cross_functional_review\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'contract-intake-routing',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Create the legal matter\",\"Attach the structured intake fields\",\"Require legal approval before signature or redline acceptance\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "b65fb593-3c66-4d26-a55e-5c23660174fe",
+      "name": "Evaluate policy signals",
+      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        80
+      ],
+      "id": "03d9de06-40ad-4c7c-a4cc-cdbdb03665f4",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}
