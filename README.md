@@ -69,6 +69,15 @@ Machine integrations can validate adoption-tool JSON against the published
 [Draft 2020-12 schemas](schemas/README.md), including the complete catalog contract.
 Use `npm run contracts -- list --json` to discover every repository document and generated CLI output with its schema; `npm run contracts -- validate` checks the registry, every document, and complete schema coverage.
 
+Get an honest deployment-facing summary without exposing payloads:
+
+```bash
+npm run readiness
+npm run --silent readiness -- --json
+```
+
+The report distinguishes valid repository evidence from production authorization. A green repository can still be deployment-blocked by draft or overdue policies, and every template still requires environment-specific authentication, field mapping, adapters, human approvals, monitoring, retention, and rollback.
+
 Find a starting point by business language or system, then generate a rollout worksheet:
 
 ```bash

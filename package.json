@@ -15,6 +15,7 @@
     "smoke:webhook": "node scripts/smoke-test-webhook.mjs",
     "compatibility": "node scripts/runtime-compatibility-cli.mjs",
     "lifecycle": "node scripts/policy-lifecycle-cli.mjs",
+    "readiness": "node scripts/readiness-report-cli.mjs",
     "validate": "node scripts/validate-workflows.mjs",
     "validate:links": "node scripts/validate-links.mjs",
     "scan:sensitive": "node scripts/scan-sensitive-data.mjs",

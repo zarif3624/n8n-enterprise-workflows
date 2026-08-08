@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/zarif3624/n8n-enterprise-workflows/main/schemas/readiness-report.schema.json",
+  "title": "n8n Enterprise Workflows Readiness Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reportVersion", "asOf", "packageVersion", "repositoryStatus",
+    "deploymentStatus", "inventory", "policyGovernance", "runtimeCompatibility",
+    "contractCoverage", "evidence", "deploymentBlockers",
+    "requiredDeploymentControls", "limitations", "privacy"
+  ],
+  "properties": {
+    "reportVersion": { "const": 1 },
+    "asOf": { "$ref": "#/$defs/date" },
+    "packageVersion": { "$ref": "#/$defs/semver" },
+    "repositoryStatus": { "type": "string", "enum": ["ready", "invalid"] },
+    "deploymentStatus": { "type": "string", "enum": ["blocked", "requires-environment-configuration"] },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workflows", "departments", "artifacts"],
+      "properties": {
+        "workflows": { "type": "integer", "minimum": 1 },
+        "departments": { "type": "integer", "minimum": 1 },
+        "artifacts": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "policyGovernance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engineVersion", "engineFingerprint", "draft", "active", "deprecated", "dueSoon", "overdue"],
+      "properties": {
+        "engineVersion": { "$ref": "#/$defs/semver" },
+        "engineFingerprint": { "$ref": "#/$defs/sha256" },
+        "draft": { "type": "integer", "minimum": 0 },
+        "active": { "type": "integer", "minimum": 0 },
+        "deprecated": { "type": "integer", "minimum": 0 },
+        "dueSoon": { "type": "integer", "minimum": 0 },
+        "overdue": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "runtimeCompatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimumSupportedN8nVersion", "scheduledN8nVersions", "nodeVersion", "representativeWorkflow", "probeCount"],
+      "properties": {
+        "minimumSupportedN8nVersion": { "$ref": "#/$defs/semver" },
+        "scheduledN8nVersions": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "$ref": "#/$defs/semver" } },
+        "nodeVersion": { "type": "string", "pattern": "^[0-9]+$" },
+        "representativeWorkflow": { "$ref": "#/$defs/slug" },
+        "probeCount": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "contractCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repositoryDocuments", "generatedOutputs", "schemas"],
+      "properties": {
+        "repositoryDocuments": { "type": "integer", "minimum": 1 },
+        "generatedOutputs": { "type": "integer", "minimum": 1 },
+        "schemas": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactManifestMatches", "contractRegistryValid", "lifecycleContractValid", "runtimeCompatibilityValid", "issues"],
+      "properties": {
+        "artifactManifestMatches": { "type": "boolean" },
+        "contractRegistryValid": { "type": "boolean" },
+        "lifecycleContractValid": { "type": "boolean" },
+        "runtimeCompatibilityValid": { "type": "boolean" },
+        "issues": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "deploymentBlockers": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/finding" } },
+    "requiredDeploymentControls": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "limitations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rawPayloadsIncluded", "perRecordResultsIncluded"],
+      "properties": {
+        "rawPayloadsIncluded": { "const": false },
+        "perRecordResultsIncluded": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "count", "message"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$" },
+        "count": { "type": "integer", "minimum": 1 },
+        "message": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

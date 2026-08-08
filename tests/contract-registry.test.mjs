@@ -29,5 +29,5 @@ test("contract registry CLI lists machine-readable discovery metadata", () => {
   const listed = JSON.parse(result.stdout);
   assert.equal(listed.registryVersion, 1);
   assert.equal(listed.documents.length, 7);
-  assert.equal(listed.outputs.length, 5);
+  assert.equal(listed.outputs.length, 6);
 });

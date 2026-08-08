@@ -15,6 +15,7 @@ the local adoption tools:
 - `policy-snapshot.schema.json` — complete reviewable contracts, rules, thresholds, decisions, and actions;
 - `runtime-compatibility.schema.json` — the pinned n8n/Node matrix and runtime probe scope.
 - `release-manifest.schema.json` — release archive inventory, scope, sizes, and outer SHA-256 digests.
+- `readiness-report.schema.json` — privacy-safe repository evidence, policy governance, deployment blockers, and evidence limits.
 
 The schemas validate portable structure. Runtime checks additionally bind a
 mapping to a workflow's current policy fingerprint and require every workflow-
@@ -25,5 +26,5 @@ local references and enforces composition, types, bounds, formats, object
 closure, and Draft 2020-12 `unevaluatedProperties` behavior used by these
 contracts. It also checks actual policy results against `openapi.json`.
 
-All twelve schema files are covered by `artifact-manifest.json` and included in
+All thirteen schema files are covered by `artifact-manifest.json` and included in
 the reproducible full-catalog release archive.

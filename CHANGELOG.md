@@ -11,9 +11,9 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, lifecycle, and CI supply-chain coverage, increasing the suite from 58 to 224 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, lifecycle, readiness, and CI supply-chain coverage, increasing the suite from 58 to 229 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
-- A generated SHA-256 manifest covering all 95 public generated and machine-contract artifacts.
+- A generated SHA-256 manifest covering all 96 public generated and machine-contract artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
 - Immutable full-SHA pins for every external GitHub Action plus monthly Dependabot update checks.
 - Pull-request behavior replay across both branches' representative fixtures and isolated old/new rule witnesses, with observable decision deltas in the job summary.
@@ -46,6 +46,7 @@ All notable changes to this project are documented here. The project follows Sem
 - A strict policy-snapshot JSON Schema now exposes the complete review baseline—typed contracts, rules, thresholds, decisions, and actions—to portable governance tooling.
 - A self-validating contract registry now maps every repository document and structured CLI output to its schema, rejects missing or duplicate entries, and fails when any schema is orphaned.
 - Portable bundle and release manifest schemas now validate embedded file identities plus the outer archive inventory, scopes, byte sizes, and digests produced by the release builder.
+- A privacy-safe readiness report now separates repository validity from deployment authorization, surfaces draft and overdue policy blockers, enumerates required environment controls, and states the limits of its evidence.
 
 ## 0.2.0
 
