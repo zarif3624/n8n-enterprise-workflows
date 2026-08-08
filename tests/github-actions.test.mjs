@@ -45,3 +45,11 @@ test("validation CI enforces explicit production-script coverage floors", async 
   assert.match(packageManifest.scripts["test:coverage"], /--test-coverage-branches=70/);
   assert.match(packageManifest.scripts["test:coverage"], /--test-coverage-functions=90/);
 });
+
+test("release CI clean-installs and validates the packaged source archive", async () => {
+  const source = await readFile(join(root, ".github", "workflows", "release.yml"), "utf8");
+  assert.match(source, /Prove the packaged source is self-validating/);
+  assert.match(source, /tar -xzf dist\/n8n-enterprise-workflows-v\$\{GITHUB_REF_NAME#v\}\.tar\.gz/);
+  assert.match(source, /test -f "\$\{packaged_root\}\/package-lock\.json"/);
+  assert.match(source, /cd "\$\{packaged_root\}"\s+npm ci --ignore-scripts\s+npm run check/);
+});

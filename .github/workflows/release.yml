@@ -36,6 +36,16 @@ jobs:
       - name: Verify release checksums
         working-directory: dist
         run: sha256sum --check SHA256SUMS
+      - name: Prove the packaged source is self-validating
+        shell: bash
+        run: |
+          verification_root="$(mktemp -d)"
+          tar -xzf dist/n8n-enterprise-workflows-v${GITHUB_REF_NAME#v}.tar.gz -C "${verification_root}"
+          packaged_root="${verification_root}/n8n-enterprise-workflows-v${GITHUB_REF_NAME#v}"
+          test -f "${packaged_root}/package-lock.json"
+          cd "${packaged_root}"
+          npm ci --ignore-scripts
+          npm run check
       - name: Attest release provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
