@@ -21,7 +21,7 @@ fixes correctness, security, compatibility, observability, or adoption friction.
 
 1. Run `npm run check`.
 2. Confirm every changed policy fingerprint has an intentional semantic-version bump.
-3. Review the generated diff and scan for credentials or customer data; confirm `artifact-manifest.json` changed only where expected.
+3. Review the generated diff, confirm `npm run scan:sensitive` passes, manually check for customer data the scanner cannot classify, and confirm `artifact-manifest.json` changed only where expected.
 4. Confirm links, catalog metadata, the policy lock, policy snapshot, and generated OpenAPI contract.
 5. Run the `n8n import compatibility` workflow for node-version or export-shape changes.
 6. Merge through a focused pull request so CI can compare policy versions with the target branch.

@@ -165,6 +165,7 @@ policy-expression parity, policy fingerprints, review-snapshot parity and versio
 webhook paths, inactive status, response behavior, credential leakage,
 companion documentation, and catalog coverage. The test suite then exercises
 every required field, declared type, rule boundary, safety floor, and deterministic adversarial-input invariant.
+The same command also runs a redacted sensitive-data scan across every repository text file, not only exported workflows.
 
 ## Extend the catalog
 
