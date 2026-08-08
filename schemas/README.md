@@ -10,6 +10,7 @@ the local adoption tools:
 - `conformance-comparison.schema.json` — aggregate output from `npm run conformance:compare -- --json`;
 - `policy-lifecycle.schema.json` — owner review, due-date, and deprecation metadata;
 - `policy-lock.schema.json` — engine and per-policy versions and behavior fingerprints;
+- `policy-snapshot.schema.json` — complete reviewable contracts, rules, thresholds, decisions, and actions;
 - `runtime-compatibility.schema.json` — the pinned n8n/Node matrix and runtime probe scope.
 
 The schemas validate portable structure. Runtime checks additionally bind a
@@ -21,5 +22,5 @@ local references and enforces composition, types, bounds, formats, object
 closure, and Draft 2020-12 `unevaluatedProperties` behavior used by these
 contracts. It also checks actual policy results against `openapi.json`.
 
-All eight schema files are covered by `artifact-manifest.json` and included in
+All nine schema files are covered by `artifact-manifest.json` and included in
 the reproducible full-catalog release archive.

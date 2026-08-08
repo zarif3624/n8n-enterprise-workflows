@@ -11,7 +11,7 @@ import { schemaContractIssues } from "../scripts/schema-contract-check.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const readJson = async (path) => JSON.parse(await readFile(join(root, path), "utf8"));
-const [artifactSchema, catalogSchema, mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, lifecycleSchema, lockSchema, artifactManifest, compatibility, lifecycle, lock, catalog, snapshot] = await Promise.all([
+const [artifactSchema, catalogSchema, mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, lifecycleSchema, lockSchema, snapshotSchema, artifactManifest, compatibility, lifecycle, lock, catalog, snapshot] = await Promise.all([
   readJson("schemas/artifact-manifest.schema.json"),
   readJson("schemas/catalog.schema.json"),
   readJson("schemas/field-mapping.schema.json"),
@@ -20,6 +20,7 @@ const [artifactSchema, catalogSchema, mappingSchema, reportSchema, comparisonSch
   readJson("schemas/runtime-compatibility.schema.json"),
   readJson("schemas/policy-lifecycle.schema.json"),
   readJson("schemas/policy-lock.schema.json"),
+  readJson("schemas/policy-snapshot.schema.json"),
   readJson("artifact-manifest.json"),
   readJson("runtime-compatibility.json"),
   readJson("policy-lifecycle.json"),
@@ -56,6 +57,13 @@ test("published policy lock schema rejects malformed governed fingerprints", () 
   const malformed = structuredClone(lock);
   malformed.policies[0].fingerprint = "sha256:not-a-digest";
   assert.ok(schemaContractIssues(malformed, lockSchema, lockSchema).some((issue) => issue.includes("pattern mismatch")));
+});
+
+test("published policy snapshot schema locks executable review behavior", () => {
+  assertMatches(snapshot, snapshotSchema);
+  const unsafe = structuredClone(snapshot);
+  unsafe.policies[0].behavior.rules[0].operator = "execute-code";
+  assert.ok(schemaContractIssues(unsafe, snapshotSchema, snapshotSchema).some((issue) => issue.includes("enum mismatch")));
 });
 
 test("published field-mapping schema accepts generated mappings and rejects extensions", () => {
