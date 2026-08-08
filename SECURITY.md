@@ -12,6 +12,8 @@ Use GitHub's private vulnerability reporting for this repository.
 - Webhook templates use no authentication only to make local evaluation easy.
 - Before production use, configure n8n's built-in Header Auth, Basic Auth, or
   another appropriate trigger credential.
+- Enforce request-body size and rate limits at an upstream gateway before the
+  webhook; field constraints do not bound the total size of ignored fields.
 - Review data retention, execution logging, RBAC, and environment promotion
   policies for your organization.
 
@@ -53,7 +55,7 @@ adopter-controlled trust boundary. Before adding one:
 
 ## Threats adopters must address
 
-- Authentication, authorization, network allowlisting, and rate limiting.
+- Authentication, authorization, network allowlisting, request-body limits, and rate limiting.
 - Tenant isolation and payload-level access control.
 - Data residency, privacy notices, retention, and deletion requirements.
 - Downstream API timeouts, retries, partial failures, and duplicate writes.

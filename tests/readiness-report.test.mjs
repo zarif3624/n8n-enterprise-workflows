@@ -22,6 +22,7 @@ test("readiness JSON separates repository validity from deployment authorization
   assert.equal(report.policyGovernance.draft, 15);
   assert.equal(report.policyGovernance.active, 0);
   assert.equal(report.contractCoverage.schemas, 13);
+  assert.ok(report.requiredDeploymentControls.some((control) => /body size and rate limits/i.test(control)));
   assert.deepEqual(report.privacy, { rawPayloadsIncluded: false, perRecordResultsIncluded: false });
 });
 

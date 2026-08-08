@@ -21,7 +21,7 @@ Run `npm run readiness -- --workflow <workflow-slug>` for a schema-validated pre
 - Minimize personal, financial, customer, and security-sensitive data.
 - Review execution-data retention and redact logs where necessary.
 - Verify the production endpoint against `openapi.json` and remove any response fields callers do not need.
-- Add rate limiting or an upstream API gateway for externally reachable webhooks.
+- Add an upstream API gateway for externally reachable webhooks and enforce both request-body size and rate limits there.
 
 ## Reliability
 

@@ -98,6 +98,7 @@ export function buildReadinessReport({
     deploymentBlockers: blockers,
     requiredDeploymentControls: [
       "Configure built-in webhook authentication",
+      "Enforce ingress request-body size and rate limits before the webhook",
       "Map and test enterprise source fields",
       "Connect downstream systems only in a development environment",
       "Assign human approval for consequential actions",
