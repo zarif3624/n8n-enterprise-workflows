@@ -10,6 +10,10 @@ import { assertSchemaContract } from "./schema-contract-check.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
+if (args.includes("--help") || args.includes("-h")) {
+  process.stdout.write("Usage: npm run readiness -- [--as-of YYYY-MM-DD] [--json]\n");
+  process.exit(0);
+}
 const asOfIndex = args.indexOf("--as-of");
 const asOf = asOfIndex >= 0 ? args[asOfIndex + 1] : new Date().toISOString().slice(0, 10);
 const [

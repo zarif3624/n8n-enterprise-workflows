@@ -9,7 +9,7 @@ function usage() {
 
 async function main() {
   const args = process.argv.slice(2);
-  if (args.includes("--help")) {
+  if (args.includes("--help") || args.includes("-h")) {
     process.stdout.write(usage());
     return;
   }

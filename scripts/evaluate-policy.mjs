@@ -3,11 +3,21 @@ import { evaluatePolicy } from "./policy-engine.mjs";
 import { readCliInput } from "./read-cli-input.mjs";
 import { policyFor, workflows } from "./workflow-definitions.mjs";
 
-const [slug, inputPath] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const usage = () => {
+  process.stdout.write("Usage: npm run evaluate -- <workflow-slug> <payload.json|->\n");
+  process.stdout.write(`Available workflows: ${workflows.map((workflow) => workflow.slug).join(", ")}\n`);
+};
+
+if (args.includes("--help") || args.includes("-h")) {
+  usage();
+  process.exit(0);
+}
+
+const [slug, inputPath] = args;
 
 if (!slug || !inputPath) {
-  console.error("Usage: npm run evaluate -- <workflow-slug> <payload.json|->");
-  console.error(`Available workflows: ${workflows.map((workflow) => workflow.slug).join(", ")}`);
+  usage();
   process.exit(1);
 }
 

@@ -6,7 +6,10 @@ import { contractRegistryIssues } from "./contract-registry.mjs";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const registry = JSON.parse(await readFile(join(root, "contract-registry.json"), "utf8"));
 const command = process.argv[2] ?? "validate";
-if (command === "validate") {
+const usage = "Usage: npm run contracts -- [validate|list] [--json]\n";
+if (command === "--help" || command === "-h") {
+  process.stdout.write(usage);
+} else if (command === "validate") {
   const issues = await contractRegistryIssues({ root, registry });
   if (issues.length) {
     console.error(`Contract registry validation failed:\n- ${issues.join("\n- ")}`);
@@ -20,6 +23,6 @@ if (command === "validate") {
     for (const entry of registry.outputs) console.log(`${entry.id}\t<generated>\t${entry.schema}`);
   }
 } else {
-  console.error("Usage: node scripts/contract-registry-cli.mjs [validate|list] [--json]");
+  console.error(usage.trimEnd());
   process.exit(2);
 }

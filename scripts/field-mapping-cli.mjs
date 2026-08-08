@@ -13,7 +13,12 @@ function usage() {
 }
 
 async function main() {
-  const [command, argument, ...extra] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  if (args.includes("--help") || args.includes("-h")) {
+    process.stdout.write(usage());
+    return;
+  }
+  const [command, argument, ...extra] = args;
   if (!command || !argument || extra.length) throw new Error("A command and one argument are required");
   const snapshot = JSON.parse(await readFile(join(root, "policy-snapshot.json"), "utf8"));
   if (command === "init") {

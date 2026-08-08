@@ -56,7 +56,12 @@ async function readReport(path, label) {
 }
 
 async function main() {
-  const { positionals, options } = parseArguments(process.argv.slice(2));
+  const args = process.argv.slice(2);
+  if (args.includes("--help") || args.includes("-h")) {
+    process.stdout.write(usage());
+    return;
+  }
+  const { positionals, options } = parseArguments(args);
   if (options.help) {
     process.stdout.write(usage());
     return;

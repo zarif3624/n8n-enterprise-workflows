@@ -59,7 +59,12 @@ function integerOption(options, name, fallback) {
 }
 
 async function main() {
-  const { options, positionals } = parseArguments(process.argv.slice(2));
+  const args = process.argv.slice(2);
+  if (args.includes("--help") || args.includes("-h")) {
+    process.stdout.write(usage());
+    return;
+  }
+  const { options, positionals } = parseArguments(args);
   if (options.help) {
     process.stdout.write(usage());
     return;

@@ -81,7 +81,12 @@ async function fixtureOutcomes(entry, snapshotPolicy) {
 }
 
 async function main() {
-  const parsed = parseArguments(process.argv.slice(2));
+  const args = process.argv.slice(2);
+  if (args.includes("--help") || args.includes("-h")) {
+    process.stdout.write(usage());
+    return;
+  }
+  const parsed = parseArguments(args);
   if (parsed.options.help || !parsed.command) {
     process.stdout.write(usage());
     return;

@@ -5,6 +5,11 @@ import { buildPolicyLifecycleReport, policyLifecycleIssues, renderPolicyLifecycl
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
+const usage = "Usage: npm run lifecycle -- [validate|report] [--as-of YYYY-MM-DD] [--json]\n";
+if (args.includes("--help") || args.includes("-h")) {
+  process.stdout.write(usage);
+  process.exit(0);
+}
 const command = args[0] ?? "report";
 const asOfIndex = args.indexOf("--as-of");
 const asOf = asOfIndex >= 0 ? args[asOfIndex + 1] : new Date().toISOString().slice(0, 10);
@@ -36,6 +41,6 @@ if (command === "validate") {
 } else if (command === "report") {
   process.stdout.write(json ? `${JSON.stringify(report, null, 2)}\n` : renderPolicyLifecycleReport(report));
 } else {
-  console.error("Usage: node scripts/policy-lifecycle-cli.mjs [validate|report] [--as-of YYYY-MM-DD] [--json]");
+  console.error(usage.trimEnd());
   process.exit(2);
 }
