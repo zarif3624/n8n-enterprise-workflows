@@ -30,7 +30,7 @@
           "kind": {
             "type": "string",
             "enum": [
-              "api-contract", "catalog", "catalog-documentation",
+              "api-contract", "catalog", "catalog-documentation", "contract-registry",
               "fixture-high-risk", "fixture-invalid", "fixture-low-risk",
               "json-schema", "policy-lifecycle", "policy-lock",
               "policy-snapshot", "runtime-compatibility", "workflow",

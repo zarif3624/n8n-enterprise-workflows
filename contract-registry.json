@@ -1,0 +1,17 @@
+{
+  "registryVersion": 1,
+  "documents": [
+    { "id": "artifact-manifest", "path": "artifact-manifest.json", "schema": "schemas/artifact-manifest.schema.json" },
+    { "id": "catalog", "path": "catalog.json", "schema": "schemas/catalog.schema.json" },
+    { "id": "contract-registry", "path": "contract-registry.json", "schema": "schemas/contract-registry.schema.json" },
+    { "id": "policy-lifecycle", "path": "policy-lifecycle.json", "schema": "schemas/policy-lifecycle.schema.json" },
+    { "id": "policy-lock", "path": "policy-lock.json", "schema": "schemas/policy-lock.schema.json" },
+    { "id": "policy-snapshot", "path": "policy-snapshot.json", "schema": "schemas/policy-snapshot.schema.json" },
+    { "id": "runtime-compatibility", "path": "runtime-compatibility.json", "schema": "schemas/runtime-compatibility.schema.json" }
+  ],
+  "outputs": [
+    { "id": "conformance-comparison", "schema": "schemas/conformance-comparison.schema.json", "producer": "npm run conformance:compare -- <baseline.json> <current.json> --json" },
+    { "id": "conformance-report", "schema": "schemas/conformance-report.schema.json", "producer": "npm run conformance -- <workflow-slug> <records.jsonl> --json" },
+    { "id": "field-mapping", "schema": "schemas/field-mapping.schema.json", "producer": "npm run mapping -- init <workflow-slug>" }
+  ]
+}

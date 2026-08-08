@@ -67,6 +67,7 @@ Browse the machine-readable [catalog](catalog.json), the generated
 [OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [policy lifecycle contract](policy-lifecycle.json), the [runtime compatibility plan](runtime-compatibility.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
 Machine integrations can validate adoption-tool JSON against the published
 [Draft 2020-12 schemas](schemas/README.md), including the complete catalog contract.
+Use `npm run contracts -- list --json` to discover every repository document and generated CLI output with its schema; `npm run contracts -- validate` checks the registry, every document, and complete schema coverage.
 
 Find a starting point by business language or system, then generate a rollout worksheet:
 

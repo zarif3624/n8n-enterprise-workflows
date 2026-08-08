@@ -4,7 +4,7 @@
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.3",
   "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
-  "artifactCount": 91,
+  "artifactCount": 93,
   "departmentCount": 15,
   "workflowCount": 15,
   "artifacts": [
@@ -13,6 +13,12 @@
       "kind": "catalog",
       "bytes": 37412,
       "sha256": "sha256:808d90a680eb88a4c375c3ce70fb9afc64c359ead661b6b764779aae9bf3a589"
+    },
+    {
+      "path": "contract-registry.json",
+      "kind": "contract-registry",
+      "bytes": 1340,
+      "sha256": "sha256:05ea3278cbfcfb1efa9cd14b3a1ad1524c1445e703719a85a920a3f3e9a39170"
     },
     {
       "path": "docs/catalog.md",
@@ -53,8 +59,8 @@
     {
       "path": "schemas/artifact-manifest.schema.json",
       "kind": "json-schema",
-      "bytes": 2308,
-      "sha256": "sha256:637e6559740c3d336c9fcb3f9f7bde0a99d1b2f893eef6184a6ee2151accdbf1"
+      "bytes": 2329,
+      "sha256": "sha256:6d9fa6b2c3901c2d0793d7e21b74ee75789c910ac45a4a4450f9e7cc61c2c06e"
     },
     {
       "path": "schemas/catalog.schema.json",
@@ -73,6 +79,12 @@
       "kind": "json-schema",
       "bytes": 6932,
       "sha256": "sha256:f426cdbd9e92092fdae674ee6b5daf8ee5dc50addd91f49cb3f39d6ef2583664"
+    },
+    {
+      "path": "schemas/contract-registry.schema.json",
+      "kind": "json-schema",
+      "bytes": 1463,
+      "sha256": "sha256:aa3a7ba5e312e3bcf6a08a72fd22f59f9b9459d848c0567b30e5ad07a2fc91a2"
     },
     {
       "path": "schemas/field-mapping.schema.json",

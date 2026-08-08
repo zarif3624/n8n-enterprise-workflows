@@ -8,6 +8,7 @@ the local adoption tools:
 - `field-mapping.schema.json` — declarative source-to-policy mapping files;
 - `conformance-report.schema.json` — aggregate output from `npm run conformance -- --json`;
 - `conformance-comparison.schema.json` — aggregate output from `npm run conformance:compare -- --json`;
+- `contract-registry.schema.json` — discovery links from repository documents and CLI outputs to schemas;
 - `policy-lifecycle.schema.json` — owner review, due-date, and deprecation metadata;
 - `policy-lock.schema.json` — engine and per-policy versions and behavior fingerprints;
 - `policy-snapshot.schema.json` — complete reviewable contracts, rules, thresholds, decisions, and actions;
@@ -22,5 +23,5 @@ local references and enforces composition, types, bounds, formats, object
 closure, and Draft 2020-12 `unevaluatedProperties` behavior used by these
 contracts. It also checks actual policy results against `openapi.json`.
 
-All nine schema files are covered by `artifact-manifest.json` and included in
+All ten schema files are covered by `artifact-manifest.json` and included in
 the reproducible full-catalog release archive.

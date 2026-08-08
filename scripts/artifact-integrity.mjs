@@ -12,6 +12,7 @@ export function generatedArtifactDescriptors(catalog) {
   const descriptors = [
     { path: "schemas/artifact-manifest.schema.json", kind: "json-schema" },
     { path: "catalog.json", kind: "catalog" },
+    { path: "contract-registry.json", kind: "contract-registry" },
     { path: "docs/catalog.md", kind: "catalog-documentation" },
     { path: "openapi.json", kind: "api-contract" },
     { path: "policy-lifecycle.json", kind: "policy-lifecycle" },
@@ -21,6 +22,7 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "schemas/catalog.schema.json", kind: "json-schema" },
     { path: "schemas/conformance-comparison.schema.json", kind: "json-schema" },
     { path: "schemas/conformance-report.schema.json", kind: "json-schema" },
+    { path: "schemas/contract-registry.schema.json", kind: "json-schema" },
     { path: "schemas/field-mapping.schema.json", kind: "json-schema" },
     { path: "schemas/policy-lifecycle.schema.json", kind: "json-schema" },
     { path: "schemas/policy-lock.schema.json", kind: "json-schema" },
