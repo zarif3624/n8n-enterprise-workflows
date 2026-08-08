@@ -8,6 +8,7 @@
     "generate": "node scripts/generate-workflows.mjs",
     "evaluate": "node scripts/evaluate-policy.mjs",
     "catalog": "node scripts/catalog-cli.mjs",
+    "mapping": "node scripts/field-mapping-cli.mjs",
     "conformance": "node scripts/conformance-cli.mjs",
     "smoke:webhook": "node scripts/smoke-test-webhook.mjs",
     "validate": "node scripts/validate-workflows.mjs",

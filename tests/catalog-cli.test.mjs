@@ -46,6 +46,7 @@ test("adoption plans expose controls and calculate conservative capacity value",
   assert.equal(plan.roi.capacityEstimate.annualCapacityValue, 240000);
   assert.equal(plan.rolloutGates.length, 7);
   assert.equal(plan.verificationCommands.length, 3);
+  assert.equal(plan.mappingCommands.length, 2);
   assert.match(plan.conformanceCommand, /sanitized-records\.jsonl/);
   assert.match(renderAdoptionPlan(plan), /Illustrative annual capacity value: \*\*\$240,000\*\*/);
 });

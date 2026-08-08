@@ -12,6 +12,7 @@ function usage() {
 
 Options:
   --json                       Emit machine-readable JSON instead of Markdown
+  --mapping <mapping.json>     Safely map source-shaped records before evaluation
   --max-records <integer>      Reject larger inputs (default: ${defaultMaxRecords})
   --min-records <integer>      Fail the conformance gate below this sample size
   --max-invalid-rate <0..1>    Fail above this contract-invalid fraction
@@ -23,7 +24,7 @@ Options:
 function parseArguments(argv) {
   const options = {};
   const positionals = [];
-  const valueOptions = new Set(["max-records", "min-records", "max-invalid-rate", "min-rule-coverage", "require-bands"]);
+  const valueOptions = new Set(["mapping", "max-records", "min-records", "max-invalid-rate", "min-rule-coverage", "require-bands"]);
   while (argv.length) {
     const argument = argv.shift();
     if (!argument.startsWith("--")) {
@@ -76,6 +77,14 @@ async function main() {
     throw new Error("Could not read the conformance input; file-system details were omitted");
   }
   const records = parseConformanceInput(raw, { maxRecords: integerOption(options, "max-records", defaultMaxRecords) });
+  let mapping;
+  if (options.mapping) {
+    try {
+      mapping = JSON.parse(await readFile(options.mapping, "utf8"));
+    } catch {
+      throw new Error("Could not read or parse the mapping file");
+    }
+  }
   const requireBands = options["require-bands"] === undefined
     ? []
     : options["require-bands"].split(",").map((band) => band.trim()).filter(Boolean);
@@ -85,6 +94,7 @@ async function main() {
   const report = analyzeConformance({
     snapshotPolicy,
     records,
+    mapping,
     gates: {
       minRecords: integerOption(options, "min-records"),
       maxInvalidRate: fractionOption(options, "max-invalid-rate"),

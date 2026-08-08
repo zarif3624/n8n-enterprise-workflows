@@ -105,13 +105,17 @@ After mapping source fields, evaluate a sanitized JSON array or JSONL sample
 without emitting payload values or per-record results:
 
 ```bash
+npm run mapping -- init invoice-exception-triage > invoice-mapping.json
+npm run mapping -- check invoice-mapping.json
 npm run conformance -- invoice-exception-triage ./sanitized-invoices.jsonl \
+  --mapping invoice-mapping.json \
   --min-records 100 --max-invalid-rate 0.02 --min-rule-coverage 0.8
 ```
 
-The aggregate report records the exact policy fingerprint, outcome mix, score
+The declarative mapper uses safe JSON Pointers and explicit transforms, is bound
+to the exact policy fingerprint, and never executes adopter code. The aggregate report records the exact policy fingerprint, outcome mix, score
 distribution, rule coverage, and field/code violation counts. Optional gates
-exit nonzero for CI or UAT. See [privacy-safe conformance testing](docs/conformance-testing.md).
+exit nonzero for CI or UAT. See [field mapping](docs/field-mapping.md) and [privacy-safe conformance testing](docs/conformance-testing.md).
 
 ### Option B: Attach a workflow to Codex through n8n MCP
 

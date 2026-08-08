@@ -31,7 +31,7 @@ test("conformance input errors do not echo malformed input", () => {
 
 test("aggregate report measures outcomes, rule exercise, violations, and scores", () => {
   const report = analyzeConformance({ snapshotPolicy, records: [low, high, invalid] });
-  assert.deepEqual(report.sample, { total: 3, valid: 2, invalid: 1, invalidRate: 0.3333 });
+  assert.deepEqual(report.sample, { total: 3, valid: 2, invalid: 1, contractInvalid: 1, mappingInvalid: 0, invalidRate: 0.3333 });
   assert.equal(report.outcomes.priorityBands.find((item) => item.band === "low").count, 1);
   assert.equal(report.outcomes.priorityBands.find((item) => item.band === "high").count, 1);
   assert.equal(report.scores.count, 2);
@@ -54,6 +54,7 @@ test("aggregate report cannot leak caller values or request identifiers", () => 
     rawPayloadsIncluded: false,
     requestIdentifiersIncluded: false
   });
+  assert.deepEqual(report.mapping, { enabled: false });
 });
 
 test("configured conformance gates fail closed with actionable evidence", () => {

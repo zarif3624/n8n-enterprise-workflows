@@ -11,6 +11,9 @@ The input may be a JSON array, one JSON object, or newline-delimited JSON
 outside source control, remove direct identifiers and unnecessary fields, and
 use synthetic values where the policy only needs a type or category.
 
+If records still use a source-system shape, create a fingerprint-bound
+[declarative field mapping](field-mapping.md) and pass it with `--mapping`.
+
 The command defaults to 10,000 records to prevent accidental unbounded local
 processing. Override the cap deliberately with `--max-records`.
 
@@ -36,6 +39,8 @@ Raw payloads, field values, request IDs, and per-record outcomes are never
 included. Field names, rule IDs, decisions, and aggregate counts are policy
 metadata and may still be sensitive in a very small cohort. Run the analyzer
 locally and do not publish small-sample reports without a privacy review.
+When a mapping is used, the report adds only its fingerprint, mapped-target
+count, and target-field/error aggregates; source paths remain private.
 
 ## Add rollout gates
 

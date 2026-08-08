@@ -1,4 +1,5 @@
 import { evaluatePolicy } from "./policy-engine.mjs";
+import { applyFieldMapping, validateFieldMapping } from "./field-mapping.mjs";
 
 export const conformanceSchemaVersion = "1.0";
 export const defaultMaxRecords = 10_000;
@@ -78,10 +79,11 @@ export function parseConformanceInput(raw, { maxRecords = defaultMaxRecords } = 
   return records;
 }
 
-export function analyzeConformance({ snapshotPolicy, records, gates }) {
+export function analyzeConformance({ snapshotPolicy, records, gates, mapping }) {
   if (!snapshotPolicy?.behavior || !snapshotPolicy.fingerprint) throw new Error("A complete snapshot policy is required");
   if (!Array.isArray(records) || !records.length) throw new Error("At least one conformance record is required");
   const normalizedGates = normalizeGates(gates);
+  const compiledMapping = mapping ? validateFieldMapping(mapping, snapshotPolicy) : null;
   const policy = { ...snapshotPolicy.behavior, policyVersion: snapshotPolicy.policyVersion };
   const declaredRules = policy.rules.map((rule, index) => ({
     ruleId: ruleId(rule, index),
@@ -92,15 +94,33 @@ export function analyzeConformance({ snapshotPolicy, records, gates }) {
   const decisionCounts = new Map();
   const ruleCounts = new Map(declaredRules.map((rule) => [rule.ruleId, 0]));
   const violationCounts = new Map();
+  const mappingErrorCounts = new Map();
   const scores = [];
   let valid = 0;
   let invalid = 0;
+  let contractInvalid = 0;
+  let mappingInvalid = 0;
   let violationTotal = 0;
+  let mappingErrorTotal = 0;
 
   records.forEach((record, index) => {
+    let requestBody = record;
+    if (compiledMapping) {
+      const mapped = applyFieldMapping(compiledMapping, record);
+      if (!mapped.ok) {
+        invalid += 1;
+        mappingInvalid += 1;
+        for (const error of mapped.errors) {
+          mappingErrorTotal += 1;
+          increment(mappingErrorCounts, JSON.stringify([error.field, error.code]));
+        }
+        return;
+      }
+      requestBody = mapped.value;
+    }
     const result = evaluatePolicy({
       policy,
-      envelope: { body: record, headers: { "x-request-id": `conformance-${index + 1}` } },
+      envelope: { body: requestBody, headers: { "x-request-id": `conformance-${index + 1}` } },
       executionId: `conformance-${index + 1}`,
       evaluatedAt: "1970-01-01T00:00:00.000Z"
     });
@@ -113,6 +133,7 @@ export function analyzeConformance({ snapshotPolicy, records, gates }) {
       return;
     }
     invalid += 1;
+    contractInvalid += 1;
     for (const violation of result.details?.violations ?? []) {
       violationTotal += 1;
       increment(violationCounts, JSON.stringify([violation.field, violation.code]));
@@ -155,7 +176,22 @@ export function analyzeConformance({ snapshotPolicy, records, gates }) {
       rawPayloadsIncluded: false,
       requestIdentifiersIncluded: false
     },
-    sample: { total, valid, invalid, invalidRate },
+    sample: { total, valid, invalid, contractInvalid, mappingInvalid, invalidRate },
+    mapping: compiledMapping
+      ? {
+          enabled: true,
+          mappingVersion: compiledMapping.mappingVersion,
+          fingerprint: compiledMapping.fingerprint,
+          mappedFieldCount: compiledMapping.fields.length,
+          errors: {
+            total: mappingErrorTotal,
+            counts: entriesByCount(mappingErrorCounts, (key, count) => {
+              const [field, code] = JSON.parse(key);
+              return { field, code, count, rate: rate(count, mappingInvalid) };
+            })
+          }
+        }
+      : { enabled: false },
     outcomes: {
       priorityBands: [...bandCounts.entries()].map(([band, count]) => ({ band, count, rate: rate(count, valid) })),
       decisions: entriesByCount(decisionCounts, (decision, count) => ({ decision, count, rate: rate(count, valid) }))
@@ -201,6 +237,9 @@ export function renderConformanceReport(report) {
   const bands = report.outcomes.priorityBands.map((item) => `| ${item.band} | ${item.count} | ${percent(item.rate)} |`);
   const rules = report.rules.counts.map((item) => `| \`${item.ruleId}\` | \`${item.field}\` | ${item.count} | ${percent(item.rate)} |`);
   const violations = report.violations.counts.map((item) => `| \`${item.field}\` | \`${item.code}\` | ${item.count} | ${percent(item.rate)} |`);
+  const mappingErrors = report.mapping.enabled
+    ? report.mapping.errors.counts.map((item) => `| \`${item.field}\` | \`${item.code}\` | ${item.count} | ${percent(item.rate)} |`)
+    : [];
   const gates = report.gates.map((gate) => `| \`${gate.gate}\` | ${JSON.stringify(gate.expected)} | ${JSON.stringify(gate.actual)} | ${gate.passed ? "PASS" : "FAIL"} |`);
   const scoreSummary = report.scores
     ? `min ${report.scores.min}, average ${report.scores.average}, p50 ${report.scores.p50}, p95 ${report.scores.p95}, max ${report.scores.max}`
@@ -215,11 +254,19 @@ export function renderConformanceReport(report) {
 
 ## Sample
 
-| Total | Valid | Invalid | Invalid rate | Rule coverage |
-| ---: | ---: | ---: | ---: | ---: |
-| ${report.sample.total} | ${report.sample.valid} | ${report.sample.invalid} | ${percent(report.sample.invalidRate)} | ${percent(report.rules.coverageRate)} |
+| Total | Valid | Contract invalid | Mapping invalid | Invalid rate | Rule coverage |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| ${report.sample.total} | ${report.sample.valid} | ${report.sample.contractInvalid} | ${report.sample.mappingInvalid} | ${percent(report.sample.invalidRate)} | ${percent(report.rules.coverageRate)} |
 
 Score distribution: ${scoreSummary}.
+
+## Mapping
+
+${report.mapping.enabled ? `Mapping \`${report.mapping.fingerprint}\` mapped ${report.mapping.mappedFieldCount} target fields.` : "No declarative mapping was applied; records were evaluated as workflow-shaped payloads."}
+
+| Target field | Code | Occurrences | Rate of mapping-invalid records |
+| --- | --- | ---: | ---: |
+${tableOrNone(mappingErrors, "| — | — | 0 | 0% |")}
 
 ## Priority bands
 

@@ -171,7 +171,11 @@ export function buildAdoptionPlan(detail, { adapter, capacity, fixtureOutcomes =
       `npm run evaluate -- ${detail.slug} ${detail.examples.highRisk}`,
       `npm run evaluate -- ${detail.slug} ${detail.examples.invalid}`
     ],
-    conformanceCommand: `npm run conformance -- ${detail.slug} <sanitized-records.jsonl> --min-records <n> --max-invalid-rate <0..1> --min-rule-coverage <0..1>`,
+    mappingCommands: [
+      `npm run mapping -- init ${detail.slug} > ${detail.slug}.mapping.json`,
+      `npm run mapping -- check ${detail.slug}.mapping.json`
+    ],
+    conformanceCommand: `npm run conformance -- ${detail.slug} ./sanitized-records.jsonl --mapping ${detail.slug}.mapping.json --min-records 100 --max-invalid-rate 0.02 --min-rule-coverage 0.8`,
     rolloutGates: [
       { gate: "Policy approval", evidence: `Owner ${detail.owner} approves rules, thresholds, hard gates, decisions, and policy fingerprint.` },
       { gate: "Data mapping", evidence: "Every required field has a typed source, classification, owner, and invalid-data path." },
@@ -265,7 +269,13 @@ export function renderAdoptionPlan(plan) {
     ...plan.verificationCommands,
     "```",
     "",
-    "Then evaluate sanitized mapped records with owner-approved gates:",
+    "Create and validate a fingerprint-bound declarative mapping:",
+    "",
+    "```bash",
+    ...plan.mappingCommands,
+    "```",
+    "",
+    "Then evaluate sanitized source-shaped records with owner-approved gates:",
     "",
     "```bash",
     plan.conformanceCommand,
