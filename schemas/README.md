@@ -11,5 +11,10 @@ The schemas validate portable structure. Runtime checks additionally bind a
 mapping to a workflow's current policy fingerprint and require every workflow-
 specific required target field.
 
+The dependency-free supported-subset checker used by the test suite resolves
+local references and enforces composition, types, bounds, formats, object
+closure, and Draft 2020-12 `unevaluatedProperties` behavior used by these
+contracts. It also checks actual policy results against `openapi.json`.
+
 All three schema files are covered by `artifact-manifest.json` and included in
 the reproducible full-catalog release archive.

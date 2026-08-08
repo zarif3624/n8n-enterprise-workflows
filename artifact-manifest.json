@@ -41,8 +41,8 @@
     {
       "path": "schemas/conformance-comparison.schema.json",
       "kind": "json-schema",
-      "bytes": 6005,
-      "sha256": "sha256:adda69765dec0071c327eba292c8f3f4351afa120c9dd6f1883ab001e51878ab"
+      "bytes": 5989,
+      "sha256": "sha256:0f42c71607d94972ace8ab545ab31aeca13843ce393a209e31ba68232de71ce8"
     },
     {
       "path": "schemas/conformance-report.schema.json",

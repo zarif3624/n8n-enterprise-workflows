@@ -95,28 +95,32 @@
       }
     },
     "bandDelta": {
-      "allOf": [
-        { "$ref": "#/$defs/deltaBase" },
-        { "type": "object", "required": ["band"], "properties": { "band": { "enum": ["low", "medium", "high"] } }, "unevaluatedProperties": false }
-      ]
+      "allOf": [{ "$ref": "#/$defs/deltaBase" }],
+      "type": "object",
+      "required": ["band"],
+      "properties": { "band": { "enum": ["low", "medium", "high"] } },
+      "unevaluatedProperties": false
     },
     "decisionDelta": {
-      "allOf": [
-        { "$ref": "#/$defs/deltaBase" },
-        { "type": "object", "required": ["decision"], "properties": { "decision": { "type": "string", "minLength": 1 } }, "unevaluatedProperties": false }
-      ]
+      "allOf": [{ "$ref": "#/$defs/deltaBase" }],
+      "type": "object",
+      "required": ["decision"],
+      "properties": { "decision": { "type": "string", "minLength": 1 } },
+      "unevaluatedProperties": false
     },
     "ruleDelta": {
-      "allOf": [
-        { "$ref": "#/$defs/deltaBase" },
-        { "type": "object", "required": ["ruleId", "field"], "properties": { "ruleId": { "type": "string", "minLength": 1 }, "field": { "type": "string", "minLength": 1 } }, "unevaluatedProperties": false }
-      ]
+      "allOf": [{ "$ref": "#/$defs/deltaBase" }],
+      "type": "object",
+      "required": ["ruleId", "field"],
+      "properties": { "ruleId": { "type": "string", "minLength": 1 }, "field": { "type": "string", "minLength": 1 } },
+      "unevaluatedProperties": false
     },
     "errorDelta": {
-      "allOf": [
-        { "$ref": "#/$defs/deltaBase" },
-        { "type": "object", "required": ["key", "field", "code"], "properties": { "key": { "type": "string", "minLength": 1 }, "field": { "type": "string", "minLength": 1 }, "code": { "type": "string", "minLength": 1 } }, "unevaluatedProperties": false }
-      ]
+      "allOf": [{ "$ref": "#/$defs/deltaBase" }],
+      "type": "object",
+      "required": ["key", "field", "code"],
+      "properties": { "key": { "type": "string", "minLength": 1 }, "field": { "type": "string", "minLength": 1 }, "code": { "type": "string", "minLength": 1 } },
+      "unevaluatedProperties": false
     },
     "gate": {
       "type": "object",

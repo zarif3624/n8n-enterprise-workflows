@@ -11,7 +11,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, adversarial, sensitive-data, privacy, and CI supply-chain coverage, increasing the suite from 58 to 192 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, and CI supply-chain coverage, increasing the suite from 58 to 208 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
 - A generated SHA-256 manifest covering all 83 public generated and machine-contract artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
@@ -25,6 +25,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Fixed-seed adversarial testing across every policy and mapping boundary for crash safety, determinism, score/rule bounds, prototype-shaped data, safe serialization, and private-marker non-echo.
 - A consumer-facing release bundle verifier with decompression limits, safe-path/type parsing, exact file-set enforcement, and per-file byte/SHA-256 checks against `BUNDLE.json`.
 - Redacted full-repository sensitive-data scanning for provider tokens, private keys, JWTs, and high-entropy credential assignments, enforced by the standard local and CI check.
+- Executable OpenAPI conformance across all 15 operations: valid/invalid requests and real 200/400 plus sanitized 500 response objects are checked against their published schemas, with negative leakage and decision-drift tests.
 
 ### Changed
 

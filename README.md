@@ -32,6 +32,7 @@ The shared test suite checks these guarantees across the full catalog instead of
 It also runs a fixed-seed [adversarial corpus](docs/adversarial-testing.md) across every policy and mapping boundary to catch crashes, nondeterminism, unsafe bounds, prototype-shaped inputs, and payload echo.
 The scheduled compatibility matrix also boots supported n8n versions, exercises a representative webhook over HTTP, and forces an evaluator exception to prove the sanitized 500 path. This catches runtime behavior that import checks cannot see.
 Pull-request CI separately replays changed policies against target-branch and current fixtures plus isolated rule witnesses, then summarizes any score, band, decision, matched-rule, action, or validation delta for business-owner review.
+The suite also executes every low/high/invalid fixture through the source engine and validates the resulting 200/400 objects plus the sanitized 500 shape against that endpoint's published OpenAPI schema.
 
 ## Why this project exists
 
