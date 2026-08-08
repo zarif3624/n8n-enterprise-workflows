@@ -30,7 +30,7 @@ Every workflow package includes:
 
 The shared test suite checks these guarantees across the full catalog instead of relying on screenshots or manual import checks.
 It also runs a fixed-seed [adversarial corpus](docs/adversarial-testing.md) across every policy and mapping boundary to catch crashes, nondeterminism, unsafe bounds, prototype-shaped inputs, and payload echo.
-The scheduled compatibility matrix also boots supported n8n versions, exercises a representative webhook over HTTP, and forces an evaluator exception to prove the sanitized 500 path. This catches runtime behavior that import checks cannot see.
+The scheduled compatibility matrix also boots the versions pinned in the machine-readable [runtime compatibility plan](runtime-compatibility.json), exercises a representative webhook over HTTP, and forces an evaluator exception to prove the sanitized 500 path. This catches runtime behavior that import checks cannot see and prevents CI from drifting away from documented support.
 Pull-request CI separately replays changed policies against target-branch and current fixtures plus isolated rule witnesses, then summarizes any score, band, decision, matched-rule, action, or validation delta for business-owner review.
 The suite also executes every low/high/invalid fixture through the source engine and validates the resulting 200/400 objects plus the sanitized 500 shape against that endpoint's published OpenAPI schema.
 
@@ -63,7 +63,7 @@ This project makes those concerns part of each workflow package.
 | Privacy | [Data subject request triage](workflows/privacy/data-subject-request-triage) | Keep identity, deadline, and legal constraints visible |
 
 Browse the machine-readable [catalog](catalog.json), the generated
-[OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
+[OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [runtime compatibility plan](runtime-compatibility.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
 Machine integrations can validate adoption-tool JSON against the published
 [Draft 2020-12 schemas](schemas/README.md).
 

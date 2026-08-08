@@ -1,0 +1,22 @@
+{
+  "compatibilityVersion": 1,
+  "policyEngineVersion": "1.0.3",
+  "nodeVersion": "22",
+  "minimumSupportedN8nVersion": "2.13.0",
+  "scheduledN8nVersions": [
+    "2.13.0",
+    "2.33.7"
+  ],
+  "scope": {
+    "import": "all-workflows",
+    "representativeWorkflow": "invoice-exception-triage",
+    "probes": [
+      "low-risk-decision",
+      "high-risk-decision",
+      "invalid-fixture",
+      "null-body",
+      "forced-internal-error"
+    ]
+  },
+  "evidenceWorkflow": ".github/workflows/n8n-import-smoke.yml"
+}

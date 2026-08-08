@@ -5,14 +5,19 @@ import test from "node:test";
 import { compareConformanceReports } from "../scripts/conformance-compare.mjs";
 import { analyzeConformance } from "../scripts/conformance.mjs";
 import { createIdentityMapping } from "../scripts/field-mapping.mjs";
+import { policyEngineVersion } from "../scripts/policy-engine.mjs";
+import { runtimeCompatibilityIssues, runtimeCompatibilityMatrix } from "../scripts/runtime-compatibility.mjs";
 import { schemaContractIssues } from "../scripts/schema-contract-check.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const readJson = async (path) => JSON.parse(await readFile(join(root, path), "utf8"));
-const [mappingSchema, reportSchema, comparisonSchema, snapshot] = await Promise.all([
+const [mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, compatibility, catalog, snapshot] = await Promise.all([
   readJson("schemas/field-mapping.schema.json"),
   readJson("schemas/conformance-report.schema.json"),
   readJson("schemas/conformance-comparison.schema.json"),
+  readJson("schemas/runtime-compatibility.schema.json"),
+  readJson("runtime-compatibility.json"),
+  readJson("catalog.json"),
   readJson("policy-snapshot.json")
 ]);
 const policy = snapshot.policies.find((candidate) => candidate.slug === "invoice-exception-triage");
@@ -46,4 +51,16 @@ test("published comparison schema accepts drift reports and requires interpretat
   assertMatches(comparison, comparisonSchema);
   delete comparison.interpretation;
   assert.ok(schemaContractIssues(comparison, comparisonSchema, comparisonSchema).some((issue) => issue.includes("missing interpretation")));
+});
+
+test("published runtime compatibility plan drives a pinned, complete CI matrix", () => {
+  assertMatches(compatibility, compatibilitySchema);
+  assert.deepEqual(runtimeCompatibilityIssues(compatibility, { catalog, policyEngineVersion }), []);
+  assert.deepEqual(runtimeCompatibilityMatrix(compatibility), compatibility.scheduledN8nVersions.map((version) => ({
+    "n8n-version": version,
+    "node-version": compatibility.nodeVersion
+  })));
+  const drifted = structuredClone(compatibility);
+  drifted.policyEngineVersion = "0.0.0";
+  assert.ok(runtimeCompatibilityIssues(drifted, { catalog, policyEngineVersion }).some((issue) => issue.includes("policyEngineVersion")));
 });

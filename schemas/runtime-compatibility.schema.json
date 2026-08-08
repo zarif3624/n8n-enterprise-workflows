@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/zarif3624/n8n-enterprise-workflows/main/schemas/runtime-compatibility.schema.json",
+  "title": "n8n Enterprise Workflows Runtime Compatibility Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "compatibilityVersion",
+    "policyEngineVersion",
+    "nodeVersion",
+    "minimumSupportedN8nVersion",
+    "scheduledN8nVersions",
+    "scope",
+    "evidenceWorkflow"
+  ],
+  "properties": {
+    "compatibilityVersion": { "const": 1 },
+    "policyEngineVersion": { "$ref": "#/$defs/semver" },
+    "nodeVersion": { "type": "string", "pattern": "^[0-9]+$" },
+    "minimumSupportedN8nVersion": { "$ref": "#/$defs/semver" },
+    "scheduledN8nVersions": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/semver" }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["import", "representativeWorkflow", "probes"],
+      "properties": {
+        "import": { "const": "all-workflows" },
+        "representativeWorkflow": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "probes": {
+          "type": "array",
+          "minItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "low-risk-decision",
+              "high-risk-decision",
+              "invalid-fixture",
+              "null-body",
+              "forced-internal-error"
+            ]
+          }
+        }
+      }
+    },
+    "evidenceWorkflow": { "const": ".github/workflows/n8n-import-smoke.yml" }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" }
+  }
+}

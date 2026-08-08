@@ -4,7 +4,7 @@
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.3",
   "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
-  "artifactCount": 83,
+  "artifactCount": 85,
   "departmentCount": 15,
   "workflowCount": 15,
   "artifacts": [
@@ -39,6 +39,12 @@
       "sha256": "sha256:f489e96b8723662eccbd2bc1b6941af0be1ef0f0a64e188a1304e85e38e12ac7"
     },
     {
+      "path": "runtime-compatibility.json",
+      "kind": "runtime-compatibility",
+      "bytes": 513,
+      "sha256": "sha256:9f1e410c2350fd67aa2d5fbd83ac424c7c14dbbe6d0921e04a3f8b1af77d3959"
+    },
+    {
       "path": "schemas/conformance-comparison.schema.json",
       "kind": "json-schema",
       "bytes": 5989,
@@ -55,6 +61,12 @@
       "kind": "json-schema",
       "bytes": 1203,
       "sha256": "sha256:f27579945547f28b9b6d03e57a0d3ffe50427f0d3df97dee1f851ee95a3a6d1a"
+    },
+    {
+      "path": "schemas/runtime-compatibility.schema.json",
+      "kind": "json-schema",
+      "bytes": 1812,
+      "sha256": "sha256:07c19bd7ab33dc1f71b9ae2d4aba6148f7397ab9059ab751edfd213e916fcfed"
     },
     {
       "path": "workflows/corporate-communications/external-communication-approval/README.md",

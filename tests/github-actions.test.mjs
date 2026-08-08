@@ -20,3 +20,10 @@ test("all external GitHub Actions are pinned to immutable commit SHAs", async ()
     }
   }
 });
+
+test("the n8n compatibility workflow consumes the versioned runtime plan", async () => {
+  const source = await readFile(join(root, ".github", "workflows", "n8n-import-smoke.yml"), "utf8");
+  assert.match(source, /compatibility -- matrix/);
+  assert.match(source, /fromJSON\(needs\.matrix\.outputs\.include\)/);
+  assert.doesNotMatch(source, /n8n-version:\s*\[[^\]]+\]/);
+});
