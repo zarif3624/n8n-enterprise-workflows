@@ -11,11 +11,32 @@ import { assertSchemaContract } from "./schema-contract-check.mjs";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
 if (args.includes("--help") || args.includes("-h")) {
-  process.stdout.write("Usage: npm run readiness -- [--as-of YYYY-MM-DD] [--json]\n");
+  process.stdout.write("Usage: npm run readiness -- [--workflow <slug>] [--as-of YYYY-MM-DD] [--json]\n");
   process.exit(0);
 }
-const asOfIndex = args.indexOf("--as-of");
-const asOf = asOfIndex >= 0 ? args[asOfIndex + 1] : new Date().toISOString().slice(0, 10);
+let asOf = new Date().toISOString().slice(0, 10);
+let workflowSlug;
+let json = false;
+for (let index = 0; index < args.length; index += 1) {
+  const argument = args[index];
+  if (argument === "--json") {
+    json = true;
+    continue;
+  }
+  if (argument === "--as-of" || argument === "--workflow") {
+    const value = args[index + 1];
+    if (!value || value.startsWith("--")) {
+      console.error(`Option ${argument} requires a value`);
+      process.exit(2);
+    }
+    if (argument === "--as-of") asOf = value;
+    else workflowSlug = value;
+    index += 1;
+    continue;
+  }
+  console.error(`Unknown option: ${argument}`);
+  process.exit(2);
+}
 const [
   packageManifest, catalog, artifactManifest, policyLock, lifecycle,
   compatibility, registry, readinessSchema, engineSource
@@ -47,12 +68,13 @@ try {
     artifactManifestMatches: JSON.stringify(artifactManifest) === JSON.stringify(expectedArtifactManifest),
     contractIssues: await contractRegistryIssues({ root, registry }),
     lifecycleIssues: policyLifecycleIssues(lifecycle, { catalog, policyLock }),
-    compatibilityIssues: runtimeCompatibilityIssues(compatibility, { catalog, policyEngineVersion: policyLock.policyEngineVersion })
+    compatibilityIssues: runtimeCompatibilityIssues(compatibility, { catalog, policyEngineVersion: policyLock.policyEngineVersion }),
+    workflowSlug
   });
 } catch (error) {
   console.error(error.message);
   process.exit(2);
 }
 assertSchemaContract(report, readinessSchema, readinessSchema, "Readiness report");
-process.stdout.write(args.includes("--json") ? `${JSON.stringify(report, null, 2)}\n` : renderReadinessReport(report));
+process.stdout.write(json ? `${JSON.stringify(report, null, 2)}\n` : renderReadinessReport(report));
 if (report.repositoryStatus === "invalid") process.exitCode = 1;

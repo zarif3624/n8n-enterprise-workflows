@@ -12,6 +12,7 @@ test("readiness JSON separates repository validity from deployment authorization
   const result = run("--json", "--as-of", "2026-08-08");
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout);
+  assert.deepEqual(report.scope, { type: "catalog" });
   assert.equal(report.repositoryStatus, "ready");
   assert.equal(report.deploymentStatus, "blocked");
   assert.equal(report.inventory.workflows, 15);
@@ -28,6 +29,28 @@ test("readiness Markdown makes owner approval and evidence limits prominent", ()
   assert.match(result.stdout, /Repository: \*\*ready\*\*\. Deployment: \*\*blocked\*\*/);
   assert.match(result.stdout, /real review by their named business owners/);
   assert.match(result.stdout, /not approval to deploy/);
+});
+
+test("workflow-scoped readiness reports only the selected policy's deployment gate", () => {
+  const result = run("--json", "--workflow", "invoice-exception-triage", "--as-of", "2026-08-08");
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.deepEqual(report.scope, { type: "workflow", workflow: "invoice-exception-triage", department: "finance" });
+  assert.equal(report.policyGovernance.draft, 1);
+  assert.equal(report.policyGovernance.dueSoon, 1);
+  assert.deepEqual(report.deploymentBlockers.map(({ code, count }) => ({ code, count })), [
+    { code: "owner_approval_required", count: 1 }
+  ]);
+});
+
+test("workflow-scoped readiness rejects unknown slugs and malformed options", () => {
+  const unknown = run("--workflow", "not-a-policy");
+  assert.equal(unknown.status, 2);
+  assert.match(unknown.stderr, /Unknown workflow slug/);
+  assert.doesNotMatch(unknown.stderr, /node:internal|at buildReadinessReport/);
+  const malformed = run("--workflow", "--json");
+  assert.equal(malformed.status, 2);
+  assert.match(malformed.stderr, /requires a value/);
 });
 
 test("overdue reviews become explicit deployment blockers without falsifying repository evidence", () => {
@@ -49,6 +72,6 @@ test("readiness CLI rejects impossible evidence dates without a stack trace", ()
 test("documented npm invocation emits parseable JSON without a package-script banner", () => {
   const result = spawnSync("npm", ["run", "--silent", "readiness", "--", "--json", "--as-of", "2026-08-08"], { cwd: root, encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(JSON.parse(result.stdout).reportVersion, 1);
+  assert.equal(JSON.parse(result.stdout).reportVersion, 2);
   assert.doesNotMatch(result.stdout, /> n8n-enterprise-workflows/);
 });

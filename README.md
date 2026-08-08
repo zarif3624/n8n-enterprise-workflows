@@ -74,9 +74,10 @@ Get an honest deployment-facing summary without exposing payloads:
 ```bash
 npm run readiness
 npm run --silent readiness -- --json
+npm run readiness -- --workflow invoice-exception-triage
 ```
 
-The report distinguishes valid repository evidence from production authorization. A green repository can still be deployment-blocked by draft or overdue policies, and every template still requires environment-specific authentication, field mapping, adapters, human approvals, monitoring, retention, and rollback.
+The report distinguishes valid repository evidence from production authorization. Scope it to one workflow for an adoption preflight with only that policy's governance gates. A green repository can still be deployment-blocked by draft or overdue policies, and every template still requires environment-specific authentication, field mapping, adapters, human approvals, monitoring, retention, and rollback.
 Every documented CLI supports `--help` and `-h` with a successful exit, so commands can be discovered safely without supplying files or running an analysis.
 
 Find a starting point by business language or system, then generate a rollout worksheet:

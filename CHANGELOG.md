@@ -12,7 +12,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, lifecycle, readiness, and CI supply-chain coverage, increasing the suite from 58 to 231 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, lifecycle, readiness, and CI supply-chain coverage, increasing the suite from 58 to more than 240 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
 - A generated SHA-256 manifest covering all 96 public generated and machine-contract artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
@@ -30,6 +30,7 @@ All notable changes to this project are documented here. The project follows Sem
 
 ### Changed
 
+- Readiness evidence can now be scoped to one workflow, exposing that policy's deployment gates without catalog-wide approval noise.
 - Clarified that unknown request fields are accepted for compatibility but ignored and never echoed.
 - Pretty-serialized embedded policy JSON so n8n cannot misread nested `}}` as an early expression terminator; all policies and the shared engine move to patch version `1.0.1`.
 - OpenAPI operations now constrain workflow identity, policy version, and decision enums per endpoint and document correlation/cache headers on 200, 400, and 500 responses.

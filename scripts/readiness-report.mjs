@@ -12,9 +12,15 @@ export function buildReadinessReport({
   artifactManifestMatches,
   contractIssues,
   lifecycleIssues,
-  compatibilityIssues
+  compatibilityIssues,
+  workflowSlug
 }) {
-  const lifecycleReport = buildPolicyLifecycleReport(lifecycle, { asOf });
+  const scopedEntry = workflowSlug ? catalog.find((entry) => entry.slug === workflowSlug) : undefined;
+  if (workflowSlug && !scopedEntry) throw new Error(`Unknown workflow slug: ${workflowSlug}`);
+  const scopedLifecycle = workflowSlug
+    ? { ...lifecycle, policies: lifecycle.policies.filter((entry) => entry.slug === workflowSlug) }
+    : lifecycle;
+  const lifecycleReport = buildPolicyLifecycleReport(scopedLifecycle, { asOf });
   const issues = [
     ...contractIssues.map((issue) => `contract: ${issue}`),
     ...lifecycleIssues.map((issue) => `lifecycle: ${issue}`),
@@ -33,9 +39,12 @@ export function buildReadinessReport({
     message: "Overdue policy reviews must be completed before production use"
   });
   return {
-    reportVersion: 1,
+    reportVersion: 2,
     asOf,
     packageVersion: packageManifest.version,
+    scope: workflowSlug
+      ? { type: "workflow", workflow: workflowSlug, department: scopedEntry.department }
+      : { type: "catalog" },
     repositoryStatus: issues.length ? "invalid" : "ready",
     deploymentStatus: blockers.length ? "blocked" : "requires-environment-configuration",
     inventory: {
@@ -94,7 +103,8 @@ export function renderReadinessReport(report) {
     "",
     `Repository: **${report.repositoryStatus}**. Deployment: **${report.deploymentStatus}**.`,
     "",
-    `Inventory: ${report.inventory.workflows} workflows, ${report.inventory.departments} departments, ${report.inventory.artifacts} integrity-covered artifacts.`,
+    `Scope: ${report.scope.type === "workflow" ? `workflow \`${report.scope.workflow}\` (${report.scope.department})` : "complete catalog"}.`,
+    `Repository inventory: ${report.inventory.workflows} workflows, ${report.inventory.departments} departments, ${report.inventory.artifacts} integrity-covered artifacts.`,
     `Governance: ${report.policyGovernance.draft} draft, ${report.policyGovernance.active} active, ${report.policyGovernance.deprecated} deprecated, ${report.policyGovernance.dueSoon} due soon, ${report.policyGovernance.overdue} overdue.`,
     `Compatibility: n8n ${report.runtimeCompatibility.scheduledN8nVersions.join(", ")} on Node ${report.runtimeCompatibility.nodeVersion}, ${report.runtimeCompatibility.probeCount} live probes.`,
     `Contracts: ${report.contractCoverage.repositoryDocuments} documents, ${report.contractCoverage.generatedOutputs} generated outputs, ${report.contractCoverage.schemas} schemas.`,

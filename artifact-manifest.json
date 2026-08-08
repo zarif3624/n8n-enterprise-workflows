@@ -119,8 +119,8 @@
     {
       "path": "schemas/readiness-report.schema.json",
       "kind": "json-schema",
-      "bytes": 4877,
-      "sha256": "sha256:79e9ab38804ccc6024be94e2af7c04c9e46db90c1462790bb801720e6b4560a8"
+      "bytes": 5459,
+      "sha256": "sha256:3bb8f365557d9b42335e4981051c314ad6961159730179215011d91e1624e8b3"
     },
     {
       "path": "schemas/release-manifest.schema.json",

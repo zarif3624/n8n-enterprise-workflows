@@ -5,15 +5,35 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "reportVersion", "asOf", "packageVersion", "repositoryStatus",
+    "reportVersion", "asOf", "packageVersion", "scope", "repositoryStatus",
     "deploymentStatus", "inventory", "policyGovernance", "runtimeCompatibility",
     "contractCoverage", "evidence", "deploymentBlockers",
     "requiredDeploymentControls", "limitations", "privacy"
   ],
   "properties": {
-    "reportVersion": { "const": 1 },
+    "reportVersion": { "const": 2 },
     "asOf": { "$ref": "#/$defs/date" },
     "packageVersion": { "$ref": "#/$defs/semver" },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": { "type": { "const": "catalog" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "workflow", "department"],
+          "properties": {
+            "type": { "const": "workflow" },
+            "workflow": { "$ref": "#/$defs/slug" },
+            "department": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
     "repositoryStatus": { "type": "string", "enum": ["ready", "invalid"] },
     "deploymentStatus": { "type": "string", "enum": ["blocked", "requires-environment-configuration"] },
     "inventory": {
