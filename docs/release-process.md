@@ -19,7 +19,7 @@ fixes correctness, security, compatibility, observability, or adoption friction.
 
 ## Release checklist
 
-1. Run `npm run check`.
+1. Run `npm run check`, then review `npm run readiness`. A `ready` repository status is required; deployment blockers may remain when publishing intentionally inactive draft templates, but must be called out in release notes.
 2. Confirm every changed policy fingerprint has an intentional semantic-version bump.
 3. Review the generated diff, confirm `npm run scan:sensitive` passes, manually check for customer data the scanner cannot classify, and confirm `artifact-manifest.json` changed only where expected.
 4. Confirm links, catalog metadata, the policy lock, policy snapshot, and generated OpenAPI contract.
@@ -36,7 +36,7 @@ fixes correctness, security, compatibility, observability, or adoption friction.
 `npm run build:release` creates `dist/` from validated source without timestamps or host-specific ownership metadata. It produces:
 
 - One complete archive with generated artifacts, source policy tooling, CI/release metadata, documentation, and tests.
-- One self-contained archive per department with only that department's workflows and filtered catalog, OpenAPI, policy lock, and policy snapshot.
+- One self-contained archive per department with that department's workflows; filtered catalog, OpenAPI, policy lock, policy snapshot, and lifecycle contract; plus runtime compatibility metadata, JSON Schemas, and deployment guidance.
 - A `BUNDLE.json` inside every archive that hashes every other bundled file.
 - `release-manifest.json`, which records archive scope, workflow count, byte size, and SHA-256 identity.
 - `SHA256SUMS`, which covers every archive and the release manifest.

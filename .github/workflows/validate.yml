@@ -23,6 +23,8 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run check
+      - name: Summarize repository and deployment readiness
+        run: npm run --silent readiness >> "$GITHUB_STEP_SUMMARY"
       - run: npm run build:release
       - name: Enforce policy version bumps
         if: github.event_name == 'pull_request'

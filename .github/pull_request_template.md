@@ -14,6 +14,7 @@ Describe the process and measurable value this change supports.
 - [ ] External side effects and error paths are documented
 - [ ] `npm run check` passes
 - [ ] Generated artifact-manifest changes match the intended workflow/contract changes
+- [ ] Readiness report reviewed; repository status and deployment blockers are expected
 
 ## Test evidence
 
@@ -29,3 +30,5 @@ Describe validation and representative input used.
 - Hard safety floors added or changed:
 - Generated fixtures reviewed: low / high / invalid
 - Sanitized batch conformance reviewed when deployment mappings changed
+- Lifecycle status: draft / active / deprecated
+- Owner approval or recurring review due date:

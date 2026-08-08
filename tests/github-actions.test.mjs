@@ -27,3 +27,9 @@ test("the n8n compatibility workflow consumes the versioned runtime plan", async
   assert.match(source, /fromJSON\(needs\.matrix\.outputs\.include\)/);
   assert.doesNotMatch(source, /n8n-version:\s*\[[^\]]+\]/);
 });
+
+test("validation CI publishes the honest readiness report without changing its exit semantics", async () => {
+  const source = await readFile(join(root, ".github", "workflows", "validate.yml"), "utf8");
+  assert.match(source, /npm run --silent readiness >> "\$GITHUB_STEP_SUMMARY"/);
+  assert.doesNotMatch(source, /readiness -- --json/);
+});

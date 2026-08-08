@@ -41,6 +41,7 @@ For a policy change:
 7. Run `npm run report:policy-changes -- origin/main` and review the human-readable definition summary with the named policy owner.
 8. Run `npm run report:policy-impact -- origin/main` and review every changed fixture/rule-witness outcome.
 9. Confirm `git diff --exit-code` is clean after committing generated artifacts.
+10. Add the policy to `policy-lifecycle.json` as a draft with an honest introduction date and owner-approval deadline; do not claim approval based on code review or passing tests.
 
 See [policy authoring](docs/policy-authoring.md) for the scoring and compatibility contract.
 
@@ -53,4 +54,5 @@ small-cohort privacy risk. See [conformance testing](docs/conformance-testing.md
 
 Keep each pull request focused. Explain the business outcome, test evidence,
 and any production assumptions. Add or update catalog metadata when workflows
-change.
+change. Review `npm run readiness` and state whether its deployment blockers are
+expected for the change.
