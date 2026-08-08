@@ -28,3 +28,4 @@ Describe validation and representative input used.
 - Decision behavior before and after:
 - Hard safety floors added or changed:
 - Generated fixtures reviewed: low / high / invalid
+- Sanitized batch conformance reviewed when deployment mappings changed

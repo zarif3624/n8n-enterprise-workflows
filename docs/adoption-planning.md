@@ -52,4 +52,4 @@ This calculation is `monthly volume × 12 × minutes saved × loaded hourly cost
 
 ## Complete the plan before production
 
-The generated Markdown intentionally contains `<map source field>`, `<classify>`, and `<assign>` placeholders. Complete every required mapping, retain low/high/invalid fixture evidence, test duplicate and failure paths, and obtain the named owner's approval for the exact policy fingerprint. The plan complements the [enterprise readiness checklist](enterprise-readiness.md); it does not replace security, privacy, legal, or change-management review.
+The generated Markdown intentionally contains `<map source field>`, `<classify>`, and `<assign>` placeholders. Complete every required mapping, retain low/high/invalid fixture evidence, run the included [privacy-safe conformance](conformance-testing.md) command against sanitized mapped records, test duplicate and failure paths, and obtain the named owner's approval for the exact policy fingerprint. The plan complements the [enterprise readiness checklist](enterprise-readiness.md); it does not replace security, privacy, legal, or change-management review.

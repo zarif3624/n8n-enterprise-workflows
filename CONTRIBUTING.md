@@ -44,6 +44,11 @@ For a policy change:
 
 See [policy authoring](docs/policy-authoring.md) for the scoring and compatibility contract.
 
+For adopter or deployment evidence, run the workflow against a sanitized JSON
+array or JSONL sample with `npm run conformance -- <workflow-slug> <input>`.
+Never commit source payloads; share only an aggregate report after checking
+small-cohort privacy risk. See [conformance testing](docs/conformance-testing.md).
+
 ## Pull requests
 
 Keep each pull request focused. Explain the business outcome, test evidence,

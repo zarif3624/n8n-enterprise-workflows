@@ -31,6 +31,7 @@ Start with `npm run catalog -- plan <workflow-slug>` to generate a workflow-spec
 - Test 4xx, 5xx, timeout, duplicate, and partial-data paths.
 - Preserve the template's evaluator error output and sanitized 500 responder when extending the success path.
 - Run all three package fixtures and preserve the observed decision evidence with the release.
+- Run a sanitized representative batch through `npm run conformance`, agree invalid-rate and rule-coverage gates with the policy owner, and preserve only the aggregate report.
 - Propagate `X-Request-Id` through downstream systems and alerts.
 
 ## Deployment

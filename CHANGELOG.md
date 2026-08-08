@@ -11,13 +11,14 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, and CI supply-chain coverage, increasing the suite from 58 to 159 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, conformance, privacy, and CI supply-chain coverage, increasing the suite from 58 to 166 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
 - A generated SHA-256 manifest covering all 80 public artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
 - Immutable full-SHA pins for every external GitHub Action plus monthly Dependabot update checks.
 - Pull-request behavior replay across both branches' representative fixtures and isolated old/new rule witnesses, with observable decision deltas in the job summary.
 - A no-dependency catalog CLI for discovery, machine-readable inspection, and workflow-specific adoption plans with field mapping, controls, fixture evidence, observability, rollback, and optional capacity-value scenarios.
+- A privacy-safe batch conformance CLI for JSON or JSONL samples with aggregate contract, outcome, score, rule-coverage, violation, and configurable rollout-gate evidence.
 
 ### Changed
 
@@ -28,6 +29,7 @@ All notable changes to this project are documented here. The project follows Sem
 ### Fixed
 
 - A runtime-only failure where importable workflows produced empty HTTP 200 responses because the Edit Fields raw-expression parser rejected compact nested policy JSON.
+- Documented stdin (`-`) support now reads piped JSON reliably in both single-record evaluation and batch conformance commands without echoing malformed input.
 
 ## 0.2.0
 

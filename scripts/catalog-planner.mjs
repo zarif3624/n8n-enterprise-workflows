@@ -171,13 +171,14 @@ export function buildAdoptionPlan(detail, { adapter, capacity, fixtureOutcomes =
       `npm run evaluate -- ${detail.slug} ${detail.examples.highRisk}`,
       `npm run evaluate -- ${detail.slug} ${detail.examples.invalid}`
     ],
+    conformanceCommand: `npm run conformance -- ${detail.slug} <sanitized-records.jsonl> --min-records <n> --max-invalid-rate <0..1> --min-rule-coverage <0..1>`,
     rolloutGates: [
       { gate: "Policy approval", evidence: `Owner ${detail.owner} approves rules, thresholds, hard gates, decisions, and policy fingerprint.` },
       { gate: "Data mapping", evidence: "Every required field has a typed source, classification, owner, and invalid-data path." },
       { gate: "Authentication", evidence: "The production webhook uses an approved built-in credential plus upstream authorization or allowlisting." },
       { gate: "Side-effect safety", evidence: "Credentials are least privilege; consequential writes require human approval; retries are idempotent." },
       { gate: "Failure handling", evidence: "External-node error outputs, timeout behavior, private alerts, sanitized 5xx responses, and rollback are tested." },
-      { gate: "User acceptance", evidence: "Low-risk, high-risk, invalid, duplicate, timeout, and downstream-failure evidence is retained." },
+      { gate: "User acceptance", evidence: "Low-risk, high-risk, invalid, duplicate, timeout, downstream-failure, and aggregate batch-conformance evidence is retained." },
       { gate: "Promotion", evidence: "A reviewed version is published through environment promotion; the original inactive export is the rollback point." }
     ],
     observability: [
@@ -262,6 +263,12 @@ export function renderAdoptionPlan(plan) {
     "",
     "```bash",
     ...plan.verificationCommands,
+    "```",
+    "",
+    "Then evaluate sanitized mapped records with owner-approved gates:",
+    "",
+    "```bash",
+    plan.conformanceCommand,
     "```",
     "",
     "## Rollout gates",

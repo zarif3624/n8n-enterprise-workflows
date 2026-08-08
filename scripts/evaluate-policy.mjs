@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
 import { evaluatePolicy } from "./policy-engine.mjs";
+import { readCliInput } from "./read-cli-input.mjs";
 import { policyFor, workflows } from "./workflow-definitions.mjs";
 
 const [slug, inputPath] = process.argv.slice(2);
@@ -19,10 +19,10 @@ if (!definition) {
 
 let payload;
 try {
-  const raw = await readFile(inputPath === "-" ? 0 : inputPath, "utf8");
+  const raw = await readCliInput(inputPath);
   payload = JSON.parse(raw);
-} catch (error) {
-  console.error(`Could not read a JSON payload: ${error.message}`);
+} catch {
+  console.error("Could not read or parse JSON input; payload and file-system details were omitted");
   process.exit(1);
 }
 

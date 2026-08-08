@@ -22,6 +22,7 @@ Every workflow package includes:
 - Human-readable policy snapshots and pull-request summaries for owner review.
 - Before/after policy replay across both branches' fixtures and every declared rule witness.
 - A SHA-256 artifact manifest and reproducible full-catalog and per-department release archives.
+- Privacy-safe batch conformance analysis with contract, outcome, score, and rule-coverage gates.
 - Structured HTTP 200, 400, and sanitized retryable 500 responses with correlation IDs.
 - A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
 - Security, operations, human-approval, adapter, and ROI guidance.
@@ -99,6 +100,18 @@ npm run evaluate -- invoice-exception-triage \
 ```
 
 The command exits 0 for a valid decision, 2 for a contract violation, and 1 for CLI or file errors.
+
+After mapping source fields, evaluate a sanitized JSON array or JSONL sample
+without emitting payload values or per-record results:
+
+```bash
+npm run conformance -- invoice-exception-triage ./sanitized-invoices.jsonl \
+  --min-records 100 --max-invalid-rate 0.02 --min-rule-coverage 0.8
+```
+
+The aggregate report records the exact policy fingerprint, outcome mix, score
+distribution, rule coverage, and field/code violation counts. Optional gates
+exit nonzero for CI or UAT. See [privacy-safe conformance testing](docs/conformance-testing.md).
 
 ### Option B: Attach a workflow to Codex through n8n MCP
 
