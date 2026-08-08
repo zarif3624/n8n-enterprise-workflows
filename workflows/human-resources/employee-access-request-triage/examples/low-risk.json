@@ -1,0 +1,11 @@
+{
+  "requestId": "requestId-001",
+  "employeeId": "employeeId-001",
+  "system": "system-001",
+  "accessLevel": "accessLevel-001",
+  "managerApproved": true,
+  "privilegedAccess": false,
+  "productionAccess": false,
+  "contractor": false,
+  "endDate": "2026-08-07T03:00:00Z"
+}

@@ -2,6 +2,7 @@ export const workflows = [
   {
     department: "finance",
     slug: "invoice-exception-triage",
+    policyVersion: "1.0.0",
     name: "Triage enterprise invoice exceptions",
     summary: "Scores invoice exceptions and routes clean invoices, finance reviews, and payment holds through a consistent policy.",
     problem: "Accounts payable teams lose time manually interpreting missing purchase orders, duplicate invoices, amount mismatches, and risky vendors.",
@@ -12,9 +13,9 @@ export const workflows = [
     optional: ["purchaseOrderId", "duplicateDetected", "amountMismatchPercent", "restrictedVendor", "newBankDetails"],
     rules: [
       { field: "purchaseOrderId", operator: "missing", points: 25, reason: "Purchase order is missing" },
-      { field: "duplicateDetected", operator: "truthy", points: 50, reason: "Potential duplicate invoice" },
+      { field: "duplicateDetected", operator: "truthy", points: 50, minimumBand: "high", reason: "Potential duplicate invoice" },
       { field: "amountMismatchPercent", operator: "gt", value: 2, points: 25, reason: "Invoice and purchase order differ by more than 2%" },
-      { field: "restrictedVendor", operator: "truthy", points: 60, reason: "Vendor appears on a restricted list" },
+      { field: "restrictedVendor", operator: "truthy", points: 60, minimumBand: "high", reason: "Vendor appears on a restricted list" },
       { field: "newBankDetails", operator: "truthy", points: 35, reason: "Payment destination changed" }
     ],
     decisions: { low: "continue_standard_processing", medium: "route_to_finance_review", high: "hold_payment_and_escalate" },
@@ -24,6 +25,7 @@ export const workflows = [
   {
     department: "human-resources",
     slug: "employee-access-request-triage",
+    policyVersion: "1.0.0",
     name: "Triage employee access requests",
     summary: "Classifies employee access requests using role, privilege, environment, and approval signals before provisioning begins.",
     problem: "Access requests often arrive through inconsistent channels and reach IT without enough context or the required approvals.",
@@ -46,6 +48,7 @@ export const workflows = [
   {
     department: "information-technology",
     slug: "service-desk-priority-routing",
+    policyVersion: "1.0.0",
     name: "Route enterprise service desk incidents",
     summary: "Assigns incident priority from impact, urgency, affected users, outage state, and executive visibility.",
     problem: "Inconsistent ticket priority creates noisy queues while genuinely disruptive incidents wait too long for the right team.",
@@ -69,6 +72,7 @@ export const workflows = [
   {
     department: "security",
     slug: "phishing-report-triage",
+    policyVersion: "1.0.0",
     name: "Triage employee phishing reports",
     summary: "Scores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.",
     problem: "Security teams receive large volumes of suspicious-email reports with uneven context and limited prioritization.",
@@ -81,7 +85,7 @@ export const workflows = [
       { field: "credentialRequested", operator: "truthy", points: 40, reason: "Message requests credentials" },
       { field: "suspiciousAttachment", operator: "truthy", points: 35, reason: "Suspicious attachment present" },
       { field: "executiveImpersonation", operator: "truthy", points: 30, reason: "Executive impersonation detected" },
-      { field: "linkClicked", operator: "truthy", points: 55, reason: "A user clicked the reported link" },
+      { field: "linkClicked", operator: "truthy", points: 55, minimumBand: "high", reason: "A user clicked the reported link" },
       { field: "multipleRecipients", operator: "truthy", points: 25, reason: "Possible campaign affects multiple recipients" }
     ],
     decisions: { low: "queue_analyst_review", medium: "expedite_investigation", high: "initiate_containment_review" },
@@ -91,6 +95,7 @@ export const workflows = [
   {
     department: "sales",
     slug: "enterprise-lead-routing",
+    policyVersion: "1.0.0",
     name: "Route enterprise sales leads",
     summary: "Scores enterprise leads using account fit, buying intent, geography, engagement, and consent before assignment.",
     problem: "High-value leads are often delayed or misrouted because qualification logic differs across forms, regions, and teams.",
@@ -113,6 +118,7 @@ export const workflows = [
   {
     department: "marketing",
     slug: "campaign-lead-compliance-gate",
+    policyVersion: "1.0.0",
     name: "Gate campaign leads for compliant follow-up",
     summary: "Checks consent, suppression, geography, engagement, and target-account status before campaign follow-up.",
     problem: "Campaign handoffs can create compliance risk and wasted spend when suppression and consent checks happen too late.",
@@ -122,8 +128,8 @@ export const workflows = [
     required: ["leadId", "email", "campaignId", "country"],
     optional: ["consent", "suppressed", "targetAccount", "engagementScore", "existingCustomer"],
     rules: [
-      { field: "consent", operator: "falsy", points: 60, reason: "Consent is missing" },
-      { field: "suppressed", operator: "truthy", points: 80, reason: "Contact is on a suppression list" },
+      { field: "consent", operator: "falsy", points: 60, minimumBand: "high", reason: "Consent is missing" },
+      { field: "suppressed", operator: "truthy", points: 80, minimumBand: "high", reason: "Contact is on a suppression list" },
       { field: "targetAccount", operator: "truthy", points: -20, reason: "Contact belongs to a target account" },
       { field: "engagementScore", operator: "gte", value: 70, points: -15, reason: "Strong engagement signal" },
       { field: "existingCustomer", operator: "truthy", points: 15, reason: "Customer messaging policy may apply" }
@@ -135,6 +141,7 @@ export const workflows = [
   {
     department: "customer-success",
     slug: "customer-risk-escalation",
+    policyVersion: "1.0.0",
     name: "Escalate at-risk enterprise customers",
     summary: "Combines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response.",
     problem: "Customer risk signals are distributed across systems and often become visible only after renewal conversations deteriorate.",
@@ -158,6 +165,7 @@ export const workflows = [
   {
     department: "legal",
     slug: "contract-intake-routing",
+    policyVersion: "1.0.0",
     name: "Route enterprise contract requests",
     summary: "Routes contract intake using document type, value, jurisdiction, data access, and non-standard terms.",
     problem: "Legal requests arrive without enough commercial or risk context, creating avoidable back-and-forth and slow review cycles.",
@@ -181,6 +189,7 @@ export const workflows = [
   {
     department: "procurement",
     slug: "vendor-risk-intake",
+    policyVersion: "1.0.0",
     name: "Triage enterprise vendor risk",
     summary: "Scores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence.",
     problem: "Procurement, security, privacy, and legal reviews often start late because vendor risk is not classified at intake.",
@@ -204,6 +213,7 @@ export const workflows = [
   {
     department: "operations",
     slug: "major-incident-stakeholder-brief",
+    policyVersion: "1.0.0",
     name: "Prepare major incident stakeholder briefs",
     summary: "Turns operational incident facts into a severity decision and a consistent stakeholder communication plan.",
     problem: "During incidents, teams lose time reconciling impact facts and deciding who needs which update cadence.",
@@ -215,13 +225,128 @@ export const workflows = [
     rules: [
       { field: "customersAffected", operator: "gte", value: 100, points: 30, reason: "At least 100 customers affected" },
       { field: "revenueImpact", operator: "truthy", points: 35, reason: "Revenue operations are affected" },
-      { field: "dataRisk", operator: "truthy", points: 50, reason: "Potential data exposure or integrity risk" },
+      { field: "dataRisk", operator: "truthy", points: 50, minimumBand: "high", reason: "Potential data exposure or integrity risk" },
       { field: "workaroundAvailable", operator: "falsy", points: 20, reason: "No workaround is available" },
-      { field: "regulatoryNotificationPossible", operator: "truthy", points: 45, reason: "Regulatory notification may be required" }
+      { field: "regulatoryNotificationPossible", operator: "truthy", points: 45, minimumBand: "high", reason: "Regulatory notification may be required" }
     ],
     decisions: { low: "standard_operations_update", medium: "activate_incident_command", high: "activate_executive_and_legal_response" },
     actions: ["Create the stakeholder brief", "Assign the next-update owner and deadline", "Require incident commander approval before external communication"],
     roiExample: "major incidents x minutes faster communication x affected staff loaded cost per minute"
+  },
+  {
+    department: "data-and-analytics",
+    slug: "data-access-request-triage",
+    policyVersion: "1.0.0",
+    name: "Triage enterprise data access requests",
+    summary: "Classifies data access requests by sensitivity, environment, sharing intent, retention, and owner approval before access is granted.",
+    problem: "Data teams receive incomplete access requests that obscure privacy risk, production scope, retention needs, and accountable ownership.",
+    outcome: "A transparent governance route that separates standard access from data-owner, privacy, and security review.",
+    owner: "Data Governance",
+    primaryMetric: "Time from request to governed data access",
+    required: ["requestId", "requesterId", "dataset", "purpose"],
+    optional: ["containsSensitiveData", "productionData", "externalSharing", "retentionDays", "ownerApproved"],
+    rules: [
+      { field: "containsSensitiveData", operator: "truthy", points: 35, reason: "Dataset contains sensitive data" },
+      { field: "productionData", operator: "truthy", points: 25, reason: "Request includes production data" },
+      { field: "externalSharing", operator: "truthy", points: 50, minimumBand: "high", reason: "Data may be shared outside the organization" },
+      { field: "retentionDays", operator: "gt", value: 365, points: 25, reason: "Requested retention exceeds one year" },
+      { field: "ownerApproved", operator: "falsy", points: 40, reason: "Dataset owner approval is missing" }
+    ],
+    decisions: { low: "approve_standard_data_access", medium: "require_owner_and_privacy_review", high: "block_until_governance_approval" },
+    actions: ["Create the governed access ticket", "Record purpose and retention", "Require named approval before external sharing"],
+    roiExample: "monthly data requests x review minutes saved x governance hourly cost / 60"
+  },
+  {
+    department: "engineering",
+    slug: "production-change-risk-gate",
+    policyVersion: "1.0.0",
+    name: "Gate production changes by operational risk",
+    summary: "Scores planned production changes using customer, database, rollback, peak-period, and security signals before deployment.",
+    problem: "Change approvals become inconsistent when risk context is scattered across pull requests, tickets, and release conversations.",
+    outcome: "An explainable release route that preserves human authority for elevated and security-relevant changes.",
+    owner: "Engineering Operations",
+    primaryMetric: "Change lead time without increasing failure rate",
+    required: ["changeId", "service", "changeType", "plannedAt"],
+    optional: ["customerImpact", "databaseMigration", "rollbackTested", "duringPeakHours", "securityRelevant"],
+    rules: [
+      { field: "customerImpact", operator: "truthy", points: 30, reason: "Change can affect customers" },
+      { field: "databaseMigration", operator: "truthy", points: 25, reason: "Change includes a database migration" },
+      { field: "rollbackTested", operator: "falsy", points: 45, reason: "Rollback has not been tested" },
+      { field: "duringPeakHours", operator: "truthy", points: 20, reason: "Change is planned during peak hours" },
+      { field: "securityRelevant", operator: "truthy", points: 45, minimumBand: "high", reason: "Change affects a security control or boundary" }
+    ],
+    decisions: { low: "continue_standard_change_process", medium: "require_senior_engineering_review", high: "hold_for_change_advisory_approval" },
+    actions: ["Update the change record", "Attach rollback evidence", "Require an accountable approver before deployment"],
+    roiExample: "monthly changes x approval minutes saved x engineering hourly cost / 60"
+  },
+  {
+    department: "facilities",
+    slug: "workplace-incident-routing",
+    policyVersion: "1.0.0",
+    name: "Route workplace incidents safely",
+    summary: "Prioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals.",
+    problem: "Facilities incidents arrive through inconsistent channels, delaying the right safety, security, or operations response.",
+    outcome: "A defensible urgency tier with clear escalation reasons and a named human response path.",
+    owner: "Workplace Operations",
+    primaryMetric: "Minutes from report to accountable responder",
+    required: ["incidentId", "site", "category", "description"],
+    optional: ["injuryReported", "immediateDanger", "accessControlImpact", "operationsDisrupted", "peopleAffected"],
+    rules: [
+      { field: "injuryReported", operator: "truthy", points: 55, minimumBand: "high", reason: "An injury has been reported" },
+      { field: "immediateDanger", operator: "truthy", points: 70, minimumBand: "high", reason: "People may face immediate danger" },
+      { field: "accessControlImpact", operator: "truthy", points: 30, reason: "Physical access controls are affected" },
+      { field: "operationsDisrupted", operator: "truthy", points: 25, reason: "Workplace operations are disrupted" },
+      { field: "peopleAffected", operator: "gte", value: 25, points: 25, reason: "At least 25 people are affected" }
+    ],
+    decisions: { low: "route_standard_facilities_queue", medium: "dispatch_urgent_workplace_response", high: "activate_safety_and_security_response" },
+    actions: ["Create the facilities incident", "Assign an on-site response owner", "Require human confirmation before closing a safety event"],
+    roiExample: "workplace incidents x minutes faster routing x disruption cost per minute"
+  },
+  {
+    department: "corporate-communications",
+    slug: "external-communication-approval",
+    policyVersion: "1.0.0",
+    name: "Approve external enterprise communications",
+    summary: "Routes proposed external communications using financial, customer, security, legal, and executive-approval signals.",
+    problem: "External statements move quickly across teams while material, legal, security, and customer implications remain unclear.",
+    outcome: "A visible approval route that prevents high-risk messages from bypassing accountable reviewers.",
+    owner: "Corporate Communications",
+    primaryMetric: "Time from draft to approved external communication",
+    required: ["requestId", "audience", "channel", "messageSummary", "owner"],
+    optional: ["materialFinancialInfo", "customerImpact", "securityIncident", "legalReviewed", "executiveApproved"],
+    rules: [
+      { field: "materialFinancialInfo", operator: "truthy", points: 60, minimumBand: "high", reason: "Message may contain material financial information" },
+      { field: "customerImpact", operator: "truthy", points: 30, reason: "Message addresses customer impact" },
+      { field: "securityIncident", operator: "truthy", points: 60, minimumBand: "high", reason: "Message concerns a security incident" },
+      { field: "legalReviewed", operator: "falsy", points: 35, reason: "Legal review is not recorded" },
+      { field: "executiveApproved", operator: "falsy", points: 25, reason: "Executive approval is not recorded" }
+    ],
+    decisions: { low: "continue_standard_editorial_review", medium: "require_cross_functional_approval", high: "hold_for_executive_and_legal_approval" },
+    actions: ["Create the communication approval record", "Attach the final approved wording", "Require named approval before publication"],
+    roiExample: "external messages x coordination minutes saved x reviewer hourly cost / 60"
+  },
+  {
+    department: "privacy",
+    slug: "data-subject-request-triage",
+    policyVersion: "1.0.0",
+    name: "Triage data subject requests",
+    summary: "Prioritizes privacy requests using identity, deadline, sensitivity, third-party, and legal-hold signals.",
+    problem: "Privacy requests have strict deadlines and often require coordination across identity, legal, security, and data-owning teams.",
+    outcome: "A deadline-aware route that keeps identity verification and legal constraints visible before fulfillment.",
+    owner: "Privacy Operations",
+    primaryMetric: "Data subject requests completed within policy deadline",
+    required: ["requestId", "requestType", "requesterRegion", "receivedAt"],
+    optional: ["identityVerified", "deadlineDays", "sensitiveData", "thirdPartyData", "legalHold"],
+    rules: [
+      { field: "identityVerified", operator: "falsy", points: 50, minimumBand: "high", reason: "Requester identity is not verified" },
+      { field: "deadlineDays", operator: "lt", value: 7, points: 35, reason: "Fewer than seven days remain" },
+      { field: "sensitiveData", operator: "truthy", points: 30, reason: "Request involves sensitive data" },
+      { field: "thirdPartyData", operator: "truthy", points: 25, reason: "Responsive records may contain third-party data" },
+      { field: "legalHold", operator: "truthy", points: 60, minimumBand: "high", reason: "Responsive data is subject to legal hold" }
+    ],
+    decisions: { low: "continue_standard_privacy_queue", medium: "assign_privacy_specialist_review", high: "hold_for_identity_or_legal_review" },
+    actions: ["Create the privacy case", "Record the governing deadline", "Require privacy or legal approval before disclosure or deletion"],
+    roiExample: "annual privacy requests x handling hours saved x privacy operations hourly cost"
   }
 ];
 
@@ -229,3 +354,93 @@ export const thresholds = {
   medium: 30,
   high: 70
 };
+
+const numberContracts = {
+  amount: { type: "number", minimum: 0 },
+  amountMismatchPercent: { type: "number", minimum: 0, maximum: 100 },
+  affectedUsers: { type: "number", minimum: 0 },
+  employeeCount: { type: "number", minimum: 0 },
+  engagementScore: { type: "number", minimum: 0, maximum: 100 },
+  arr: { type: "number", minimum: 0 },
+  renewalDays: { type: "number", minimum: 0 },
+  usageDropPercent: { type: "number", minimum: 0, maximum: 100 },
+  criticalTickets: { type: "number", minimum: 0 },
+  contractValue: { type: "number", minimum: 0 },
+  annualSpend: { type: "number", minimum: 0 },
+  customersAffected: { type: "number", minimum: 0 },
+  retentionDays: { type: "number", minimum: 0 },
+  peopleAffected: { type: "number", minimum: 0 },
+  deadlineDays: { type: "number", minimum: 0 }
+};
+
+const booleanFields = new Set([
+  "duplicateDetected", "restrictedVendor", "newBankDetails", "managerApproved",
+  "privilegedAccess", "productionAccess", "contractor", "serviceDown",
+  "securityImpact", "executiveAffected", "revenueImpact", "workaroundAvailable",
+  "credentialRequested", "suspiciousAttachment", "executiveImpersonation", "linkClicked",
+  "multipleRecipients", "targetAccount", "highIntent", "requestedDemo",
+  "marketingConsent", "consent", "suppressed", "existingCustomer", "negativeSentiment",
+  "championLeft", "execSponsorMissing", "nonStandardTerms", "personalData",
+  "crossBorderData", "autoRenewal", "regulatedIndustry", "handlesPersonalData",
+  "businessCritical", "foreignDataHosting", "subprocessors", "soc2Available", "dataRisk",
+  "regulatoryNotificationPossible", "containsSensitiveData", "productionData", "externalSharing",
+  "ownerApproved", "customerImpact", "databaseMigration", "rollbackTested", "duringPeakHours",
+  "securityRelevant", "injuryReported", "immediateDanger", "accessControlImpact", "operationsDisrupted",
+  "materialFinancialInfo", "securityIncident", "legalReviewed", "executiveApproved", "identityVerified",
+  "sensitiveData", "thirdPartyData", "legalHold"
+]);
+
+const adaptersByDepartment = {
+  finance: ["SAP", "Oracle", "NetSuite", "Coupa", "Slack"],
+  "human-resources": ["Workday", "Okta", "Microsoft Entra ID", "ServiceNow"],
+  "information-technology": ["ServiceNow", "Jira Service Management", "PagerDuty"],
+  security: ["Microsoft 365", "Google Workspace", "SIEM", "SOAR"],
+  sales: ["Salesforce", "HubSpot", "enrichment and routing tools"],
+  marketing: ["marketing automation", "CRM", "consent platform"],
+  "customer-success": ["customer success platform", "CRM", "support desk"],
+  legal: ["CLM", "e-signature", "ticketing", "document storage"],
+  procurement: ["procurement suite", "GRC", "security questionnaires"],
+  operations: ["incident management", "Slack", "Microsoft Teams", "status page"],
+  "data-and-analytics": ["Snowflake", "Databricks", "BigQuery", "data catalog", "ticketing"],
+  engineering: ["GitHub", "GitLab", "Jira", "change management", "incident management"],
+  facilities: ["facilities management", "physical security", "Slack", "Microsoft Teams"],
+  "corporate-communications": ["content management", "Slack", "Microsoft Teams", "approval tools"],
+  privacy: ["privacy management", "CRM", "data catalog", "ticketing", "document storage"]
+};
+
+function contractFor(field) {
+  if (numberContracts[field]) return numberContracts[field];
+  if (booleanFields.has(field)) return { type: "boolean" };
+  if (field === "email") return { type: "string", format: "email", minLength: 3, maxLength: 320 };
+  if (["startedAt", "endDate", "plannedAt", "receivedAt"].includes(field)) return { type: "string", format: "date-time", minLength: 1, maxLength: 64 };
+  if (field === "currency") return { type: "string", pattern: "^[A-Z]{3}$", minLength: 3, maxLength: 3 };
+  if (field === "summary") return { type: "string", minLength: 1, maxLength: 5000 };
+  return { type: "string", minLength: 1, maxLength: 500 };
+}
+
+export function inputSchemaFor(definition) {
+  return {
+    type: "object",
+    required: [...definition.required],
+    properties: Object.fromEntries(
+      [...definition.required, ...definition.optional].map((field) => [field, contractFor(field)])
+    ),
+    additionalProperties: true
+  };
+}
+
+export function policyFor(definition) {
+  return {
+    slug: definition.slug,
+    policyVersion: definition.policyVersion,
+    inputSchema: inputSchemaFor(definition),
+    rules: definition.rules,
+    thresholds,
+    decisions: definition.decisions,
+    actions: definition.actions
+  };
+}
+
+export function adaptersFor(definition) {
+  return adaptersByDepartment[definition.department] ?? [];
+}

@@ -1,10 +1,13 @@
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { workflows as definitions } from "./workflow-definitions.mjs";
+import { evaluatePolicy, policySchemaVersion } from "./policy-engine.mjs";
+import { inputSchemaFor, policyFor, workflows as definitions } from "./workflow-definitions.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "catalog.json"), "utf8"));
+const openApi = JSON.parse(await readFile(join(root, "openapi.json"), "utf8"));
+const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
 const errors = [];
 const webhookPaths = new Set();
 const definitionsBySlug = new Map(definitions.map((definition) => [definition.slug, definition]));
@@ -13,25 +16,89 @@ function fail(path, message) {
   errors.push(`${path}: ${message}`);
 }
 
+function sameJson(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function reachableNodeNames(workflow, triggerName) {
+  const seen = new Set();
+  const queue = [triggerName];
+  while (queue.length) {
+    const name = queue.shift();
+    if (seen.has(name)) continue;
+    seen.add(name);
+    for (const outputType of Object.values(workflow.connections?.[name] ?? {})) {
+      for (const channel of outputType ?? []) {
+        for (const connection of channel ?? []) queue.push(connection.node);
+      }
+    }
+  }
+  return seen;
+}
+
+function evaluateExpression(expression, envelope) {
+  const source = expression.replace(/^=\{\{/, "").replace(/\}\}$/, "").trim();
+  const getNode = () => ({ first: () => ({ json: envelope }), item: { json: envelope } });
+  const now = { toUTC: () => ({ toISO: () => "2026-08-07T03:00:00.000Z" }) };
+  return new Function("$", "$execution", "$now", `return (${source});`)(getNode, { id: "test-execution" }, now);
+}
+
+if (!Array.isArray(catalog)) fail("catalog.json", "catalog root must be an array");
+if (catalog.length !== definitions.length) fail("catalog.json", "catalog and workflow definitions must contain the same number of entries");
+if (new Set(definitions.map((definition) => definition.slug)).size !== definitions.length) fail("workflow-definitions.mjs", "workflow slugs must be unique");
+for (const definition of definitions) {
+  const path = `workflow-definitions.mjs:${definition.slug}`;
+  const allFields = [...definition.required, ...definition.optional];
+  if (!/^\d+\.\d+\.\d+$/.test(definition.policyVersion ?? "")) fail(path, "policyVersion must use semantic versioning");
+  if (new Set(allFields).size !== allFields.length) fail(path, "required and optional fields must be unique and disjoint");
+  if (!definition.required.length || !definition.rules.length || !definition.actions.length) fail(path, "required fields, rules, and actions cannot be empty");
+  if (!["low", "medium", "high"].every((band) => typeof definition.decisions?.[band] === "string")) fail(path, "all three decision bands are required");
+  for (const rule of definition.rules) {
+    if (!allFields.includes(rule.field)) fail(path, `rule references undeclared field ${rule.field}`);
+    if (!["missing", "truthy", "falsy", "equals", "includes", "gt", "gte", "lt"].includes(rule.operator)) fail(path, `unsupported rule operator ${rule.operator}`);
+    if (!Number.isFinite(rule.points) || !rule.reason) fail(path, `rule ${rule.field} needs finite points and a reason`);
+    if (rule.minimumBand && !["medium", "high"].includes(rule.minimumBand)) fail(path, `rule ${rule.field} has an invalid minimum band`);
+  }
+}
+if (openApi.openapi !== "3.1.0" || openApi.info?.version !== packageManifest.version) fail("openapi.json", "OpenAPI version metadata is invalid");
+if (Object.keys(openApi.paths ?? {}).length !== definitions.length) fail("openapi.json", "OpenAPI must expose exactly one path per workflow");
+
 for (const entry of catalog) {
   const workflowPath = join(root, entry.path, "workflow.json");
   const readmePath = join(root, entry.path, "README.md");
+  const definition = definitionsBySlug.get(entry.slug);
   let workflow;
   let raw;
+  let readme;
 
   try {
     raw = await readFile(workflowPath, "utf8");
     workflow = JSON.parse(raw);
-    await readFile(readmePath, "utf8");
+    readme = await readFile(readmePath, "utf8");
   } catch (error) {
     fail(entry.path, error.message);
     continue;
   }
 
-  if (!workflow.id || !workflow.name || !Array.isArray(workflow.nodes) || workflow.nodes.length < 3) fail(entry.path, "workflow shape is incomplete");
+  if (!definition) {
+    fail(entry.path, "catalog entry has no policy definition");
+    continue;
+  }
+  if (entry.schemaVersion !== policySchemaVersion || entry.policyVersion !== definition.policyVersion) fail(entry.path, "catalog policy/schema version is missing or unsupported");
+  if (!sameJson(entry.inputSchema, inputSchemaFor(definition))) fail(entry.path, "catalog input schema drifted from the definition");
+  if (!entry.outcome || !entry.owner || !entry.metric || !entry.examples || !Array.isArray(entry.adapters)) fail(entry.path, "catalog adoption metadata is incomplete");
+  const openApiOperation = openApi.paths?.[entry.endpoint]?.post;
+  if (!openApiOperation || openApiOperation.operationId !== `evaluate${entry.slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join("")}`) fail(entry.path, "OpenAPI operation is missing or unstable");
+  if (!sameJson(openApiOperation?.requestBody?.content?.["application/json"]?.schema, entry.inputSchema)) fail(entry.path, "OpenAPI input schema drifted from the catalog");
+
+  if (!workflow.id || !workflow.name || !Array.isArray(workflow.nodes) || workflow.nodes.length < 4) fail(entry.path, "workflow shape is incomplete");
+  if (!workflow.description || workflow.description.split(/[.!?](?:\s|$)/).filter(Boolean).length < 2) fail(entry.path, "workflow description must explain what it does and why");
   if (workflow.active !== false) fail(entry.path, "template must ship inactive");
-  if (!workflow.settings?.executionTimeout) fail(entry.path, "execution timeout is required");
+  if (workflow.settings?.executionTimeout !== 120) fail(entry.path, "execution timeout must be 120 seconds");
+  if (workflow.settings?.timezone !== "UTC") fail(entry.path, "workflow timezone must be explicit");
+  if (workflow.settings?.saveDataSuccessExecution !== "none") fail(entry.path, "success payload retention must default to none");
   if (!workflow.nodes.some((node) => node.type === "n8n-nodes-base.stickyNote")) fail(entry.path, "activation guidance sticky note is required");
+  if (workflow.nodes.some((node) => node.type === "n8n-nodes-base.code")) fail(entry.path, "single-item policy templates must use native expressions, not Code nodes");
 
   const ids = new Set();
   const names = new Set();
@@ -45,43 +112,82 @@ for (const entry of catalog) {
 
   const triggers = workflow.nodes.filter((node) => node.type === "n8n-nodes-base.webhook");
   if (triggers.length !== 1) fail(entry.path, "exactly one webhook trigger is required");
-  if (triggers[0]?.parameters?.responseMode !== "responseNode") fail(entry.path, "webhook must use responseNode mode");
-  const webhookPath = triggers[0]?.parameters?.path;
-  if (!webhookPath || webhookPaths.has(webhookPath)) fail(entry.path, "webhook path must be present and globally unique");
+  const trigger = triggers[0];
+  if (trigger?.parameters?.responseMode !== "responseNode") fail(entry.path, "webhook must use responseNode mode");
+  if (trigger?.parameters?.authentication !== "none") fail(entry.path, "local template authentication mode must be explicit");
+  const webhookPath = trigger?.parameters?.path;
+  if (!webhookPath || webhookPaths.has(webhookPath) || !/^enterprise\/[a-z-]+\/[a-z-]+$/.test(webhookPath)) fail(entry.path, "webhook path must be safe and globally unique");
   webhookPaths.add(webhookPath);
+
+  const sticky = workflow.nodes.find((node) => node.type === "n8n-nodes-base.stickyNote");
+  if (!/inactive template|unauthenticated webhook|before activation/i.test(sticky?.parameters?.content ?? "")) fail(entry.path, "sticky note must make the unauthenticated local-test gate explicit");
+
+  const evaluator = workflow.nodes.find((node) => node.name === "Evaluate policy signals");
+  if (evaluator?.type !== "n8n-nodes-base.set" || evaluator?.typeVersion !== 3.4) fail(entry.path, "policy evaluator must use Edit Fields (Set) v3.4");
+  if (evaluator?.parameters?.mode !== "raw" || evaluator?.parameters?.includeOtherFields !== false) fail(entry.path, "policy evaluator must return a clean raw object");
+  if (!evaluator?.parameters?.jsonOutput?.startsWith("={{")) fail(entry.path, "policy evaluator expression is missing");
 
   const responder = workflow.nodes.find((node) => node.type === "n8n-nodes-base.respondToWebhook");
   if (!responder) fail(entry.path, "Respond to Webhook node is required");
-  if (responder?.parameters?.responseBody !== "={{ $json }}") fail(entry.path, "JSON response must pass an object, not a stringified body");
-  if (!responder?.parameters?.options?.responseCode) fail(entry.path, "explicit response code is required");
-
-  const codeNode = workflow.nodes.find((node) => node.type === "n8n-nodes-base.code");
-  const definition = definitionsBySlug.get(entry.slug);
-  if (!codeNode?.parameters?.jsCode || !definition) {
-    fail(entry.path, "executable policy definition is missing");
-  } else {
-    try {
-      const evaluate = new Function("$input", "$execution", codeNode.parameters.jsCode);
-      const validBody = Object.fromEntries(definition.required.map((field) => [field, `test-${field}`]));
-      const validResult = evaluate({ first: () => ({ json: { body: validBody, headers: {} } }) }, { id: "test-execution" });
-      const invalidResult = evaluate({ first: () => ({ json: { body: {}, headers: {} } }) }, { id: "test-execution" });
-      if (validResult?.[0]?.json?.ok !== true || validResult?.[0]?.json?.httpStatus !== 200) fail(entry.path, "valid policy input did not return a success decision");
-      if (invalidResult?.[0]?.json?.ok !== false || invalidResult?.[0]?.json?.httpStatus !== 400) fail(entry.path, "missing input did not return a validation error");
-    } catch (error) {
-      fail(entry.path, `policy code failed to execute: ${error.message}`);
-    }
-  }
+  if (responder?.typeVersion !== 1.5) fail(entry.path, "Respond to Webhook must use v1.5");
+  if (responder?.parameters?.responseBody !== "={{ $('Evaluate policy signals').item.json }}") fail(entry.path, "response must reference the evaluator by name and pass an object");
+  if (responder?.parameters?.options?.responseCode !== "={{ $('Evaluate policy signals').item.json.httpStatus }}") fail(entry.path, "response status must reference the evaluator by name");
+  const responseHeaders = Object.fromEntries((responder?.parameters?.options?.responseHeaders?.entries ?? []).map(({ name, value }) => [name.toLowerCase(), value]));
+  if (responseHeaders["cache-control"] !== "no-store") fail(entry.path, "decision responses must disable intermediary caching");
+  if (responseHeaders["x-request-id"] !== "={{ $('Evaluate policy signals').item.json.requestId }}") fail(entry.path, "decision responses must expose the correlation ID as a header");
 
   for (const [source, outputs] of Object.entries(workflow.connections ?? {})) {
     if (!names.has(source)) fail(entry.path, `connection source does not exist: ${source}`);
-    for (const channel of outputs.main ?? []) {
-      for (const connection of channel) {
-        if (!names.has(connection.node)) fail(entry.path, `connection target does not exist: ${connection.node}`);
+    for (const [outputType, channels] of Object.entries(outputs)) {
+      if (outputType !== "main") fail(entry.path, `unsupported output type: ${outputType}`);
+      for (const channel of channels ?? []) {
+        for (const connection of channel ?? []) {
+          if (!names.has(connection.node)) fail(entry.path, `connection target does not exist: ${connection.node}`);
+          if (connection.type !== "main" || connection.index !== 0) fail(entry.path, `invalid connection to ${connection.node}`);
+        }
       }
     }
   }
 
-  if (/api[_-]?key|bearer\s+[a-z0-9]|password\s*[:=]|exampleSlackCredId/i.test(raw)) fail(entry.path, "possible secret or credential placeholder detected");
+  if (trigger) {
+    const reachable = reachableNodeNames(workflow, trigger.name);
+    for (const node of workflow.nodes.filter((item) => item.type !== "n8n-nodes-base.stickyNote")) {
+      if (!reachable.has(node.name)) fail(entry.path, `unreachable executable node: ${node.name}`);
+    }
+    if (!reachable.has(responder?.name)) fail(entry.path, "webhook path does not terminate in a response");
+  }
+
+  const requiredSections = ["## Five-minute adoption", "## Input contract", "## Policy rules", "## Response contract", "## Security and operations", "## ROI worksheet"];
+  for (const section of requiredSections) if (!readme.includes(section)) fail(entry.path, `README is missing ${section}`);
+  if (!readme.includes("human approval") || !readme.includes("examples/high-risk.json")) fail(entry.path, "README is missing human-approval or representative-test guidance");
+
+  const examplePayloads = {};
+  for (const [key, relativePath] of Object.entries(entry.examples)) {
+    try {
+      examplePayloads[key] = JSON.parse(await readFile(join(root, relativePath), "utf8"));
+    } catch (error) {
+      fail(entry.path, `${key} example is missing or invalid: ${error.message}`);
+    }
+  }
+
+  if (evaluator?.parameters?.jsonOutput && Object.keys(examplePayloads).length === 3) {
+    try {
+      const low = evaluateExpression(evaluator.parameters.jsonOutput, { body: examplePayloads.lowRisk, headers: { "x-request-id": "test-low" } });
+      const high = evaluateExpression(evaluator.parameters.jsonOutput, { body: examplePayloads.highRisk, headers: { "x-request-id": "test-high" } });
+      const invalid = evaluateExpression(evaluator.parameters.jsonOutput, { body: examplePayloads.invalid, headers: {} });
+      const directLow = evaluatePolicy({ policy: policyFor(definition), envelope: { body: examplePayloads.lowRisk, headers: { "x-request-id": "test-low" } }, executionId: "test-execution", evaluatedAt: "2026-08-07T03:00:00.000Z" });
+      if (!sameJson(low, directLow)) fail(entry.path, "generated n8n expression drifted from the source policy engine");
+      if (low.ok !== true || low.priorityBand !== "low") fail(entry.path, "low-risk fixture must return a low-band success");
+      if (high.ok !== true || high.priorityBand !== "high") fail(entry.path, "high-risk fixture must return a high-band success");
+      if (invalid.ok !== false || invalid.httpStatus !== 400 || invalid.details?.violations?.length < 2) fail(entry.path, "invalid fixture must return multiple field-level violations");
+    } catch (error) {
+      fail(entry.path, `policy expression failed to execute: ${error.message}`);
+    }
+  }
+
+  if (/(?:api[_-]?key|access[_-]?token|client[_-]?secret|password)\s*["'=:\s]+[A-Za-z0-9_\-]{12,}|bearer\s+[A-Za-z0-9._\-]{12,}|sk-[A-Za-z0-9]{12,}/i.test(raw)) {
+    fail(entry.path, "possible secret detected in workflow export");
+  }
 }
 
 const discovered = [];
@@ -94,7 +200,8 @@ for (const department of await readdir(join(root, "workflows"), { withFileTypes:
 
 const catalogPaths = new Set(catalog.map((entry) => entry.path));
 for (const path of discovered) if (!catalogPaths.has(path)) fail(path, "workflow is missing from catalog.json");
-if (catalog.length < 10) fail("catalog.json", "the initial release must include at least 10 workflows");
+for (const path of catalogPaths) if (!discovered.includes(path)) fail(path, "catalog entry points to a missing workflow package");
+if (catalog.length < 10) fail("catalog.json", "the catalog must include at least 10 workflows");
 
 if (errors.length) {
   console.error(`Validation failed with ${errors.length} issue(s):`);
@@ -102,4 +209,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated ${catalog.length} workflows across ${new Set(catalog.map((entry) => entry.department)).size} departments.`);
+console.log(`Validated ${catalog.length} workflows: contracts, fixtures, policy parity, graph reachability, safety, and documentation.`);

@@ -1,0 +1,4709 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "n8n Enterprise Workflow Decision APIs",
+    "version": "0.2.0",
+    "description": "Production contracts for the inactive n8n workflow templates in this repository. Authentication must be configured during adoption.",
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{n8nHost}",
+      "variables": {
+        "n8nHost": {
+          "default": "your-n8n.example.com"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/webhook/enterprise/finance/invoice-exception-triage": {
+      "post": {
+        "operationId": "evaluateInvoiceExceptionTriage",
+        "tags": [
+          "finance"
+        ],
+        "summary": "Triage enterprise invoice exceptions",
+        "description": "Scores invoice exceptions and routes clean invoices, finance reviews, and payment holds through a consistent policy. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "invoiceId",
+                  "vendorId",
+                  "amount",
+                  "currency"
+                ],
+                "properties": {
+                  "invoiceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "vendorId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "amount": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$",
+                    "minLength": 3,
+                    "maxLength": 3
+                  },
+                  "purchaseOrderId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "duplicateDetected": {
+                    "type": "boolean"
+                  },
+                  "amountMismatchPercent": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "restrictedVendor": {
+                    "type": "boolean"
+                  },
+                  "newBankDetails": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "invoiceId": "invoiceId-001",
+                    "vendorId": "vendorId-001",
+                    "amount": 1,
+                    "currency": "USD",
+                    "purchaseOrderId": "purchaseOrderId-001",
+                    "duplicateDetected": false,
+                    "amountMismatchPercent": 2,
+                    "restrictedVendor": false,
+                    "newBankDetails": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "invoiceId": "invoiceId-001",
+                    "vendorId": "vendorId-001",
+                    "amount": 1,
+                    "currency": "USD",
+                    "duplicateDetected": true,
+                    "amountMismatchPercent": 3,
+                    "restrictedVendor": true,
+                    "newBankDetails": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "invoice-exception-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "continue_standard_processing",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Persist the decision in the ERP or AP queue",
+                        "Require human approval for payment holds",
+                        "Notify the invoice owner with matched policy reasons"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "invoice-exception-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "hold_payment_and_escalate",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "purchaseOrderId_missing_1",
+                          "field": "purchaseOrderId",
+                          "points": 25,
+                          "reason": "Purchase order is missing"
+                        },
+                        {
+                          "ruleId": "duplicateDetected_truthy_2",
+                          "field": "duplicateDetected",
+                          "points": 50,
+                          "reason": "Potential duplicate invoice",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "amountMismatchPercent_gt_3",
+                          "field": "amountMismatchPercent",
+                          "points": 25,
+                          "reason": "Invoice and purchase order differ by more than 2%"
+                        },
+                        {
+                          "ruleId": "restrictedVendor_truthy_4",
+                          "field": "restrictedVendor",
+                          "points": 60,
+                          "reason": "Vendor appears on a restricted list",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "newBankDetails_truthy_5",
+                          "field": "newBankDetails",
+                          "points": 35,
+                          "reason": "Payment destination changed"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Persist the decision in the ERP or AP queue",
+                        "Require human approval for payment holds",
+                        "Notify the invoice owner with matched policy reasons"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "invoiceId",
+                        "code": "required",
+                        "message": "invoiceId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "vendorId",
+                        "code": "invalid_type",
+                        "message": "vendorId must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "invoiceId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "invoiceId",
+                      "vendorId",
+                      "amount",
+                      "currency"
+                    ],
+                    "properties": {
+                      "invoiceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "vendorId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "amount": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$",
+                        "minLength": 3,
+                        "maxLength": 3
+                      },
+                      "purchaseOrderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "duplicateDetected": {
+                        "type": "boolean"
+                      },
+                      "amountMismatchPercent": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "restrictedVendor": {
+                        "type": "boolean"
+                      },
+                      "newBankDetails": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/human-resources/employee-access-request-triage": {
+      "post": {
+        "operationId": "evaluateEmployeeAccessRequestTriage",
+        "tags": [
+          "human-resources"
+        ],
+        "summary": "Triage employee access requests",
+        "description": "Classifies employee access requests using role, privilege, environment, and approval signals before provisioning begins. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "employeeId",
+                  "system",
+                  "accessLevel"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "employeeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "system": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "accessLevel": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "managerApproved": {
+                    "type": "boolean"
+                  },
+                  "privilegedAccess": {
+                    "type": "boolean"
+                  },
+                  "productionAccess": {
+                    "type": "boolean"
+                  },
+                  "contractor": {
+                    "type": "boolean"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "minLength": 1,
+                    "maxLength": 64
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "employeeId": "employeeId-001",
+                    "system": "system-001",
+                    "accessLevel": "accessLevel-001",
+                    "managerApproved": true,
+                    "privilegedAccess": false,
+                    "productionAccess": false,
+                    "contractor": false,
+                    "endDate": "2026-08-07T03:00:00Z"
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "employeeId": "employeeId-001",
+                    "system": "system-001",
+                    "accessLevel": "accessLevel-001",
+                    "managerApproved": false,
+                    "privilegedAccess": true,
+                    "productionAccess": true,
+                    "contractor": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "employee-access-request-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "queue_standard_fulfillment",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create an identity-governance ticket",
+                        "Require a named approver for elevated access",
+                        "Set an expiration date before provisioning"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "employee-access-request-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "block_until_approved",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "managerApproved_falsy_1",
+                          "field": "managerApproved",
+                          "points": 45,
+                          "reason": "Manager approval is missing"
+                        },
+                        {
+                          "ruleId": "privilegedAccess_truthy_2",
+                          "field": "privilegedAccess",
+                          "points": 45,
+                          "reason": "Privileged access requested"
+                        },
+                        {
+                          "ruleId": "productionAccess_truthy_3",
+                          "field": "productionAccess",
+                          "points": 30,
+                          "reason": "Production access requested"
+                        },
+                        {
+                          "ruleId": "contractor_truthy_4",
+                          "field": "contractor",
+                          "points": 20,
+                          "reason": "Requester is a contractor"
+                        },
+                        {
+                          "ruleId": "endDate_missing_5",
+                          "field": "endDate",
+                          "points": 20,
+                          "reason": "Time-bound access has no end date"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create an identity-governance ticket",
+                        "Require a named approver for elevated access",
+                        "Set an expiration date before provisioning"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "requestId",
+                        "code": "required",
+                        "message": "requestId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "employeeId",
+                        "code": "invalid_type",
+                        "message": "employeeId must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "requestId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "requestId",
+                      "employeeId",
+                      "system",
+                      "accessLevel"
+                    ],
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "employeeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "accessLevel": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "managerApproved": {
+                        "type": "boolean"
+                      },
+                      "privilegedAccess": {
+                        "type": "boolean"
+                      },
+                      "productionAccess": {
+                        "type": "boolean"
+                      },
+                      "contractor": {
+                        "type": "boolean"
+                      },
+                      "endDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "minLength": 1,
+                        "maxLength": 64
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/information-technology/service-desk-priority-routing": {
+      "post": {
+        "operationId": "evaluateServiceDeskPriorityRouting",
+        "tags": [
+          "information-technology"
+        ],
+        "summary": "Route enterprise service desk incidents",
+        "description": "Assigns incident priority from impact, urgency, affected users, outage state, and executive visibility. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "ticketId",
+                  "category",
+                  "summary",
+                  "affectedUsers"
+                ],
+                "properties": {
+                  "ticketId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "category": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "summary": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 5000
+                  },
+                  "affectedUsers": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "serviceDown": {
+                    "type": "boolean"
+                  },
+                  "securityImpact": {
+                    "type": "boolean"
+                  },
+                  "executiveAffected": {
+                    "type": "boolean"
+                  },
+                  "revenueImpact": {
+                    "type": "boolean"
+                  },
+                  "workaroundAvailable": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "ticketId": "ticketId-001",
+                    "category": "category-001",
+                    "summary": "summary-001",
+                    "affectedUsers": 100,
+                    "serviceDown": false,
+                    "securityImpact": false,
+                    "executiveAffected": false,
+                    "revenueImpact": false,
+                    "workaroundAvailable": true
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "ticketId": "ticketId-001",
+                    "category": "category-001",
+                    "summary": "summary-001",
+                    "affectedUsers": 101,
+                    "serviceDown": true,
+                    "securityImpact": true,
+                    "executiveAffected": true,
+                    "revenueImpact": true,
+                    "workaroundAvailable": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "service-desk-priority-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "route_standard_queue",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create or update the ITSM incident",
+                        "Page the on-call team for major incidents",
+                        "Start stakeholder communications with a human owner"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "service-desk-priority-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "open_major_incident",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "serviceDown_truthy_1",
+                          "field": "serviceDown",
+                          "points": 45,
+                          "reason": "Business service is unavailable"
+                        },
+                        {
+                          "ruleId": "securityImpact_truthy_2",
+                          "field": "securityImpact",
+                          "points": 55,
+                          "reason": "Potential security impact"
+                        },
+                        {
+                          "ruleId": "executiveAffected_truthy_3",
+                          "field": "executiveAffected",
+                          "points": 15,
+                          "reason": "Executive user affected"
+                        },
+                        {
+                          "ruleId": "revenueImpact_truthy_4",
+                          "field": "revenueImpact",
+                          "points": 35,
+                          "reason": "Incident affects revenue operations"
+                        },
+                        {
+                          "ruleId": "workaroundAvailable_falsy_5",
+                          "field": "workaroundAvailable",
+                          "points": 20,
+                          "reason": "No workaround is available"
+                        },
+                        {
+                          "ruleId": "affectedUsers_gt_6",
+                          "field": "affectedUsers",
+                          "points": 30,
+                          "reason": "More than 100 users affected"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create or update the ITSM incident",
+                        "Page the on-call team for major incidents",
+                        "Start stakeholder communications with a human owner"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "ticketId",
+                        "code": "required",
+                        "message": "ticketId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "category",
+                        "code": "invalid_type",
+                        "message": "category must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "ticketId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "ticketId",
+                      "category",
+                      "summary",
+                      "affectedUsers"
+                    ],
+                    "properties": {
+                      "ticketId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "category": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "summary": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 5000
+                      },
+                      "affectedUsers": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "serviceDown": {
+                        "type": "boolean"
+                      },
+                      "securityImpact": {
+                        "type": "boolean"
+                      },
+                      "executiveAffected": {
+                        "type": "boolean"
+                      },
+                      "revenueImpact": {
+                        "type": "boolean"
+                      },
+                      "workaroundAvailable": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/security/phishing-report-triage": {
+      "post": {
+        "operationId": "evaluatePhishingReportTriage",
+        "tags": [
+          "security"
+        ],
+        "summary": "Triage employee phishing reports",
+        "description": "Scores reported messages using credential theft, attachment, impersonation, click, and campaign indicators. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "reportId",
+                  "reporterId",
+                  "sender",
+                  "subject"
+                ],
+                "properties": {
+                  "reportId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "reporterId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "sender": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "subject": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "credentialRequested": {
+                    "type": "boolean"
+                  },
+                  "suspiciousAttachment": {
+                    "type": "boolean"
+                  },
+                  "executiveImpersonation": {
+                    "type": "boolean"
+                  },
+                  "linkClicked": {
+                    "type": "boolean"
+                  },
+                  "multipleRecipients": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "reportId": "reportId-001",
+                    "reporterId": "reporterId-001",
+                    "sender": "sender-001",
+                    "subject": "subject-001",
+                    "credentialRequested": false,
+                    "suspiciousAttachment": false,
+                    "executiveImpersonation": false,
+                    "linkClicked": false,
+                    "multipleRecipients": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "reportId": "reportId-001",
+                    "reporterId": "reporterId-001",
+                    "sender": "sender-001",
+                    "subject": "subject-001",
+                    "credentialRequested": true,
+                    "suspiciousAttachment": true,
+                    "executiveImpersonation": true,
+                    "linkClicked": true,
+                    "multipleRecipients": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "phishing-report-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "queue_analyst_review",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create a case in the security queue",
+                        "Preserve message evidence",
+                        "Require analyst approval before quarantine or account actions"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "phishing-report-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "initiate_containment_review",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "credentialRequested_truthy_1",
+                          "field": "credentialRequested",
+                          "points": 40,
+                          "reason": "Message requests credentials"
+                        },
+                        {
+                          "ruleId": "suspiciousAttachment_truthy_2",
+                          "field": "suspiciousAttachment",
+                          "points": 35,
+                          "reason": "Suspicious attachment present"
+                        },
+                        {
+                          "ruleId": "executiveImpersonation_truthy_3",
+                          "field": "executiveImpersonation",
+                          "points": 30,
+                          "reason": "Executive impersonation detected"
+                        },
+                        {
+                          "ruleId": "linkClicked_truthy_4",
+                          "field": "linkClicked",
+                          "points": 55,
+                          "reason": "A user clicked the reported link",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "multipleRecipients_truthy_5",
+                          "field": "multipleRecipients",
+                          "points": 25,
+                          "reason": "Possible campaign affects multiple recipients"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create a case in the security queue",
+                        "Preserve message evidence",
+                        "Require analyst approval before quarantine or account actions"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "reportId",
+                        "code": "required",
+                        "message": "reportId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "reporterId",
+                        "code": "invalid_type",
+                        "message": "reporterId must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "reportId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "reportId",
+                      "reporterId",
+                      "sender",
+                      "subject"
+                    ],
+                    "properties": {
+                      "reportId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "reporterId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "sender": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "subject": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "credentialRequested": {
+                        "type": "boolean"
+                      },
+                      "suspiciousAttachment": {
+                        "type": "boolean"
+                      },
+                      "executiveImpersonation": {
+                        "type": "boolean"
+                      },
+                      "linkClicked": {
+                        "type": "boolean"
+                      },
+                      "multipleRecipients": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/sales/enterprise-lead-routing": {
+      "post": {
+        "operationId": "evaluateEnterpriseLeadRouting",
+        "tags": [
+          "sales"
+        ],
+        "summary": "Route enterprise sales leads",
+        "description": "Scores enterprise leads using account fit, buying intent, geography, engagement, and consent before assignment. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "leadId",
+                  "company",
+                  "email",
+                  "region"
+                ],
+                "properties": {
+                  "leadId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "company": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "minLength": 3,
+                    "maxLength": 320
+                  },
+                  "region": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "employeeCount": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "targetAccount": {
+                    "type": "boolean"
+                  },
+                  "highIntent": {
+                    "type": "boolean"
+                  },
+                  "requestedDemo": {
+                    "type": "boolean"
+                  },
+                  "marketingConsent": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "leadId": "leadId-001",
+                    "company": "company-001",
+                    "email": "buyer@example.com",
+                    "region": "North America",
+                    "targetAccount": false,
+                    "employeeCount": 999,
+                    "highIntent": false,
+                    "requestedDemo": false,
+                    "marketingConsent": true
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "leadId": "leadId-001",
+                    "company": "company-001",
+                    "email": "buyer@example.com",
+                    "region": "North America",
+                    "targetAccount": true,
+                    "employeeCount": 1000,
+                    "highIntent": true,
+                    "requestedDemo": true,
+                    "marketingConsent": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "enterprise-lead-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "route_to_nurture_or_review",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Upsert the lead in CRM",
+                        "Apply regional ownership rules",
+                        "Start an SLA timer for qualified handoff"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "enterprise-lead-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "assign_enterprise_owner",
+                      "priorityBand": "high",
+                      "score": 70,
+                      "matchedRules": [
+                        {
+                          "ruleId": "targetAccount_truthy_1",
+                          "field": "targetAccount",
+                          "points": 35,
+                          "reason": "Company is a named target account"
+                        },
+                        {
+                          "ruleId": "employeeCount_gte_2",
+                          "field": "employeeCount",
+                          "points": 25,
+                          "reason": "Enterprise employee threshold met"
+                        },
+                        {
+                          "ruleId": "highIntent_truthy_3",
+                          "field": "highIntent",
+                          "points": 25,
+                          "reason": "High-intent behavior detected"
+                        },
+                        {
+                          "ruleId": "requestedDemo_truthy_4",
+                          "field": "requestedDemo",
+                          "points": 25,
+                          "reason": "Buyer requested a demonstration"
+                        },
+                        {
+                          "ruleId": "marketingConsent_falsy_5",
+                          "field": "marketingConsent",
+                          "points": -40,
+                          "reason": "Marketing consent is not present"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Upsert the lead in CRM",
+                        "Apply regional ownership rules",
+                        "Start an SLA timer for qualified handoff"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "leadId",
+                        "code": "required",
+                        "message": "leadId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "company",
+                        "code": "invalid_type",
+                        "message": "company must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "leadId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "leadId",
+                      "company",
+                      "email",
+                      "region"
+                    ],
+                    "properties": {
+                      "leadId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "company": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "minLength": 3,
+                        "maxLength": 320
+                      },
+                      "region": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "employeeCount": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "targetAccount": {
+                        "type": "boolean"
+                      },
+                      "highIntent": {
+                        "type": "boolean"
+                      },
+                      "requestedDemo": {
+                        "type": "boolean"
+                      },
+                      "marketingConsent": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/marketing/campaign-lead-compliance-gate": {
+      "post": {
+        "operationId": "evaluateCampaignLeadComplianceGate",
+        "tags": [
+          "marketing"
+        ],
+        "summary": "Gate campaign leads for compliant follow-up",
+        "description": "Checks consent, suppression, geography, engagement, and target-account status before campaign follow-up. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "leadId",
+                  "email",
+                  "campaignId",
+                  "country"
+                ],
+                "properties": {
+                  "leadId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "minLength": 3,
+                    "maxLength": 320
+                  },
+                  "campaignId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "country": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "consent": {
+                    "type": "boolean"
+                  },
+                  "suppressed": {
+                    "type": "boolean"
+                  },
+                  "targetAccount": {
+                    "type": "boolean"
+                  },
+                  "engagementScore": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "existingCustomer": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "leadId": "leadId-001",
+                    "email": "buyer@example.com",
+                    "campaignId": "campaignId-001",
+                    "country": "country-001",
+                    "consent": true,
+                    "suppressed": false,
+                    "targetAccount": false,
+                    "engagementScore": 69,
+                    "existingCustomer": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "leadId": "leadId-001",
+                    "email": "buyer@example.com",
+                    "campaignId": "campaignId-001",
+                    "country": "country-001",
+                    "consent": false,
+                    "suppressed": true,
+                    "targetAccount": true,
+                    "engagementScore": 70,
+                    "existingCustomer": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "campaign-lead-compliance-gate",
+                      "policyVersion": "1.0.0",
+                      "decision": "allow_campaign_follow_up",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Record the policy decision",
+                        "Send approved contacts to the campaign sequence",
+                        "Route uncertain consent records to a human reviewer"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "campaign-lead-compliance-gate",
+                      "policyVersion": "1.0.0",
+                      "decision": "suppress_automated_outreach",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "consent_falsy_1",
+                          "field": "consent",
+                          "points": 60,
+                          "reason": "Consent is missing",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "suppressed_truthy_2",
+                          "field": "suppressed",
+                          "points": 80,
+                          "reason": "Contact is on a suppression list",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "targetAccount_truthy_3",
+                          "field": "targetAccount",
+                          "points": -20,
+                          "reason": "Contact belongs to a target account"
+                        },
+                        {
+                          "ruleId": "engagementScore_gte_4",
+                          "field": "engagementScore",
+                          "points": -15,
+                          "reason": "Strong engagement signal"
+                        },
+                        {
+                          "ruleId": "existingCustomer_truthy_5",
+                          "field": "existingCustomer",
+                          "points": 15,
+                          "reason": "Customer messaging policy may apply"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Record the policy decision",
+                        "Send approved contacts to the campaign sequence",
+                        "Route uncertain consent records to a human reviewer"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "leadId",
+                        "code": "required",
+                        "message": "leadId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "email",
+                        "code": "invalid_type",
+                        "message": "email must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "leadId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "leadId",
+                      "email",
+                      "campaignId",
+                      "country"
+                    ],
+                    "properties": {
+                      "leadId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "minLength": 3,
+                        "maxLength": 320
+                      },
+                      "campaignId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "country": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "consent": {
+                        "type": "boolean"
+                      },
+                      "suppressed": {
+                        "type": "boolean"
+                      },
+                      "targetAccount": {
+                        "type": "boolean"
+                      },
+                      "engagementScore": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "existingCustomer": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/customer-success/customer-risk-escalation": {
+      "post": {
+        "operationId": "evaluateCustomerRiskEscalation",
+        "tags": [
+          "customer-success"
+        ],
+        "summary": "Escalate at-risk enterprise customers",
+        "description": "Combines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "accountId",
+                  "accountName",
+                  "arr",
+                  "renewalDays"
+                ],
+                "properties": {
+                  "accountId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "accountName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "arr": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "renewalDays": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "usageDropPercent": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "criticalTickets": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "negativeSentiment": {
+                    "type": "boolean"
+                  },
+                  "championLeft": {
+                    "type": "boolean"
+                  },
+                  "execSponsorMissing": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "accountId": "accountId-001",
+                    "accountName": "accountName-001",
+                    "arr": 1,
+                    "renewalDays": 60,
+                    "usageDropPercent": 29,
+                    "criticalTickets": 1,
+                    "negativeSentiment": false,
+                    "championLeft": false,
+                    "execSponsorMissing": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "accountId": "accountId-001",
+                    "accountName": "accountName-001",
+                    "arr": 1,
+                    "renewalDays": 59,
+                    "usageDropPercent": 30,
+                    "criticalTickets": 2,
+                    "negativeSentiment": true,
+                    "championLeft": true,
+                    "execSponsorMissing": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "customer-risk-escalation",
+                      "policyVersion": "1.0.0",
+                      "decision": "continue_success_plan",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Update customer health in the CS platform",
+                        "Assign a named intervention owner",
+                        "Require executive review before commercial concessions"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "customer-risk-escalation",
+                      "policyVersion": "1.0.0",
+                      "decision": "launch_executive_save_plan",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "usageDropPercent_gte_1",
+                          "field": "usageDropPercent",
+                          "points": 30,
+                          "reason": "Usage dropped at least 30%"
+                        },
+                        {
+                          "ruleId": "criticalTickets_gte_2",
+                          "field": "criticalTickets",
+                          "points": 30,
+                          "reason": "Multiple critical support tickets"
+                        },
+                        {
+                          "ruleId": "negativeSentiment_truthy_3",
+                          "field": "negativeSentiment",
+                          "points": 25,
+                          "reason": "Negative customer sentiment detected"
+                        },
+                        {
+                          "ruleId": "championLeft_truthy_4",
+                          "field": "championLeft",
+                          "points": 35,
+                          "reason": "Customer champion departed"
+                        },
+                        {
+                          "ruleId": "execSponsorMissing_truthy_5",
+                          "field": "execSponsorMissing",
+                          "points": 20,
+                          "reason": "No executive sponsor is mapped"
+                        },
+                        {
+                          "ruleId": "renewalDays_lt_6",
+                          "field": "renewalDays",
+                          "points": 20,
+                          "reason": "Renewal is less than 60 days away"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Update customer health in the CS platform",
+                        "Assign a named intervention owner",
+                        "Require executive review before commercial concessions"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "accountId",
+                        "code": "required",
+                        "message": "accountId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "accountName",
+                        "code": "invalid_type",
+                        "message": "accountName must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "accountId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "accountId",
+                      "accountName",
+                      "arr",
+                      "renewalDays"
+                    ],
+                    "properties": {
+                      "accountId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "accountName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "arr": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "renewalDays": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "usageDropPercent": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "criticalTickets": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "negativeSentiment": {
+                        "type": "boolean"
+                      },
+                      "championLeft": {
+                        "type": "boolean"
+                      },
+                      "execSponsorMissing": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/legal/contract-intake-routing": {
+      "post": {
+        "operationId": "evaluateContractIntakeRouting",
+        "tags": [
+          "legal"
+        ],
+        "summary": "Route enterprise contract requests",
+        "description": "Routes contract intake using document type, value, jurisdiction, data access, and non-standard terms. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "contractType",
+                  "counterparty",
+                  "contractValue"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "contractType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "counterparty": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "contractValue": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "nonStandardTerms": {
+                    "type": "boolean"
+                  },
+                  "personalData": {
+                    "type": "boolean"
+                  },
+                  "crossBorderData": {
+                    "type": "boolean"
+                  },
+                  "autoRenewal": {
+                    "type": "boolean"
+                  },
+                  "regulatedIndustry": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "contractType": "contractType-001",
+                    "counterparty": "counterparty-001",
+                    "contractValue": 249999,
+                    "nonStandardTerms": false,
+                    "personalData": false,
+                    "crossBorderData": false,
+                    "autoRenewal": false,
+                    "regulatedIndustry": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "contractType": "contractType-001",
+                    "counterparty": "counterparty-001",
+                    "contractValue": 250000,
+                    "nonStandardTerms": true,
+                    "personalData": true,
+                    "crossBorderData": true,
+                    "autoRenewal": true,
+                    "regulatedIndustry": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "contract-intake-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "use_standard_legal_queue",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create the legal matter",
+                        "Attach the structured intake fields",
+                        "Require legal approval before signature or redline acceptance"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "contract-intake-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "open_cross_functional_review",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "nonStandardTerms_truthy_1",
+                          "field": "nonStandardTerms",
+                          "points": 30,
+                          "reason": "Non-standard terms requested"
+                        },
+                        {
+                          "ruleId": "personalData_truthy_2",
+                          "field": "personalData",
+                          "points": 25,
+                          "reason": "Agreement involves personal data"
+                        },
+                        {
+                          "ruleId": "crossBorderData_truthy_3",
+                          "field": "crossBorderData",
+                          "points": 30,
+                          "reason": "Cross-border data transfer involved"
+                        },
+                        {
+                          "ruleId": "autoRenewal_truthy_4",
+                          "field": "autoRenewal",
+                          "points": 15,
+                          "reason": "Automatic renewal clause present"
+                        },
+                        {
+                          "ruleId": "regulatedIndustry_truthy_5",
+                          "field": "regulatedIndustry",
+                          "points": 30,
+                          "reason": "Counterparty operates in a regulated industry"
+                        },
+                        {
+                          "ruleId": "contractValue_gte_6",
+                          "field": "contractValue",
+                          "points": 25,
+                          "reason": "High-value agreement"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create the legal matter",
+                        "Attach the structured intake fields",
+                        "Require legal approval before signature or redline acceptance"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "requestId",
+                        "code": "required",
+                        "message": "requestId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "contractType",
+                        "code": "invalid_type",
+                        "message": "contractType must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "requestId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "requestId",
+                      "contractType",
+                      "counterparty",
+                      "contractValue"
+                    ],
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "contractType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "counterparty": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "contractValue": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "nonStandardTerms": {
+                        "type": "boolean"
+                      },
+                      "personalData": {
+                        "type": "boolean"
+                      },
+                      "crossBorderData": {
+                        "type": "boolean"
+                      },
+                      "autoRenewal": {
+                        "type": "boolean"
+                      },
+                      "regulatedIndustry": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/procurement/vendor-risk-intake": {
+      "post": {
+        "operationId": "evaluateVendorRiskIntake",
+        "tags": [
+          "procurement"
+        ],
+        "summary": "Triage enterprise vendor risk",
+        "description": "Scores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "vendorName",
+                  "annualSpend",
+                  "businessOwner"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "vendorName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "annualSpend": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "businessOwner": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "handlesPersonalData": {
+                    "type": "boolean"
+                  },
+                  "businessCritical": {
+                    "type": "boolean"
+                  },
+                  "foreignDataHosting": {
+                    "type": "boolean"
+                  },
+                  "subprocessors": {
+                    "type": "boolean"
+                  },
+                  "soc2Available": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "vendorName": "vendorName-001",
+                    "annualSpend": 99999,
+                    "businessOwner": "businessOwner-001",
+                    "handlesPersonalData": false,
+                    "businessCritical": false,
+                    "foreignDataHosting": false,
+                    "subprocessors": false,
+                    "soc2Available": true
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "vendorName": "vendorName-001",
+                    "annualSpend": 100000,
+                    "businessOwner": "businessOwner-001",
+                    "handlesPersonalData": true,
+                    "businessCritical": true,
+                    "foreignDataHosting": true,
+                    "subprocessors": true,
+                    "soc2Available": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "vendor-risk-intake",
+                      "policyVersion": "1.0.0",
+                      "decision": "start_standard_procurement",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create the vendor record",
+                        "Assign required control owners",
+                        "Block purchase-order creation until mandatory approvals complete"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "vendor-risk-intake",
+                      "policyVersion": "1.0.0",
+                      "decision": "open_full_vendor_due_diligence",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "handlesPersonalData_truthy_1",
+                          "field": "handlesPersonalData",
+                          "points": 30,
+                          "reason": "Vendor handles personal data"
+                        },
+                        {
+                          "ruleId": "businessCritical_truthy_2",
+                          "field": "businessCritical",
+                          "points": 30,
+                          "reason": "Vendor supports a critical business process"
+                        },
+                        {
+                          "ruleId": "foreignDataHosting_truthy_3",
+                          "field": "foreignDataHosting",
+                          "points": 25,
+                          "reason": "Data is hosted in another jurisdiction"
+                        },
+                        {
+                          "ruleId": "subprocessors_truthy_4",
+                          "field": "subprocessors",
+                          "points": 20,
+                          "reason": "Vendor relies on subprocessors"
+                        },
+                        {
+                          "ruleId": "soc2Available_falsy_5",
+                          "field": "soc2Available",
+                          "points": 25,
+                          "reason": "SOC 2 evidence is unavailable"
+                        },
+                        {
+                          "ruleId": "annualSpend_gte_6",
+                          "field": "annualSpend",
+                          "points": 20,
+                          "reason": "High annual spend"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create the vendor record",
+                        "Assign required control owners",
+                        "Block purchase-order creation until mandatory approvals complete"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "requestId",
+                        "code": "required",
+                        "message": "requestId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "vendorName",
+                        "code": "invalid_type",
+                        "message": "vendorName must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "requestId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "requestId",
+                      "vendorName",
+                      "annualSpend",
+                      "businessOwner"
+                    ],
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "vendorName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "annualSpend": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "businessOwner": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "handlesPersonalData": {
+                        "type": "boolean"
+                      },
+                      "businessCritical": {
+                        "type": "boolean"
+                      },
+                      "foreignDataHosting": {
+                        "type": "boolean"
+                      },
+                      "subprocessors": {
+                        "type": "boolean"
+                      },
+                      "soc2Available": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/operations/major-incident-stakeholder-brief": {
+      "post": {
+        "operationId": "evaluateMajorIncidentStakeholderBrief",
+        "tags": [
+          "operations"
+        ],
+        "summary": "Prepare major incident stakeholder briefs",
+        "description": "Turns operational incident facts into a severity decision and a consistent stakeholder communication plan. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "incidentId",
+                  "service",
+                  "startedAt",
+                  "summary"
+                ],
+                "properties": {
+                  "incidentId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "service": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "summary": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 5000
+                  },
+                  "customersAffected": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "revenueImpact": {
+                    "type": "boolean"
+                  },
+                  "dataRisk": {
+                    "type": "boolean"
+                  },
+                  "workaroundAvailable": {
+                    "type": "boolean"
+                  },
+                  "regulatoryNotificationPossible": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "incidentId": "incidentId-001",
+                    "service": "service-001",
+                    "startedAt": "2026-08-07T03:00:00Z",
+                    "summary": "summary-001",
+                    "customersAffected": 99,
+                    "revenueImpact": false,
+                    "dataRisk": false,
+                    "workaroundAvailable": true,
+                    "regulatoryNotificationPossible": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "incidentId": "incidentId-001",
+                    "service": "service-001",
+                    "startedAt": "2026-08-07T03:00:00Z",
+                    "summary": "summary-001",
+                    "customersAffected": 100,
+                    "revenueImpact": true,
+                    "dataRisk": true,
+                    "workaroundAvailable": false,
+                    "regulatoryNotificationPossible": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "major-incident-stakeholder-brief",
+                      "policyVersion": "1.0.0",
+                      "decision": "standard_operations_update",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create the stakeholder brief",
+                        "Assign the next-update owner and deadline",
+                        "Require incident commander approval before external communication"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "major-incident-stakeholder-brief",
+                      "policyVersion": "1.0.0",
+                      "decision": "activate_executive_and_legal_response",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "customersAffected_gte_1",
+                          "field": "customersAffected",
+                          "points": 30,
+                          "reason": "At least 100 customers affected"
+                        },
+                        {
+                          "ruleId": "revenueImpact_truthy_2",
+                          "field": "revenueImpact",
+                          "points": 35,
+                          "reason": "Revenue operations are affected"
+                        },
+                        {
+                          "ruleId": "dataRisk_truthy_3",
+                          "field": "dataRisk",
+                          "points": 50,
+                          "reason": "Potential data exposure or integrity risk",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "workaroundAvailable_falsy_4",
+                          "field": "workaroundAvailable",
+                          "points": 20,
+                          "reason": "No workaround is available"
+                        },
+                        {
+                          "ruleId": "regulatoryNotificationPossible_truthy_5",
+                          "field": "regulatoryNotificationPossible",
+                          "points": 45,
+                          "reason": "Regulatory notification may be required",
+                          "minimumBand": "high"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create the stakeholder brief",
+                        "Assign the next-update owner and deadline",
+                        "Require incident commander approval before external communication"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "incidentId",
+                        "code": "required",
+                        "message": "incidentId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "service",
+                        "code": "invalid_type",
+                        "message": "service must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "incidentId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "incidentId",
+                      "service",
+                      "startedAt",
+                      "summary"
+                    ],
+                    "properties": {
+                      "incidentId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "service": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "startedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "minLength": 1,
+                        "maxLength": 64
+                      },
+                      "summary": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 5000
+                      },
+                      "customersAffected": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "revenueImpact": {
+                        "type": "boolean"
+                      },
+                      "dataRisk": {
+                        "type": "boolean"
+                      },
+                      "workaroundAvailable": {
+                        "type": "boolean"
+                      },
+                      "regulatoryNotificationPossible": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/data-and-analytics/data-access-request-triage": {
+      "post": {
+        "operationId": "evaluateDataAccessRequestTriage",
+        "tags": [
+          "data-and-analytics"
+        ],
+        "summary": "Triage enterprise data access requests",
+        "description": "Classifies data access requests by sensitivity, environment, sharing intent, retention, and owner approval before access is granted. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "requesterId",
+                  "dataset",
+                  "purpose"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "requesterId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "dataset": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "containsSensitiveData": {
+                    "type": "boolean"
+                  },
+                  "productionData": {
+                    "type": "boolean"
+                  },
+                  "externalSharing": {
+                    "type": "boolean"
+                  },
+                  "retentionDays": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "ownerApproved": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "requesterId": "requesterId-001",
+                    "dataset": "dataset-001",
+                    "purpose": "purpose-001",
+                    "containsSensitiveData": false,
+                    "productionData": false,
+                    "externalSharing": false,
+                    "retentionDays": 365,
+                    "ownerApproved": true
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "requesterId": "requesterId-001",
+                    "dataset": "dataset-001",
+                    "purpose": "purpose-001",
+                    "containsSensitiveData": true,
+                    "productionData": true,
+                    "externalSharing": true,
+                    "retentionDays": 366,
+                    "ownerApproved": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "data-access-request-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "approve_standard_data_access",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create the governed access ticket",
+                        "Record purpose and retention",
+                        "Require named approval before external sharing"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "data-access-request-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "block_until_governance_approval",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "containsSensitiveData_truthy_1",
+                          "field": "containsSensitiveData",
+                          "points": 35,
+                          "reason": "Dataset contains sensitive data"
+                        },
+                        {
+                          "ruleId": "productionData_truthy_2",
+                          "field": "productionData",
+                          "points": 25,
+                          "reason": "Request includes production data"
+                        },
+                        {
+                          "ruleId": "externalSharing_truthy_3",
+                          "field": "externalSharing",
+                          "points": 50,
+                          "reason": "Data may be shared outside the organization",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "retentionDays_gt_4",
+                          "field": "retentionDays",
+                          "points": 25,
+                          "reason": "Requested retention exceeds one year"
+                        },
+                        {
+                          "ruleId": "ownerApproved_falsy_5",
+                          "field": "ownerApproved",
+                          "points": 40,
+                          "reason": "Dataset owner approval is missing"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create the governed access ticket",
+                        "Record purpose and retention",
+                        "Require named approval before external sharing"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "requestId",
+                        "code": "required",
+                        "message": "requestId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "requesterId",
+                        "code": "invalid_type",
+                        "message": "requesterId must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "requestId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "requestId",
+                      "requesterId",
+                      "dataset",
+                      "purpose"
+                    ],
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "requesterId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "dataset": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "purpose": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "containsSensitiveData": {
+                        "type": "boolean"
+                      },
+                      "productionData": {
+                        "type": "boolean"
+                      },
+                      "externalSharing": {
+                        "type": "boolean"
+                      },
+                      "retentionDays": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "ownerApproved": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/engineering/production-change-risk-gate": {
+      "post": {
+        "operationId": "evaluateProductionChangeRiskGate",
+        "tags": [
+          "engineering"
+        ],
+        "summary": "Gate production changes by operational risk",
+        "description": "Scores planned production changes using customer, database, rollback, peak-period, and security signals before deployment. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "changeId",
+                  "service",
+                  "changeType",
+                  "plannedAt"
+                ],
+                "properties": {
+                  "changeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "service": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "changeType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "plannedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "customerImpact": {
+                    "type": "boolean"
+                  },
+                  "databaseMigration": {
+                    "type": "boolean"
+                  },
+                  "rollbackTested": {
+                    "type": "boolean"
+                  },
+                  "duringPeakHours": {
+                    "type": "boolean"
+                  },
+                  "securityRelevant": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "changeId": "changeId-001",
+                    "service": "service-001",
+                    "changeType": "changeType-001",
+                    "plannedAt": "2026-08-07T03:00:00Z",
+                    "customerImpact": false,
+                    "databaseMigration": false,
+                    "rollbackTested": true,
+                    "duringPeakHours": false,
+                    "securityRelevant": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "changeId": "changeId-001",
+                    "service": "service-001",
+                    "changeType": "changeType-001",
+                    "plannedAt": "2026-08-07T03:00:00Z",
+                    "customerImpact": true,
+                    "databaseMigration": true,
+                    "rollbackTested": false,
+                    "duringPeakHours": true,
+                    "securityRelevant": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "production-change-risk-gate",
+                      "policyVersion": "1.0.0",
+                      "decision": "continue_standard_change_process",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Update the change record",
+                        "Attach rollback evidence",
+                        "Require an accountable approver before deployment"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "production-change-risk-gate",
+                      "policyVersion": "1.0.0",
+                      "decision": "hold_for_change_advisory_approval",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "customerImpact_truthy_1",
+                          "field": "customerImpact",
+                          "points": 30,
+                          "reason": "Change can affect customers"
+                        },
+                        {
+                          "ruleId": "databaseMigration_truthy_2",
+                          "field": "databaseMigration",
+                          "points": 25,
+                          "reason": "Change includes a database migration"
+                        },
+                        {
+                          "ruleId": "rollbackTested_falsy_3",
+                          "field": "rollbackTested",
+                          "points": 45,
+                          "reason": "Rollback has not been tested"
+                        },
+                        {
+                          "ruleId": "duringPeakHours_truthy_4",
+                          "field": "duringPeakHours",
+                          "points": 20,
+                          "reason": "Change is planned during peak hours"
+                        },
+                        {
+                          "ruleId": "securityRelevant_truthy_5",
+                          "field": "securityRelevant",
+                          "points": 45,
+                          "reason": "Change affects a security control or boundary",
+                          "minimumBand": "high"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Update the change record",
+                        "Attach rollback evidence",
+                        "Require an accountable approver before deployment"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "changeId",
+                        "code": "required",
+                        "message": "changeId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "service",
+                        "code": "invalid_type",
+                        "message": "service must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "changeId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "changeId",
+                      "service",
+                      "changeType",
+                      "plannedAt"
+                    ],
+                    "properties": {
+                      "changeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "service": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "changeType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "plannedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "minLength": 1,
+                        "maxLength": 64
+                      },
+                      "customerImpact": {
+                        "type": "boolean"
+                      },
+                      "databaseMigration": {
+                        "type": "boolean"
+                      },
+                      "rollbackTested": {
+                        "type": "boolean"
+                      },
+                      "duringPeakHours": {
+                        "type": "boolean"
+                      },
+                      "securityRelevant": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/facilities/workplace-incident-routing": {
+      "post": {
+        "operationId": "evaluateWorkplaceIncidentRouting",
+        "tags": [
+          "facilities"
+        ],
+        "summary": "Route workplace incidents safely",
+        "description": "Prioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "incidentId",
+                  "site",
+                  "category",
+                  "description"
+                ],
+                "properties": {
+                  "incidentId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "site": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "category": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "injuryReported": {
+                    "type": "boolean"
+                  },
+                  "immediateDanger": {
+                    "type": "boolean"
+                  },
+                  "accessControlImpact": {
+                    "type": "boolean"
+                  },
+                  "operationsDisrupted": {
+                    "type": "boolean"
+                  },
+                  "peopleAffected": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "incidentId": "incidentId-001",
+                    "site": "site-001",
+                    "category": "category-001",
+                    "description": "description-001",
+                    "injuryReported": false,
+                    "immediateDanger": false,
+                    "accessControlImpact": false,
+                    "operationsDisrupted": false,
+                    "peopleAffected": 24
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "incidentId": "incidentId-001",
+                    "site": "site-001",
+                    "category": "category-001",
+                    "description": "description-001",
+                    "injuryReported": true,
+                    "immediateDanger": true,
+                    "accessControlImpact": true,
+                    "operationsDisrupted": true,
+                    "peopleAffected": 25
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "workplace-incident-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "route_standard_facilities_queue",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create the facilities incident",
+                        "Assign an on-site response owner",
+                        "Require human confirmation before closing a safety event"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "workplace-incident-routing",
+                      "policyVersion": "1.0.0",
+                      "decision": "activate_safety_and_security_response",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "injuryReported_truthy_1",
+                          "field": "injuryReported",
+                          "points": 55,
+                          "reason": "An injury has been reported",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "immediateDanger_truthy_2",
+                          "field": "immediateDanger",
+                          "points": 70,
+                          "reason": "People may face immediate danger",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "accessControlImpact_truthy_3",
+                          "field": "accessControlImpact",
+                          "points": 30,
+                          "reason": "Physical access controls are affected"
+                        },
+                        {
+                          "ruleId": "operationsDisrupted_truthy_4",
+                          "field": "operationsDisrupted",
+                          "points": 25,
+                          "reason": "Workplace operations are disrupted"
+                        },
+                        {
+                          "ruleId": "peopleAffected_gte_5",
+                          "field": "peopleAffected",
+                          "points": 25,
+                          "reason": "At least 25 people are affected"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create the facilities incident",
+                        "Assign an on-site response owner",
+                        "Require human confirmation before closing a safety event"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "incidentId",
+                        "code": "required",
+                        "message": "incidentId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "site",
+                        "code": "invalid_type",
+                        "message": "site must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "incidentId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "incidentId",
+                      "site",
+                      "category",
+                      "description"
+                    ],
+                    "properties": {
+                      "incidentId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "site": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "category": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "injuryReported": {
+                        "type": "boolean"
+                      },
+                      "immediateDanger": {
+                        "type": "boolean"
+                      },
+                      "accessControlImpact": {
+                        "type": "boolean"
+                      },
+                      "operationsDisrupted": {
+                        "type": "boolean"
+                      },
+                      "peopleAffected": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/corporate-communications/external-communication-approval": {
+      "post": {
+        "operationId": "evaluateExternalCommunicationApproval",
+        "tags": [
+          "corporate-communications"
+        ],
+        "summary": "Approve external enterprise communications",
+        "description": "Routes proposed external communications using financial, customer, security, legal, and executive-approval signals. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "audience",
+                  "channel",
+                  "messageSummary",
+                  "owner"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "audience": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "channel": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "messageSummary": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "owner": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "materialFinancialInfo": {
+                    "type": "boolean"
+                  },
+                  "customerImpact": {
+                    "type": "boolean"
+                  },
+                  "securityIncident": {
+                    "type": "boolean"
+                  },
+                  "legalReviewed": {
+                    "type": "boolean"
+                  },
+                  "executiveApproved": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "audience": "audience-001",
+                    "channel": "channel-001",
+                    "messageSummary": "messageSummary-001",
+                    "owner": "owner-001",
+                    "materialFinancialInfo": false,
+                    "customerImpact": false,
+                    "securityIncident": false,
+                    "legalReviewed": true,
+                    "executiveApproved": true
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "audience": "audience-001",
+                    "channel": "channel-001",
+                    "messageSummary": "messageSummary-001",
+                    "owner": "owner-001",
+                    "materialFinancialInfo": true,
+                    "customerImpact": true,
+                    "securityIncident": true,
+                    "legalReviewed": false,
+                    "executiveApproved": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "external-communication-approval",
+                      "policyVersion": "1.0.0",
+                      "decision": "continue_standard_editorial_review",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create the communication approval record",
+                        "Attach the final approved wording",
+                        "Require named approval before publication"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "external-communication-approval",
+                      "policyVersion": "1.0.0",
+                      "decision": "hold_for_executive_and_legal_approval",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "materialFinancialInfo_truthy_1",
+                          "field": "materialFinancialInfo",
+                          "points": 60,
+                          "reason": "Message may contain material financial information",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "customerImpact_truthy_2",
+                          "field": "customerImpact",
+                          "points": 30,
+                          "reason": "Message addresses customer impact"
+                        },
+                        {
+                          "ruleId": "securityIncident_truthy_3",
+                          "field": "securityIncident",
+                          "points": 60,
+                          "reason": "Message concerns a security incident",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "legalReviewed_falsy_4",
+                          "field": "legalReviewed",
+                          "points": 35,
+                          "reason": "Legal review is not recorded"
+                        },
+                        {
+                          "ruleId": "executiveApproved_falsy_5",
+                          "field": "executiveApproved",
+                          "points": 25,
+                          "reason": "Executive approval is not recorded"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create the communication approval record",
+                        "Attach the final approved wording",
+                        "Require named approval before publication"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "requestId",
+                        "code": "required",
+                        "message": "requestId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "audience",
+                        "code": "invalid_type",
+                        "message": "audience must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "requestId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "requestId",
+                      "audience",
+                      "channel",
+                      "messageSummary",
+                      "owner"
+                    ],
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "audience": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "channel": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "messageSummary": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "owner": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "materialFinancialInfo": {
+                        "type": "boolean"
+                      },
+                      "customerImpact": {
+                        "type": "boolean"
+                      },
+                      "securityIncident": {
+                        "type": "boolean"
+                      },
+                      "legalReviewed": {
+                        "type": "boolean"
+                      },
+                      "executiveApproved": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/privacy/data-subject-request-triage": {
+      "post": {
+        "operationId": "evaluateDataSubjectRequestTriage",
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Triage data subject requests",
+        "description": "Prioritizes privacy requests using identity, deadline, sensitivity, third-party, and legal-hold signals. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "requestType",
+                  "requesterRegion",
+                  "receivedAt"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "requestType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "requesterRegion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "receivedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "identityVerified": {
+                    "type": "boolean"
+                  },
+                  "deadlineDays": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "sensitiveData": {
+                    "type": "boolean"
+                  },
+                  "thirdPartyData": {
+                    "type": "boolean"
+                  },
+                  "legalHold": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "requestType": "requestType-001",
+                    "requesterRegion": "requesterRegion-001",
+                    "receivedAt": "2026-08-07T03:00:00Z",
+                    "identityVerified": true,
+                    "deadlineDays": 7,
+                    "sensitiveData": false,
+                    "thirdPartyData": false,
+                    "legalHold": false
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "requestType": "requestType-001",
+                    "requesterRegion": "requesterRegion-001",
+                    "receivedAt": "2026-08-07T03:00:00Z",
+                    "identityVerified": false,
+                    "deadlineDays": 6,
+                    "sensitiveData": true,
+                    "thirdPartyData": true,
+                    "legalHold": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "data-subject-request-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "continue_standard_privacy_queue",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create the privacy case",
+                        "Record the governing deadline",
+                        "Require privacy or legal approval before disclosure or deletion"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "data-subject-request-triage",
+                      "policyVersion": "1.0.0",
+                      "decision": "hold_for_identity_or_legal_review",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "identityVerified_falsy_1",
+                          "field": "identityVerified",
+                          "points": 50,
+                          "reason": "Requester identity is not verified",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "deadlineDays_lt_2",
+                          "field": "deadlineDays",
+                          "points": 35,
+                          "reason": "Fewer than seven days remain"
+                        },
+                        {
+                          "ruleId": "sensitiveData_truthy_3",
+                          "field": "sensitiveData",
+                          "points": 30,
+                          "reason": "Request involves sensitive data"
+                        },
+                        {
+                          "ruleId": "thirdPartyData_truthy_4",
+                          "field": "thirdPartyData",
+                          "points": 25,
+                          "reason": "Responsive records may contain third-party data"
+                        },
+                        {
+                          "ruleId": "legalHold_truthy_5",
+                          "field": "legalHold",
+                          "points": 60,
+                          "reason": "Responsive data is subject to legal hold",
+                          "minimumBand": "high"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create the privacy case",
+                        "Record the governing deadline",
+                        "Require privacy or legal approval before disclosure or deletion"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "requestId",
+                        "code": "required",
+                        "message": "requestId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "requestType",
+                        "code": "invalid_type",
+                        "message": "requestType must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "requestId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "requestId",
+                      "requestType",
+                      "requesterRegion",
+                      "receivedAt"
+                    ],
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "requestType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "requesterRegion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "receivedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "minLength": 1,
+                        "maxLength": 64
+                      },
+                      "identityVerified": {
+                        "type": "boolean"
+                      },
+                      "deadlineDays": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "sensitiveData": {
+                        "type": "boolean"
+                      },
+                      "thirdPartyData": {
+                        "type": "boolean"
+                      },
+                      "legalHold": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "webhookHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Webhook-Token",
+        "description": "Example production Header Auth contract. Match this name to the credential configured on the n8n Webhook node."
+      }
+    },
+    "schemas": {
+      "MatchedRule": {
+        "type": "object",
+        "required": [
+          "ruleId",
+          "field",
+          "points",
+          "reason"
+        ],
+        "properties": {
+          "ruleId": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "points": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "minimumBand": {
+            "type": "string",
+            "enum": [
+              "medium",
+              "high"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "DecisionResponse": {
+        "type": "object",
+        "required": [
+          "ok",
+          "httpStatus",
+          "requestId",
+          "workflow",
+          "policyVersion",
+          "decision",
+          "priorityBand",
+          "score",
+          "matchedRules",
+          "recommendedActions",
+          "evaluatedAt"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "httpStatus": {
+            "type": "integer",
+            "const": 200
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "workflow": {
+            "type": "string"
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "priorityBand": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "matchedRules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchedRule"
+            }
+          },
+          "recommendedActions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidationViolation": {
+        "type": "object",
+        "required": [
+          "field",
+          "code",
+          "message",
+          "expected"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "expected": {}
+        },
+        "additionalProperties": false
+      },
+      "ValidationResponse": {
+        "type": "object",
+        "required": [
+          "ok",
+          "httpStatus",
+          "requestId",
+          "error",
+          "message",
+          "details",
+          "requestSchema"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": false
+          },
+          "httpStatus": {
+            "type": "integer",
+            "const": 400
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string",
+            "const": "validation_error"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "required": [
+              "violations",
+              "missingFields"
+            ],
+            "properties": {
+              "violations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ValidationViolation"
+                }
+              },
+              "missingFields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "requestSchema": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

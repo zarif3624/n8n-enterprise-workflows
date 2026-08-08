@@ -1,0 +1,36 @@
+name: n8n import compatibility
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  import:
+    name: Import on n8n ${{ matrix.n8n-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        n8n-version: ["2.13.0", "2.33.7"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - name: Install isolated n8n CLI
+        run: npm install --no-save --package-lock=false "n8n@${{ matrix.n8n-version }}"
+      - name: Import every generated workflow
+        shell: bash
+        run: |
+          export N8N_USER_FOLDER="$(mktemp -d)"
+          while IFS= read -r workflow; do
+            echo "Importing ${workflow}"
+            ./node_modules/.bin/n8n import:workflow --input="${workflow}"
+          done < <(find workflows -mindepth 3 -maxdepth 3 -name workflow.json -print | sort)

@@ -1,0 +1,30 @@
+# Changelog
+
+All notable changes to this project are documented here. The project follows Semantic Versioning for repository releases; individual decision policies carry their own policy version in responses and catalog metadata.
+
+## 0.2.0
+
+### Added
+
+- Five workflow packages for data governance, engineering changes, workplace incidents, external communications, and privacy requests.
+- Typed JSON input contracts with field-level violations across all 15 workflows.
+- Low-risk, high-risk, and invalid fixtures for every package.
+- A deterministic source policy engine and a local `npm run evaluate` command.
+- An OpenAPI 3.1 contract covering every webhook decision endpoint.
+- A 52-test policy suite covering fixtures, required fields, types, constraints, rule boundaries, safety floors, correlation IDs, and response privacy.
+- Scheduled n8n 2.13 and 2.33 import-compatibility checks.
+- Policy-authoring, threat-model, operations, and release guidance.
+
+### Changed
+
+- Replaced single-item Code nodes with native Edit Fields expressions generated from the source policy engine.
+- Added stable rule IDs, policy/schema versions, named-node references, `Cache-Control: no-store`, and `X-Request-Id` response headers.
+- Hardened validation for graph reachability, expression parity, schema/catalog/OpenAPI drift, unsafe retention defaults, credential metadata, and representative fixtures.
+- Added repository-wide validation for broken or escaping relative Markdown links.
+- Added hard high-risk floors so compliance and safety gates cannot be canceled by mitigating negative scores.
+- Made CI installs reproducible with `npm ci`.
+
+### Security
+
+- Sanitized caller-provided request IDs before reflecting them in response headers.
+- Kept request bodies out of decision responses and documented adopter-owned trust boundaries.

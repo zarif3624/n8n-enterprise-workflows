@@ -1,0 +1,50 @@
+name: Policy change
+description: Propose a field, rule, threshold, hard gate, or decision-contract change
+title: "[Policy]: "
+labels: [policy-change]
+body:
+  - type: input
+    id: workflow
+    attributes:
+      label: Workflow slug
+      placeholder: invoice-exception-triage
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behavior
+      description: Include a sanitized payload and the current decision, band, score, and matched rule IDs.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed behavior
+      description: State the expected decision and the policy reason for the change.
+    validations:
+      required: true
+  - type: dropdown
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+      options:
+        - Patch — no decision-contract change
+        - Minor — backward-compatible field or scoring change
+        - Major — required field, response shape, semantics, or decision label changes
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety and approval impact
+      description: Identify human owners, hard gates, legal/compliance implications, and any action that must remain manual.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and edge cases
+      description: Include boundary cases and false-positive/false-negative considerations without customer or personal data.
+    validations:
+      required: true

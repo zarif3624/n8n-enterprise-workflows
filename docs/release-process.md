@@ -21,8 +21,9 @@ fixes correctness, security, compatibility, observability, or adoption friction.
 
 1. Run `npm run check`.
 2. Review the generated diff and scan for credentials or customer data.
-3. Confirm links and catalog metadata.
-4. Merge through a focused pull request.
-5. Tag a semantic version.
-6. Write release notes around the business outcome, not the node count.
-7. Publish a short example or implementation note for discovery.
+3. Confirm links, catalog metadata, and the generated OpenAPI contract.
+4. Run the `n8n import compatibility` workflow for node-version or export-shape changes.
+5. Merge through a focused pull request.
+6. Tag a semantic version.
+7. Write release notes around the business outcome, not the node count.
+8. Publish a short example or implementation note for discovery.

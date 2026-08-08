@@ -1,0 +1,11 @@
+{
+  "ticketId": "ticketId-001",
+  "category": "category-001",
+  "summary": "summary-001",
+  "affectedUsers": 100,
+  "serviceDown": false,
+  "securityImpact": false,
+  "executiveAffected": false,
+  "revenueImpact": false,
+  "workaroundAvailable": true
+}

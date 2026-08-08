@@ -1,0 +1,125 @@
+{
+  "id": "16cad2b8-3bdd-4a01-a02f-be56fd9fb59d",
+  "name": "Route workplace incidents safely",
+  "description": "Prioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals. It exists to make the decision policy explainable and testable before enterprise systems or irreversible actions are connected.",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Route workplace incidents safely\n\nPrioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals.\n\n**Production gate:** this inactive template uses an unauthenticated webhook for local testing only. Configure built-in webhook authentication, review policy version 1.0.0, and assign a human owner before activation.",
+        "height": 320,
+        "width": 460,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -260
+      ],
+      "id": "e75f02cc-dacf-4be2-a21a-5110d1f9e5f7",
+      "name": "Read before activation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enterprise/facilities/workplace-incident-routing",
+        "authentication": "none",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "512a1f05-89ad-4dfe-a81c-e34ab5798090",
+      "name": "Receive request",
+      "webhookId": "4e76f5e3-95f8-428e-ab7c-6b926d1a4f5d"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ (() => {\n    const hasValue = function hasValue(value) {\n  return value !== undefined && value !== null && !(typeof value === \"string\" && value.trim() === \"\");\n};\n    const normalizeRequestId = function normalizeRequestId(value, fallback) {\n  if (!hasValue(value)) return String(fallback);\n  const normalized = String(value).replace(/[\\r\\n]/g, \"\").trim().slice(0, 200);\n  return normalized || String(fallback);\n};\n    const validateValue = function validateValue(field, value, contract) {\n  const violations = [];\n  const actualType = Array.isArray(value) ? \"array\" : typeof value;\n\n  if (contract.type === \"number\" && (typeof value !== \"number\" || !Number.isFinite(value))) {\n    return [{ field, code: \"invalid_type\", message: `${field} must be a finite number`, expected: \"number\" }];\n  }\n  if (contract.type === \"string\" && typeof value !== \"string\") {\n    return [{ field, code: \"invalid_type\", message: `${field} must be a string`, expected: \"string\" }];\n  }\n  if (contract.type === \"boolean\" && typeof value !== \"boolean\") {\n    return [{ field, code: \"invalid_type\", message: `${field} must be a boolean`, expected: \"boolean\" }];\n  }\n  if (contract.type === \"array\" && !Array.isArray(value)) {\n    return [{ field, code: \"invalid_type\", message: `${field} must be an array`, expected: \"array\" }];\n  }\n  if (![\"number\", \"string\", \"boolean\", \"array\"].includes(contract.type)) {\n    return [{ field, code: \"invalid_contract\", message: `Unsupported contract type for ${field}`, expected: contract.type, actual: actualType }];\n  }\n\n  if (typeof value === \"string\") {\n    const normalized = value.trim();\n    if (contract.minLength !== undefined && normalized.length < contract.minLength) {\n      violations.push({ field, code: \"too_short\", message: `${field} must contain at least ${contract.minLength} character(s)`, expected: `minLength:${contract.minLength}` });\n    }\n    if (contract.maxLength !== undefined && normalized.length > contract.maxLength) {\n      violations.push({ field, code: \"too_long\", message: `${field} must contain at most ${contract.maxLength} characters`, expected: `maxLength:${contract.maxLength}` });\n    }\n    if (contract.format === \"email\" && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(normalized)) {\n      violations.push({ field, code: \"invalid_format\", message: `${field} must be a valid email address`, expected: \"email\" });\n    }\n    if (contract.format === \"date-time\" && Number.isNaN(Date.parse(normalized))) {\n      violations.push({ field, code: \"invalid_format\", message: `${field} must be an ISO 8601 date-time`, expected: \"date-time\" });\n    }\n    if (contract.pattern && !(new RegExp(contract.pattern)).test(normalized)) {\n      violations.push({ field, code: \"invalid_format\", message: `${field} has an invalid format`, expected: contract.pattern });\n    }\n    if (contract.enum && !contract.enum.includes(normalized)) {\n      violations.push({ field, code: \"invalid_value\", message: `${field} must be one of the supported values`, expected: contract.enum.join(\"|\") });\n    }\n  }\n\n  if (typeof value === \"number\") {\n    if (contract.minimum !== undefined && value < contract.minimum) {\n      violations.push({ field, code: \"below_minimum\", message: `${field} must be at least ${contract.minimum}`, expected: `minimum:${contract.minimum}` });\n    }\n    if (contract.maximum !== undefined && value > contract.maximum) {\n      violations.push({ field, code: \"above_maximum\", message: `${field} must be at most ${contract.maximum}`, expected: `maximum:${contract.maximum}` });\n    }\n  }\n\n  return violations;\n};\n    const matchesRule = function matchesRule(rule, value) {\n  switch (rule.operator) {\n    case \"missing\": return !hasValue(value);\n    case \"truthy\": return value === true;\n    case \"falsy\": return value !== true;\n    case \"equals\": return value === rule.value;\n    case \"includes\": return Array.isArray(value) && value.includes(rule.value);\n    case \"gt\": return Number(value) > Number(rule.value);\n    case \"gte\": return Number(value) >= Number(rule.value);\n    case \"lt\": return Number(value) < Number(rule.value);\n    default: return false;\n  }\n};\n    const evaluatePolicy = function evaluatePolicy({ policy, envelope, executionId, evaluatedAt }) {\n  const input = envelope?.body ?? envelope;\n  const headerRequestId = envelope?.headers?.[\"x-request-id\"];\n  const requestId = normalizeRequestId(headerRequestId, executionId);\n  const schema = policy.inputSchema;\n  const violations = [];\n\n  if (!input || typeof input !== \"object\" || Array.isArray(input)) {\n    violations.push({ field: \"$\", code: \"invalid_type\", message: \"Request body must be a JSON object\", expected: \"object\" });\n  } else {\n    for (const field of schema.required) {\n      if (!hasValue(input[field])) {\n        violations.push({ field, code: \"required\", message: `${field} is required`, expected: schema.properties[field].type });\n      }\n    }\n    for (const [field, contract] of Object.entries(schema.properties)) {\n      if (hasValue(input[field])) violations.push(...validateValue(field, input[field], contract));\n    }\n  }\n\n  if (violations.length > 0) {\n    return {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: \"validation_error\",\n      message: \"Request does not match the workflow input contract\",\n      details: {\n        violations,\n        missingFields: violations.filter((item) => item.code === \"required\").map((item) => item.field)\n      },\n      requestSchema: schema\n    };\n  }\n\n  const matchedRules = policy.rules\n    .map((rule, index) => ({ ...rule, ruleId: rule.id ?? `${rule.field}_${rule.operator}_${index + 1}` }))\n    .filter((rule) => matchesRule(rule, input[rule.field]))\n    .map(({ ruleId, field, points, reason, minimumBand }) => ({ ruleId, field, points, reason, ...(minimumBand ? { minimumBand } : {}) }));\n  const rawScore = matchedRules.reduce((total, rule) => total + rule.points, 0);\n  const minimumScore = matchedRules.reduce((floor, rule) => Math.max(floor, rule.minimumBand ? policy.thresholds[rule.minimumBand] : 0), 0);\n  const score = Math.max(0, Math.min(100, Math.max(rawScore, minimumScore)));\n  const priorityBand = score >= policy.thresholds.high ? \"high\" : score >= policy.thresholds.medium ? \"medium\" : \"low\";\n\n  return {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: policy.slug,\n    policyVersion: policy.policyVersion,\n    decision: policy.decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: policy.actions,\n    evaluatedAt\n  };\n};\n    return evaluatePolicy({\n      policy: {\"slug\":\"workplace-incident-routing\",\"policyVersion\":\"1.0.0\",\"inputSchema\":{\"type\":\"object\",\"required\":[\"incidentId\",\"site\",\"category\",\"description\"],\"properties\":{\"incidentId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"site\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"category\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"description\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"injuryReported\":{\"type\":\"boolean\"},\"immediateDanger\":{\"type\":\"boolean\"},\"accessControlImpact\":{\"type\":\"boolean\"},\"operationsDisrupted\":{\"type\":\"boolean\"},\"peopleAffected\":{\"type\":\"number\",\"minimum\":0}},\"additionalProperties\":true},\"rules\":[{\"field\":\"injuryReported\",\"operator\":\"truthy\",\"points\":55,\"minimumBand\":\"high\",\"reason\":\"An injury has been reported\"},{\"field\":\"immediateDanger\",\"operator\":\"truthy\",\"points\":70,\"minimumBand\":\"high\",\"reason\":\"People may face immediate danger\"},{\"field\":\"accessControlImpact\",\"operator\":\"truthy\",\"points\":30,\"reason\":\"Physical access controls are affected\"},{\"field\":\"operationsDisrupted\",\"operator\":\"truthy\",\"points\":25,\"reason\":\"Workplace operations are disrupted\"},{\"field\":\"peopleAffected\",\"operator\":\"gte\",\"value\":25,\"points\":25,\"reason\":\"At least 25 people are affected\"}],\"thresholds\":{\"medium\":30,\"high\":70},\"decisions\":{\"low\":\"route_standard_facilities_queue\",\"medium\":\"dispatch_urgent_workplace_response\",\"high\":\"activate_safety_and_security_response\"},\"actions\":[\"Create the facilities incident\",\"Assign an on-site response owner\",\"Require human confirmation before closing a safety event\"]},\n      envelope: $('Receive request').first().json,\n      executionId: $execution.id,\n      evaluatedAt: $now.toUTC().toISO()\n    });\n  })() }}",
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -60,
+        80
+      ],
+      "id": "3d5a43be-6c89-4b9f-aa64-4289665c3a29",
+      "name": "Evaluate policy signals",
+      "notes": "Evaluates one request with a native expression, enforces the documented input contract, and returns matched reasons without external writes."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $('Evaluate policy signals').item.json }}",
+        "options": {
+          "responseCode": "={{ $('Evaluate policy signals').item.json.httpStatus }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              },
+              {
+                "name": "X-Request-Id",
+                "value": "={{ $('Evaluate policy signals').item.json.requestId }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        80
+      ],
+      "id": "4d4984b6-11ca-4d45-a910-1273e06cb5d4",
+      "name": "Return structured decision"
+    }
+  ],
+  "connections": {
+    "Receive request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate policy signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate policy signals": {
+      "main": [
+        [
+          {
+            "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "timezone": "UTC"
+  },
+  "tags": []
+}

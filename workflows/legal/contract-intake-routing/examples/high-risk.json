@@ -1,0 +1,11 @@
+{
+  "requestId": "requestId-001",
+  "contractType": "contractType-001",
+  "counterparty": "counterparty-001",
+  "contractValue": 250000,
+  "nonStandardTerms": true,
+  "personalData": true,
+  "crossBorderData": true,
+  "autoRenewal": true,
+  "regulatedIndustry": true
+}

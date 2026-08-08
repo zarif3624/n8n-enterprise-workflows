@@ -12,48 +12,78 @@ A rapid containment recommendation without automatically taking destructive secu
 
 - **Primary owner:** Security Operations
 - **Primary metric:** Minutes from report to analyst triage
+- **Policy version:** `1.0.0`
 - **ROI starting point:** `reports per month x minutes saved in initial triage x analyst hourly cost / 60`
 
-## Import and configure
+## Five-minute adoption
 
 1. Import `workflow.json` into an n8n development project.
-2. Review the policy rules and thresholds with the named business owner.
-3. Configure built-in authentication on **Receive request**. Do not activate an unauthenticated production webhook.
-4. Send the sample payload to the test webhook URL.
-5. Connect approved downstream systems only after the decision output is verified.
-6. Add error outputs and a private logging destination to every external node you introduce.
+2. Review the policy rules, hard risk gates, and thresholds with the named business owner.
+3. Keep the workflow inactive while testing. The imported webhook is intentionally unauthenticated for local evaluation.
+4. Send `examples/low-risk.json`, `examples/high-risk.json`, and `examples/invalid.json` to the test webhook URL.
+5. Configure Header Auth, Basic Auth, or another approved built-in webhook credential before activation.
+6. Connect approved downstream systems only after the decision contract is verified.
 
-## Required input
-
-- `reportId`
-- `reporterId`
-- `sender`
-- `subject`
-
-Optional signals: `credentialRequested`, `suspiciousAttachment`, `executiveImpersonation`, `linkClicked`, `multipleRecipients`.
-
-### Sample payload
-
-```json
-{
-  "reportId": "reportid-001",
-  "reporterId": "reporterid-001",
-  "sender": "Example sender",
-  "subject": "Example subject"
-}
+```bash
+curl --fail-with-body --request POST "$N8N_TEST_WEBHOOK_URL" \
+  --header "Content-Type: application/json" \
+  --header "X-Request-Id: local-test-001" \
+  --data @examples/low-risk.json
 ```
+
+## Input contract
+
+The request body must be a JSON object. Unknown fields are preserved as caller context but are not echoed in the response.
+
+| Field | Required | Contract |
+| --- | --- | --- |
+| `reportId` | Yes | string |
+| `reporterId` | Yes | string |
+| `sender` | Yes | string |
+| `subject` | Yes | string |
+| `credentialRequested` | No | boolean |
+| `suspiciousAttachment` | No | boolean |
+| `executiveImpersonation` | No | boolean |
+| `linkClicked` | No | boolean |
+| `multipleRecipients` | No | boolean |
 
 ## Policy rules
 
-| Field | Match | Points | Reason |
-| --- | --- | ---: | --- |
-| `credentialRequested` | truthy | 40 | Message requests credentials |
-| `suspiciousAttachment` | truthy | 35 | Suspicious attachment present |
-| `executiveImpersonation` | truthy | 30 | Executive impersonation detected |
-| `linkClicked` | truthy | 55 | A user clicked the reported link |
-| `multipleRecipients` | truthy | 25 | Possible campaign affects multiple recipients |
+| Rule ID | Field | Match | Points | Minimum band | Reason |
+| --- | --- | --- | ---: | --- | --- |
+| `credentialRequested_truthy_1` | `credentialRequested` | truthy | 40 | — | Message requests credentials |
+| `suspiciousAttachment_truthy_2` | `suspiciousAttachment` | truthy | 35 | — | Suspicious attachment present |
+| `executiveImpersonation_truthy_3` | `executiveImpersonation` | truthy | 30 | — | Executive impersonation detected |
+| `linkClicked_truthy_4` | `linkClicked` | truthy | 55 | high | A user clicked the reported link |
+| `multipleRecipients_truthy_5` | `multipleRecipients` | truthy | 25 | — | Possible campaign affects multiple recipients |
 
-Scores below 30 use `queue_analyst_review`, scores from 30-69 use `expedite_investigation`, and scores of 70+ use `initiate_containment_review`.
+Scores below 30 use `queue_analyst_review`, scores from 30-69 use `expedite_investigation`, and scores of 70+ use `initiate_containment_review`. A minimum band is a hard safety floor: negative rules cannot cancel it.
+
+## Response contract
+
+Successful requests return HTTP 200 with a request ID, policy version, decision, band, score, matched rules, recommended actions, and evaluation timestamp.
+
+```json
+{
+  "ok": true,
+  "httpStatus": 200,
+  "requestId": "example-request-001",
+  "workflow": "phishing-report-triage",
+  "policyVersion": "1.0.0",
+  "decision": "queue_analyst_review",
+  "priorityBand": "low",
+  "score": 0,
+  "matchedRules": [],
+  "recommendedActions": [
+    "Create a case in the security queue",
+    "Preserve message evidence",
+    "Require analyst approval before quarantine or account actions"
+  ],
+  "evaluatedAt": "2026-08-07T03:00:00.000Z"
+}
+```
+
+The high-risk example returns `initiate_containment_review` in the `high` band with score 100. Invalid requests return HTTP 400 with `error: "validation_error"`, field-level violations, and the complete request schema so callers can self-correct.
 
 ## Recommended production extensions
 
@@ -61,7 +91,20 @@ Scores below 30 use `queue_analyst_review`, scores from 30-69 use `expedite_inve
 - Preserve message evidence.
 - Require analyst approval before quarantine or account actions.
 
-Keep consequential actions behind explicit human approval. The template returns a recommendation; it does not make irreversible changes.
+Typical adapters: Microsoft 365, Google Workspace, SIEM, SOAR.
+
+## Security and operations
+
+- Keep consequential actions behind explicit human approval. This template recommends; it does not make irreversible changes.
+- Replace unauthenticated local testing with built-in webhook authentication before activation.
+- Store secrets only in n8n credentials; never place tokens in expressions, fields, or exported JSON.
+- Add retries only to safe, idempotent external calls and wire every fallible node to a structured 5xx response.
+- Set a private workflow-level error workflow and review execution-data retention before processing sensitive data.
+- Treat `requestId` as a correlation value, not proof of identity, and avoid returning source records in the response.
+
+## ROI worksheet
+
+Start with `reports per month x minutes saved in initial triage x analyst hourly cost / 60`. Record baseline volume, handling time, false-positive rate, and loaded cost before rollout; compare them with observed values after 30 days. Report capacity, risk reduction, and revenue impact separately.
 
 ## Search terms
 

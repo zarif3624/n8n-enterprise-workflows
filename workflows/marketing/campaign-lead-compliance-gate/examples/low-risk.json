@@ -1,0 +1,11 @@
+{
+  "leadId": "leadId-001",
+  "email": "buyer@example.com",
+  "campaignId": "campaignId-001",
+  "country": "country-001",
+  "consent": true,
+  "suppressed": false,
+  "targetAccount": false,
+  "engagementScore": 69,
+  "existingCustomer": false
+}

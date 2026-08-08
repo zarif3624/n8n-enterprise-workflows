@@ -17,6 +17,8 @@ one with production data or systems.
 - Apply least-privilege credentials and project access.
 - Minimize personal, financial, customer, and security-sensitive data.
 - Review execution-data retention and redact logs where necessary.
+- Verify the production endpoint against `openapi.json` and remove any response fields callers do not need.
+- Add rate limiting or an upstream API gateway for externally reachable webhooks.
 
 ## Reliability
 
@@ -25,6 +27,8 @@ one with production data or systems.
 - Add deduplication or idempotency keys before creating external records.
 - Configure timeouts and a private error workflow.
 - Test 4xx, 5xx, timeout, duplicate, and partial-data paths.
+- Run all three package fixtures and preserve the observed decision evidence with the release.
+- Propagate `X-Request-Id` through downstream systems and alerts.
 
 ## Deployment
 
@@ -33,6 +37,7 @@ one with production data or systems.
 - Keep production protected from ad hoc edits.
 - Publish a specific reviewed version and retain rollback instructions.
 - Monitor execution failures, latency, throughput, and business outcomes.
+- Record the policy and schema versions deployed in each environment.
 
 ## Value measurement
 

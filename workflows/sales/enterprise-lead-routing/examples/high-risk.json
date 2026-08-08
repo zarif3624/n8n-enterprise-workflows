@@ -1,0 +1,11 @@
+{
+  "leadId": "leadId-001",
+  "company": "company-001",
+  "email": "buyer@example.com",
+  "region": "North America",
+  "targetAccount": true,
+  "employeeCount": 1000,
+  "highIntent": true,
+  "requestedDemo": true,
+  "marketingConsent": false
+}

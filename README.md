@@ -11,6 +11,19 @@ sample data, policy logic, security gates, business value, and an ROI model.
 > Start with a decision workflow, prove the policy, then connect enterprise
 > systems. Templates never include credentials or make irreversible changes.
 
+## What makes a template production-minded
+
+Every workflow package includes:
+
+- A typed, machine-readable JSON input contract with field-level validation.
+- Low-risk, high-risk, and invalid fixtures that can be sent to the test webhook.
+- Explainable scoring with stable rule IDs, policy versions, and hard risk floors.
+- Structured HTTP 200 and 400 responses with correlation IDs.
+- A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
+- Security, operations, human-approval, adapter, and ROI guidance.
+
+The shared test suite checks these guarantees across the full catalog instead of relying on screenshots or manual import checks.
+
 ## Why this project exists
 
 Most workflow galleries show what a tool can connect. Enterprise teams need
@@ -33,9 +46,14 @@ This project makes those concerns part of each workflow package.
 | Legal | [Contract intake routing](workflows/legal/contract-intake-routing) | Send contracts to the correct review path sooner |
 | Procurement | [Vendor risk intake](workflows/procurement/vendor-risk-intake) | Start security, privacy, and legal diligence earlier |
 | Operations | [Major incident stakeholder brief](workflows/operations/major-incident-stakeholder-brief) | Accelerate consistent incident communications |
+| Data and Analytics | [Data access request triage](workflows/data-and-analytics/data-access-request-triage) | Govern sensitive and externally shared data access |
+| Engineering | [Production change risk gate](workflows/engineering/production-change-risk-gate) | Preserve accountable review for risky releases |
+| Facilities | [Workplace incident routing](workflows/facilities/workplace-incident-routing) | Escalate safety and security events quickly |
+| Corporate Communications | [External communication approval](workflows/corporate-communications/external-communication-approval) | Prevent high-risk messages from bypassing reviewers |
+| Privacy | [Data subject request triage](workflows/privacy/data-subject-request-triage) | Keep identity, deadline, and legal constraints visible |
 
-Browse the machine-readable [catalog](catalog.json) or the
-[department index](docs/catalog.md).
+Browse the machine-readable [catalog](catalog.json), the generated
+[OpenAPI 3.1 contract](openapi.json), or the [department index](docs/catalog.md).
 
 ## Five-minute start
 
@@ -47,8 +65,25 @@ Browse the machine-readable [catalog](catalog.json) or the
 4. Send the sample payload to the test webhook URL.
 5. Review the response with the business owner before connecting downstream systems.
 
+Each package includes ready-to-send fixtures:
+
+```text
+examples/low-risk.json
+examples/high-risk.json
+examples/invalid.json
+```
+
 The templates ship inactive and use unauthenticated webhooks for local testing.
 Configure n8n's built-in webhook authentication before production activation.
+
+To inspect a decision before importing n8n, run the exact same source policy locally:
+
+```bash
+npm run evaluate -- invoice-exception-triage \
+  workflows/finance/invoice-exception-triage/examples/high-risk.json
+```
+
+The command exits 0 for a valid decision, 2 for a contract violation, and 1 for CLI or file errors.
 
 ### Option B: Attach a workflow to Codex through n8n MCP
 
@@ -77,9 +112,22 @@ and [security model](SECURITY.md).
 npm run check
 ```
 
-The validator checks workflow shape, node identity, connection integrity,
-unique webhook paths, inactive status, response behavior, credential leakage,
-companion documentation, and catalog coverage.
+The validator checks workflow shape, node identity, graph reachability,
+policy-expression parity, typed contracts, representative fixtures, unique
+webhook paths, inactive status, response behavior, credential leakage,
+companion documentation, and catalog coverage. The test suite then exercises
+every required field, declared type, rule boundary, and safety floor.
+
+## Extend the catalog
+
+The source of truth is [scripts/workflow-definitions.mjs](scripts/workflow-definitions.mjs); workflow JSON, package READMEs, examples, and catalog metadata are generated artifacts. Read [policy authoring](docs/policy-authoring.md) before changing scoring behavior, then run:
+
+```bash
+npm run check
+git diff --exit-code
+```
+
+The second command should only be clean after generated changes have been reviewed and committed.
 
 ## Release rhythm
 
@@ -93,7 +141,7 @@ problem. See the [release process](docs/release-process.md).
 - Native adapters for Salesforce, ServiceNow, Slack, Microsoft Teams, SAP, Workday, and common data warehouses
 - Human-approval sub-workflows and reusable error handlers
 - Industry packs for financial services, healthcare, software, and professional services
-- Automated import validation against supported n8n releases
+- Broaden the scheduled import compatibility matrix as supported n8n releases evolve
 - Outcome benchmarks and community-submitted deployment notes
 
 ## Contributing

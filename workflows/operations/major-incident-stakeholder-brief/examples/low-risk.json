@@ -1,0 +1,11 @@
+{
+  "incidentId": "incidentId-001",
+  "service": "service-001",
+  "startedAt": "2026-08-07T03:00:00Z",
+  "summary": "summary-001",
+  "customersAffected": 99,
+  "revenueImpact": false,
+  "dataRisk": false,
+  "workaroundAvailable": true,
+  "regulatoryNotificationPossible": false
+}

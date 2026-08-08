@@ -17,3 +17,10 @@ Describe the process and measurable value this change supports.
 ## Test evidence
 
 Describe validation and representative input used.
+
+## Policy compatibility
+
+- Policy version change: none / patch / minor / major
+- Decision behavior before and after:
+- Hard safety floors added or changed:
+- Generated fixtures reviewed: low / high / invalid

@@ -1,0 +1,11 @@
+{
+  "requestId": "requestId-001",
+  "requesterId": "requesterId-001",
+  "dataset": "dataset-001",
+  "purpose": "purpose-001",
+  "containsSensitiveData": true,
+  "productionData": true,
+  "externalSharing": true,
+  "retentionDays": 366,
+  "ownerApproved": false
+}

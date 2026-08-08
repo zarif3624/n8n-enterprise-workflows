@@ -1,0 +1,10 @@
+{
+  "requestId": "requestId-001",
+  "employeeId": "employeeId-001",
+  "system": "system-001",
+  "accessLevel": "accessLevel-001",
+  "managerApproved": false,
+  "privilegedAccess": true,
+  "productionAccess": true,
+  "contractor": true
+}

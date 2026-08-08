@@ -1,0 +1,11 @@
+{
+  "reportId": "reportId-001",
+  "reporterId": "reporterId-001",
+  "sender": "sender-001",
+  "subject": "subject-001",
+  "credentialRequested": false,
+  "suspiciousAttachment": false,
+  "executiveImpersonation": false,
+  "linkClicked": false,
+  "multipleRecipients": false
+}

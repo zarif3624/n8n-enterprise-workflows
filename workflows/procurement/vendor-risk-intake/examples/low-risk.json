@@ -1,0 +1,11 @@
+{
+  "requestId": "requestId-001",
+  "vendorName": "vendorName-001",
+  "annualSpend": 99999,
+  "businessOwner": "businessOwner-001",
+  "handlesPersonalData": false,
+  "businessCritical": false,
+  "foreignDataHosting": false,
+  "subprocessors": false,
+  "soc2Available": true
+}

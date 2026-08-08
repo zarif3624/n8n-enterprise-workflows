@@ -1,0 +1,11 @@
+{
+  "invoiceId": "invoiceId-001",
+  "vendorId": "vendorId-001",
+  "amount": 1,
+  "currency": "USD",
+  "purchaseOrderId": "purchaseOrderId-001",
+  "duplicateDetected": false,
+  "amountMismatchPercent": 2,
+  "restrictedVendor": false,
+  "newBankDetails": false
+}

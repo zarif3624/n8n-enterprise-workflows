@@ -1,92 +1,1179 @@
 [
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "finance",
     "slug": "invoice-exception-triage",
     "name": "Triage enterprise invoice exceptions",
     "summary": "Scores invoice exceptions and routes clean invoices, finance reviews, and payment holds through a consistent policy.",
+    "outcome": "A structured decision with a risk score, matched policy reasons, and the next recommended action.",
     "owner": "Accounts Payable Operations",
     "metric": "Minutes of manual review avoided per invoice",
-    "path": "workflows/finance/invoice-exception-triage"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "invoiceId",
+        "vendorId",
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "invoiceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "vendorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "purchaseOrderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "duplicateDetected": {
+          "type": "boolean"
+        },
+        "amountMismatchPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "restrictedVendor": {
+          "type": "boolean"
+        },
+        "newBankDetails": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "continue_standard_processing",
+      "medium": "route_to_finance_review",
+      "high": "hold_payment_and_escalate"
+    },
+    "adapters": [
+      "SAP",
+      "Oracle",
+      "NetSuite",
+      "Coupa",
+      "Slack"
+    ],
+    "path": "workflows/finance/invoice-exception-triage",
+    "endpoint": "/webhook/enterprise/finance/invoice-exception-triage",
+    "workflow": "workflows/finance/invoice-exception-triage/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/finance/invoice-exception-triage/examples/low-risk.json",
+      "highRisk": "workflows/finance/invoice-exception-triage/examples/high-risk.json",
+      "invalid": "workflows/finance/invoice-exception-triage/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "human-resources",
     "slug": "employee-access-request-triage",
     "name": "Triage employee access requests",
     "summary": "Classifies employee access requests using role, privilege, environment, and approval signals before provisioning begins.",
+    "outcome": "A normalized access decision that separates standard fulfillment, security review, and blocked requests.",
     "owner": "People Operations and Identity Management",
     "metric": "Access-request cycle time",
-    "path": "workflows/human-resources/employee-access-request-triage"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "employeeId",
+        "system",
+        "accessLevel"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "employeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "system": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "accessLevel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "managerApproved": {
+          "type": "boolean"
+        },
+        "privilegedAccess": {
+          "type": "boolean"
+        },
+        "productionAccess": {
+          "type": "boolean"
+        },
+        "contractor": {
+          "type": "boolean"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "queue_standard_fulfillment",
+      "medium": "require_security_review",
+      "high": "block_until_approved"
+    },
+    "adapters": [
+      "Workday",
+      "Okta",
+      "Microsoft Entra ID",
+      "ServiceNow"
+    ],
+    "path": "workflows/human-resources/employee-access-request-triage",
+    "endpoint": "/webhook/enterprise/human-resources/employee-access-request-triage",
+    "workflow": "workflows/human-resources/employee-access-request-triage/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/human-resources/employee-access-request-triage/examples/low-risk.json",
+      "highRisk": "workflows/human-resources/employee-access-request-triage/examples/high-risk.json",
+      "invalid": "workflows/human-resources/employee-access-request-triage/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "information-technology",
     "slug": "service-desk-priority-routing",
     "name": "Route enterprise service desk incidents",
     "summary": "Assigns incident priority from impact, urgency, affected users, outage state, and executive visibility.",
+    "outcome": "A defensible routing decision with urgency, ownership guidance, and escalation reasons.",
     "owner": "IT Service Management",
     "metric": "Mean time to assignment",
-    "path": "workflows/information-technology/service-desk-priority-routing"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "ticketId",
+        "category",
+        "summary",
+        "affectedUsers"
+      ],
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "affectedUsers": {
+          "type": "number",
+          "minimum": 0
+        },
+        "serviceDown": {
+          "type": "boolean"
+        },
+        "securityImpact": {
+          "type": "boolean"
+        },
+        "executiveAffected": {
+          "type": "boolean"
+        },
+        "revenueImpact": {
+          "type": "boolean"
+        },
+        "workaroundAvailable": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "route_standard_queue",
+      "medium": "assign_priority_support",
+      "high": "open_major_incident"
+    },
+    "adapters": [
+      "ServiceNow",
+      "Jira Service Management",
+      "PagerDuty"
+    ],
+    "path": "workflows/information-technology/service-desk-priority-routing",
+    "endpoint": "/webhook/enterprise/information-technology/service-desk-priority-routing",
+    "workflow": "workflows/information-technology/service-desk-priority-routing/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/information-technology/service-desk-priority-routing/examples/low-risk.json",
+      "highRisk": "workflows/information-technology/service-desk-priority-routing/examples/high-risk.json",
+      "invalid": "workflows/information-technology/service-desk-priority-routing/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "security",
     "slug": "phishing-report-triage",
     "name": "Triage employee phishing reports",
     "summary": "Scores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.",
+    "outcome": "A rapid containment recommendation without automatically taking destructive security actions.",
     "owner": "Security Operations",
     "metric": "Minutes from report to analyst triage",
-    "path": "workflows/security/phishing-report-triage"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "reportId",
+        "reporterId",
+        "sender",
+        "subject"
+      ],
+      "properties": {
+        "reportId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "reporterId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "sender": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "credentialRequested": {
+          "type": "boolean"
+        },
+        "suspiciousAttachment": {
+          "type": "boolean"
+        },
+        "executiveImpersonation": {
+          "type": "boolean"
+        },
+        "linkClicked": {
+          "type": "boolean"
+        },
+        "multipleRecipients": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "queue_analyst_review",
+      "medium": "expedite_investigation",
+      "high": "initiate_containment_review"
+    },
+    "adapters": [
+      "Microsoft 365",
+      "Google Workspace",
+      "SIEM",
+      "SOAR"
+    ],
+    "path": "workflows/security/phishing-report-triage",
+    "endpoint": "/webhook/enterprise/security/phishing-report-triage",
+    "workflow": "workflows/security/phishing-report-triage/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/security/phishing-report-triage/examples/low-risk.json",
+      "highRisk": "workflows/security/phishing-report-triage/examples/high-risk.json",
+      "invalid": "workflows/security/phishing-report-triage/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "sales",
     "slug": "enterprise-lead-routing",
     "name": "Route enterprise sales leads",
     "summary": "Scores enterprise leads using account fit, buying intent, geography, engagement, and consent before assignment.",
+    "outcome": "A transparent routing recommendation with matched reasons and a clear next action for RevOps.",
     "owner": "Revenue Operations",
     "metric": "Speed to lead for qualified accounts",
-    "path": "workflows/sales/enterprise-lead-routing"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "leadId",
+        "company",
+        "email",
+        "region"
+      ],
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 320
+        },
+        "region": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "employeeCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "targetAccount": {
+          "type": "boolean"
+        },
+        "highIntent": {
+          "type": "boolean"
+        },
+        "requestedDemo": {
+          "type": "boolean"
+        },
+        "marketingConsent": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "route_to_nurture_or_review",
+      "medium": "assign_sdr_queue",
+      "high": "assign_enterprise_owner"
+    },
+    "adapters": [
+      "Salesforce",
+      "HubSpot",
+      "enrichment and routing tools"
+    ],
+    "path": "workflows/sales/enterprise-lead-routing",
+    "endpoint": "/webhook/enterprise/sales/enterprise-lead-routing",
+    "workflow": "workflows/sales/enterprise-lead-routing/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/sales/enterprise-lead-routing/examples/low-risk.json",
+      "highRisk": "workflows/sales/enterprise-lead-routing/examples/high-risk.json",
+      "invalid": "workflows/sales/enterprise-lead-routing/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "marketing",
     "slug": "campaign-lead-compliance-gate",
     "name": "Gate campaign leads for compliant follow-up",
     "summary": "Checks consent, suppression, geography, engagement, and target-account status before campaign follow-up.",
+    "outcome": "A follow-up decision that keeps compliance facts visible and routes ambiguous records for review.",
     "owner": "Marketing Operations",
     "metric": "Compliant leads processed per campaign",
-    "path": "workflows/marketing/campaign-lead-compliance-gate"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "leadId",
+        "email",
+        "campaignId",
+        "country"
+      ],
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 320
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "country": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "consent": {
+          "type": "boolean"
+        },
+        "suppressed": {
+          "type": "boolean"
+        },
+        "targetAccount": {
+          "type": "boolean"
+        },
+        "engagementScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "existingCustomer": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "allow_campaign_follow_up",
+      "medium": "route_to_compliance_review",
+      "high": "suppress_automated_outreach"
+    },
+    "adapters": [
+      "marketing automation",
+      "CRM",
+      "consent platform"
+    ],
+    "path": "workflows/marketing/campaign-lead-compliance-gate",
+    "endpoint": "/webhook/enterprise/marketing/campaign-lead-compliance-gate",
+    "workflow": "workflows/marketing/campaign-lead-compliance-gate/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/marketing/campaign-lead-compliance-gate/examples/low-risk.json",
+      "highRisk": "workflows/marketing/campaign-lead-compliance-gate/examples/high-risk.json",
+      "invalid": "workflows/marketing/campaign-lead-compliance-gate/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "customer-success",
     "slug": "customer-risk-escalation",
     "name": "Escalate at-risk enterprise customers",
     "summary": "Combines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response.",
+    "outcome": "An explainable intervention priority and recommended customer-success action plan.",
     "owner": "Customer Success Operations",
     "metric": "At-risk accounts engaged before renewal",
-    "path": "workflows/customer-success/customer-risk-escalation"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "accountId",
+        "accountName",
+        "arr",
+        "renewalDays"
+      ],
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "accountName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "arr": {
+          "type": "number",
+          "minimum": 0
+        },
+        "renewalDays": {
+          "type": "number",
+          "minimum": 0
+        },
+        "usageDropPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "criticalTickets": {
+          "type": "number",
+          "minimum": 0
+        },
+        "negativeSentiment": {
+          "type": "boolean"
+        },
+        "championLeft": {
+          "type": "boolean"
+        },
+        "execSponsorMissing": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "continue_success_plan",
+      "medium": "open_risk_workstream",
+      "high": "launch_executive_save_plan"
+    },
+    "adapters": [
+      "customer success platform",
+      "CRM",
+      "support desk"
+    ],
+    "path": "workflows/customer-success/customer-risk-escalation",
+    "endpoint": "/webhook/enterprise/customer-success/customer-risk-escalation",
+    "workflow": "workflows/customer-success/customer-risk-escalation/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/customer-success/customer-risk-escalation/examples/low-risk.json",
+      "highRisk": "workflows/customer-success/customer-risk-escalation/examples/high-risk.json",
+      "invalid": "workflows/customer-success/customer-risk-escalation/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "legal",
     "slug": "contract-intake-routing",
     "name": "Route enterprise contract requests",
     "summary": "Routes contract intake using document type, value, jurisdiction, data access, and non-standard terms.",
+    "outcome": "A normalized legal intake route with risk reasons and required reviewers.",
     "owner": "Legal Operations",
     "metric": "Contract request time to first review",
-    "path": "workflows/legal/contract-intake-routing"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "contractType",
+        "counterparty",
+        "contractValue"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "contractType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "counterparty": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "contractValue": {
+          "type": "number",
+          "minimum": 0
+        },
+        "nonStandardTerms": {
+          "type": "boolean"
+        },
+        "personalData": {
+          "type": "boolean"
+        },
+        "crossBorderData": {
+          "type": "boolean"
+        },
+        "autoRenewal": {
+          "type": "boolean"
+        },
+        "regulatedIndustry": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "use_standard_legal_queue",
+      "medium": "assign_specialist_review",
+      "high": "open_cross_functional_review"
+    },
+    "adapters": [
+      "CLM",
+      "e-signature",
+      "ticketing",
+      "document storage"
+    ],
+    "path": "workflows/legal/contract-intake-routing",
+    "endpoint": "/webhook/enterprise/legal/contract-intake-routing",
+    "workflow": "workflows/legal/contract-intake-routing/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/legal/contract-intake-routing/examples/low-risk.json",
+      "highRisk": "workflows/legal/contract-intake-routing/examples/high-risk.json",
+      "invalid": "workflows/legal/contract-intake-routing/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "procurement",
     "slug": "vendor-risk-intake",
     "name": "Triage enterprise vendor risk",
     "summary": "Scores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence.",
+    "outcome": "A coordinated due-diligence route with the reasons each review is required.",
     "owner": "Procurement Operations",
     "metric": "Vendor request time to correct review path",
-    "path": "workflows/procurement/vendor-risk-intake"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "vendorName",
+        "annualSpend",
+        "businessOwner"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "vendorName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "annualSpend": {
+          "type": "number",
+          "minimum": 0
+        },
+        "businessOwner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "handlesPersonalData": {
+          "type": "boolean"
+        },
+        "businessCritical": {
+          "type": "boolean"
+        },
+        "foreignDataHosting": {
+          "type": "boolean"
+        },
+        "subprocessors": {
+          "type": "boolean"
+        },
+        "soc2Available": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "start_standard_procurement",
+      "medium": "add_security_or_privacy_review",
+      "high": "open_full_vendor_due_diligence"
+    },
+    "adapters": [
+      "procurement suite",
+      "GRC",
+      "security questionnaires"
+    ],
+    "path": "workflows/procurement/vendor-risk-intake",
+    "endpoint": "/webhook/enterprise/procurement/vendor-risk-intake",
+    "workflow": "workflows/procurement/vendor-risk-intake/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/procurement/vendor-risk-intake/examples/low-risk.json",
+      "highRisk": "workflows/procurement/vendor-risk-intake/examples/high-risk.json",
+      "invalid": "workflows/procurement/vendor-risk-intake/examples/invalid.json"
+    }
   },
   {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
     "department": "operations",
     "slug": "major-incident-stakeholder-brief",
     "name": "Prepare major incident stakeholder briefs",
     "summary": "Turns operational incident facts into a severity decision and a consistent stakeholder communication plan.",
+    "outcome": "A severity tier, communication cadence, stakeholder list, and next update deadline.",
     "owner": "Business Operations and Incident Command",
     "metric": "Minutes from incident declaration to first stakeholder brief",
-    "path": "workflows/operations/major-incident-stakeholder-brief"
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "incidentId",
+        "service",
+        "startedAt",
+        "summary"
+      ],
+      "properties": {
+        "incidentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "service": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "customersAffected": {
+          "type": "number",
+          "minimum": 0
+        },
+        "revenueImpact": {
+          "type": "boolean"
+        },
+        "dataRisk": {
+          "type": "boolean"
+        },
+        "workaroundAvailable": {
+          "type": "boolean"
+        },
+        "regulatoryNotificationPossible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "standard_operations_update",
+      "medium": "activate_incident_command",
+      "high": "activate_executive_and_legal_response"
+    },
+    "adapters": [
+      "incident management",
+      "Slack",
+      "Microsoft Teams",
+      "status page"
+    ],
+    "path": "workflows/operations/major-incident-stakeholder-brief",
+    "endpoint": "/webhook/enterprise/operations/major-incident-stakeholder-brief",
+    "workflow": "workflows/operations/major-incident-stakeholder-brief/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/operations/major-incident-stakeholder-brief/examples/low-risk.json",
+      "highRisk": "workflows/operations/major-incident-stakeholder-brief/examples/high-risk.json",
+      "invalid": "workflows/operations/major-incident-stakeholder-brief/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
+    "department": "data-and-analytics",
+    "slug": "data-access-request-triage",
+    "name": "Triage enterprise data access requests",
+    "summary": "Classifies data access requests by sensitivity, environment, sharing intent, retention, and owner approval before access is granted.",
+    "outcome": "A transparent governance route that separates standard access from data-owner, privacy, and security review.",
+    "owner": "Data Governance",
+    "metric": "Time from request to governed data access",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "requesterId",
+        "dataset",
+        "purpose"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "requesterId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "containsSensitiveData": {
+          "type": "boolean"
+        },
+        "productionData": {
+          "type": "boolean"
+        },
+        "externalSharing": {
+          "type": "boolean"
+        },
+        "retentionDays": {
+          "type": "number",
+          "minimum": 0
+        },
+        "ownerApproved": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "approve_standard_data_access",
+      "medium": "require_owner_and_privacy_review",
+      "high": "block_until_governance_approval"
+    },
+    "adapters": [
+      "Snowflake",
+      "Databricks",
+      "BigQuery",
+      "data catalog",
+      "ticketing"
+    ],
+    "path": "workflows/data-and-analytics/data-access-request-triage",
+    "endpoint": "/webhook/enterprise/data-and-analytics/data-access-request-triage",
+    "workflow": "workflows/data-and-analytics/data-access-request-triage/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/data-and-analytics/data-access-request-triage/examples/low-risk.json",
+      "highRisk": "workflows/data-and-analytics/data-access-request-triage/examples/high-risk.json",
+      "invalid": "workflows/data-and-analytics/data-access-request-triage/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
+    "department": "engineering",
+    "slug": "production-change-risk-gate",
+    "name": "Gate production changes by operational risk",
+    "summary": "Scores planned production changes using customer, database, rollback, peak-period, and security signals before deployment.",
+    "outcome": "An explainable release route that preserves human authority for elevated and security-relevant changes.",
+    "owner": "Engineering Operations",
+    "metric": "Change lead time without increasing failure rate",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "changeId",
+        "service",
+        "changeType",
+        "plannedAt"
+      ],
+      "properties": {
+        "changeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "service": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "changeType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "plannedAt": {
+          "type": "string",
+          "format": "date-time",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "customerImpact": {
+          "type": "boolean"
+        },
+        "databaseMigration": {
+          "type": "boolean"
+        },
+        "rollbackTested": {
+          "type": "boolean"
+        },
+        "duringPeakHours": {
+          "type": "boolean"
+        },
+        "securityRelevant": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "continue_standard_change_process",
+      "medium": "require_senior_engineering_review",
+      "high": "hold_for_change_advisory_approval"
+    },
+    "adapters": [
+      "GitHub",
+      "GitLab",
+      "Jira",
+      "change management",
+      "incident management"
+    ],
+    "path": "workflows/engineering/production-change-risk-gate",
+    "endpoint": "/webhook/enterprise/engineering/production-change-risk-gate",
+    "workflow": "workflows/engineering/production-change-risk-gate/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/engineering/production-change-risk-gate/examples/low-risk.json",
+      "highRisk": "workflows/engineering/production-change-risk-gate/examples/high-risk.json",
+      "invalid": "workflows/engineering/production-change-risk-gate/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
+    "department": "facilities",
+    "slug": "workplace-incident-routing",
+    "name": "Route workplace incidents safely",
+    "summary": "Prioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals.",
+    "outcome": "A defensible urgency tier with clear escalation reasons and a named human response path.",
+    "owner": "Workplace Operations",
+    "metric": "Minutes from report to accountable responder",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "incidentId",
+        "site",
+        "category",
+        "description"
+      ],
+      "properties": {
+        "incidentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "site": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "injuryReported": {
+          "type": "boolean"
+        },
+        "immediateDanger": {
+          "type": "boolean"
+        },
+        "accessControlImpact": {
+          "type": "boolean"
+        },
+        "operationsDisrupted": {
+          "type": "boolean"
+        },
+        "peopleAffected": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "route_standard_facilities_queue",
+      "medium": "dispatch_urgent_workplace_response",
+      "high": "activate_safety_and_security_response"
+    },
+    "adapters": [
+      "facilities management",
+      "physical security",
+      "Slack",
+      "Microsoft Teams"
+    ],
+    "path": "workflows/facilities/workplace-incident-routing",
+    "endpoint": "/webhook/enterprise/facilities/workplace-incident-routing",
+    "workflow": "workflows/facilities/workplace-incident-routing/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/facilities/workplace-incident-routing/examples/low-risk.json",
+      "highRisk": "workflows/facilities/workplace-incident-routing/examples/high-risk.json",
+      "invalid": "workflows/facilities/workplace-incident-routing/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
+    "department": "corporate-communications",
+    "slug": "external-communication-approval",
+    "name": "Approve external enterprise communications",
+    "summary": "Routes proposed external communications using financial, customer, security, legal, and executive-approval signals.",
+    "outcome": "A visible approval route that prevents high-risk messages from bypassing accountable reviewers.",
+    "owner": "Corporate Communications",
+    "metric": "Time from draft to approved external communication",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "audience",
+        "channel",
+        "messageSummary",
+        "owner"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "audience": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "channel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "messageSummary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "materialFinancialInfo": {
+          "type": "boolean"
+        },
+        "customerImpact": {
+          "type": "boolean"
+        },
+        "securityIncident": {
+          "type": "boolean"
+        },
+        "legalReviewed": {
+          "type": "boolean"
+        },
+        "executiveApproved": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "continue_standard_editorial_review",
+      "medium": "require_cross_functional_approval",
+      "high": "hold_for_executive_and_legal_approval"
+    },
+    "adapters": [
+      "content management",
+      "Slack",
+      "Microsoft Teams",
+      "approval tools"
+    ],
+    "path": "workflows/corporate-communications/external-communication-approval",
+    "endpoint": "/webhook/enterprise/corporate-communications/external-communication-approval",
+    "workflow": "workflows/corporate-communications/external-communication-approval/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/corporate-communications/external-communication-approval/examples/low-risk.json",
+      "highRisk": "workflows/corporate-communications/external-communication-approval/examples/high-risk.json",
+      "invalid": "workflows/corporate-communications/external-communication-approval/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.0",
+    "department": "privacy",
+    "slug": "data-subject-request-triage",
+    "name": "Triage data subject requests",
+    "summary": "Prioritizes privacy requests using identity, deadline, sensitivity, third-party, and legal-hold signals.",
+    "outcome": "A deadline-aware route that keeps identity verification and legal constraints visible before fulfillment.",
+    "owner": "Privacy Operations",
+    "metric": "Data subject requests completed within policy deadline",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "requestType",
+        "requesterRegion",
+        "receivedAt"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "requestType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "requesterRegion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "receivedAt": {
+          "type": "string",
+          "format": "date-time",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "identityVerified": {
+          "type": "boolean"
+        },
+        "deadlineDays": {
+          "type": "number",
+          "minimum": 0
+        },
+        "sensitiveData": {
+          "type": "boolean"
+        },
+        "thirdPartyData": {
+          "type": "boolean"
+        },
+        "legalHold": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "continue_standard_privacy_queue",
+      "medium": "assign_privacy_specialist_review",
+      "high": "hold_for_identity_or_legal_review"
+    },
+    "adapters": [
+      "privacy management",
+      "CRM",
+      "data catalog",
+      "ticketing",
+      "document storage"
+    ],
+    "path": "workflows/privacy/data-subject-request-triage",
+    "endpoint": "/webhook/enterprise/privacy/data-subject-request-triage",
+    "workflow": "workflows/privacy/data-subject-request-triage/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/privacy/data-subject-request-triage/examples/low-risk.json",
+      "highRisk": "workflows/privacy/data-subject-request-triage/examples/high-risk.json",
+      "invalid": "workflows/privacy/data-subject-request-triage/examples/invalid.json"
+    }
   }
 ]

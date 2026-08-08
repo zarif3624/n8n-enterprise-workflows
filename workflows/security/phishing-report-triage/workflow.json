@@ -1,12 +1,13 @@
 {
   "id": "7c2ba27c-4ebd-4e4c-aa62-d6140fbd1641",
   "name": "Triage employee phishing reports",
+  "description": "Scores reported messages using credential theft, attachment, impersonation, click, and campaign indicators. It exists to make the decision policy explainable and testable before enterprise systems or irreversible actions are connected.",
   "nodes": [
     {
       "parameters": {
-        "content": "### Triage employee phishing reports\n\nScores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.\n\n**Production gate:** configure built-in webhook authentication, review the policy thresholds, and assign a human owner before activation.",
-        "height": 300,
-        "width": 420,
+        "content": "### Triage employee phishing reports\n\nScores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.\n\n**Production gate:** this inactive template uses an unauthenticated webhook for local testing only. Configure built-in webhook authentication, review policy version 1.0.0, and assign a human owner before activation.",
+        "height": 320,
+        "width": 460,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -22,6 +23,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "enterprise/security/phishing-report-triage",
+        "authentication": "none",
         "responseMode": "responseNode",
         "options": {}
       },
@@ -37,39 +39,49 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const envelope = $input.first().json;\nconst input = envelope.body ?? envelope;\nconst requestId = envelope.headers?.['x-request-id'] ?? String($execution.id);\nconst requiredFields = [\"reportId\",\"reporterId\",\"sender\",\"subject\"];\nconst missingFields = requiredFields.filter((field) => input[field] === undefined || input[field] === null || input[field] === '');\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: 'validation_error',\n      message: 'Required fields are missing',\n      details: { missingFields },\n      requiredFields\n    }\n  }];\n}\n\nconst rules = [\n  {\n    \"field\": \"credentialRequested\",\n    \"operator\": \"truthy\",\n    \"points\": 40,\n    \"reason\": \"Message requests credentials\"\n  },\n  {\n    \"field\": \"suspiciousAttachment\",\n    \"operator\": \"truthy\",\n    \"points\": 35,\n    \"reason\": \"Suspicious attachment present\"\n  },\n  {\n    \"field\": \"executiveImpersonation\",\n    \"operator\": \"truthy\",\n    \"points\": 30,\n    \"reason\": \"Executive impersonation detected\"\n  },\n  {\n    \"field\": \"linkClicked\",\n    \"operator\": \"truthy\",\n    \"points\": 55,\n    \"reason\": \"A user clicked the reported link\"\n  },\n  {\n    \"field\": \"multipleRecipients\",\n    \"operator\": \"truthy\",\n    \"points\": 25,\n    \"reason\": \"Possible campaign affects multiple recipients\"\n  }\n];\n\nfunction matches(rule, value) {\n  switch (rule.operator) {\n    case 'missing': return value === undefined || value === null || value === '';\n    case 'truthy': return value === true;\n    case 'falsy': return value !== true;\n    case 'equals': return value === rule.value;\n    case 'includes': return Array.isArray(value) && value.includes(rule.value);\n    case 'gt': return Number(value) > Number(rule.value);\n    case 'gte': return Number(value) >= Number(rule.value);\n    case 'lt': return Number(value) < Number(rule.value);\n    default: return false;\n  }\n}\n\nconst matchedRules = rules\n  .filter((rule) => matches(rule, input[rule.field]))\n  .map(({ field, points, reason }) => ({ field, points, reason }));\nconst score = Math.max(0, Math.min(100, matchedRules.reduce((total, rule) => total + rule.points, 0)));\nconst priorityBand = score >= 70 ? 'high' : score >= 30 ? 'medium' : 'low';\nconst decisions = {\"low\":\"queue_analyst_review\",\"medium\":\"expedite_investigation\",\"high\":\"initiate_containment_review\"};\n\nreturn [{\n  json: {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: 'phishing-report-triage',\n    decision: decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: [\"Create a case in the security queue\",\"Preserve message evidence\",\"Require analyst approval before quarantine or account actions\"],\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+        "mode": "raw",
+        "jsonOutput": "={{ (() => {\n    const hasValue = function hasValue(value) {\n  return value !== undefined && value !== null && !(typeof value === \"string\" && value.trim() === \"\");\n};\n    const normalizeRequestId = function normalizeRequestId(value, fallback) {\n  if (!hasValue(value)) return String(fallback);\n  const normalized = String(value).replace(/[\\r\\n]/g, \"\").trim().slice(0, 200);\n  return normalized || String(fallback);\n};\n    const validateValue = function validateValue(field, value, contract) {\n  const violations = [];\n  const actualType = Array.isArray(value) ? \"array\" : typeof value;\n\n  if (contract.type === \"number\" && (typeof value !== \"number\" || !Number.isFinite(value))) {\n    return [{ field, code: \"invalid_type\", message: `${field} must be a finite number`, expected: \"number\" }];\n  }\n  if (contract.type === \"string\" && typeof value !== \"string\") {\n    return [{ field, code: \"invalid_type\", message: `${field} must be a string`, expected: \"string\" }];\n  }\n  if (contract.type === \"boolean\" && typeof value !== \"boolean\") {\n    return [{ field, code: \"invalid_type\", message: `${field} must be a boolean`, expected: \"boolean\" }];\n  }\n  if (contract.type === \"array\" && !Array.isArray(value)) {\n    return [{ field, code: \"invalid_type\", message: `${field} must be an array`, expected: \"array\" }];\n  }\n  if (![\"number\", \"string\", \"boolean\", \"array\"].includes(contract.type)) {\n    return [{ field, code: \"invalid_contract\", message: `Unsupported contract type for ${field}`, expected: contract.type, actual: actualType }];\n  }\n\n  if (typeof value === \"string\") {\n    const normalized = value.trim();\n    if (contract.minLength !== undefined && normalized.length < contract.minLength) {\n      violations.push({ field, code: \"too_short\", message: `${field} must contain at least ${contract.minLength} character(s)`, expected: `minLength:${contract.minLength}` });\n    }\n    if (contract.maxLength !== undefined && normalized.length > contract.maxLength) {\n      violations.push({ field, code: \"too_long\", message: `${field} must contain at most ${contract.maxLength} characters`, expected: `maxLength:${contract.maxLength}` });\n    }\n    if (contract.format === \"email\" && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(normalized)) {\n      violations.push({ field, code: \"invalid_format\", message: `${field} must be a valid email address`, expected: \"email\" });\n    }\n    if (contract.format === \"date-time\" && Number.isNaN(Date.parse(normalized))) {\n      violations.push({ field, code: \"invalid_format\", message: `${field} must be an ISO 8601 date-time`, expected: \"date-time\" });\n    }\n    if (contract.pattern && !(new RegExp(contract.pattern)).test(normalized)) {\n      violations.push({ field, code: \"invalid_format\", message: `${field} has an invalid format`, expected: contract.pattern });\n    }\n    if (contract.enum && !contract.enum.includes(normalized)) {\n      violations.push({ field, code: \"invalid_value\", message: `${field} must be one of the supported values`, expected: contract.enum.join(\"|\") });\n    }\n  }\n\n  if (typeof value === \"number\") {\n    if (contract.minimum !== undefined && value < contract.minimum) {\n      violations.push({ field, code: \"below_minimum\", message: `${field} must be at least ${contract.minimum}`, expected: `minimum:${contract.minimum}` });\n    }\n    if (contract.maximum !== undefined && value > contract.maximum) {\n      violations.push({ field, code: \"above_maximum\", message: `${field} must be at most ${contract.maximum}`, expected: `maximum:${contract.maximum}` });\n    }\n  }\n\n  return violations;\n};\n    const matchesRule = function matchesRule(rule, value) {\n  switch (rule.operator) {\n    case \"missing\": return !hasValue(value);\n    case \"truthy\": return value === true;\n    case \"falsy\": return value !== true;\n    case \"equals\": return value === rule.value;\n    case \"includes\": return Array.isArray(value) && value.includes(rule.value);\n    case \"gt\": return Number(value) > Number(rule.value);\n    case \"gte\": return Number(value) >= Number(rule.value);\n    case \"lt\": return Number(value) < Number(rule.value);\n    default: return false;\n  }\n};\n    const evaluatePolicy = function evaluatePolicy({ policy, envelope, executionId, evaluatedAt }) {\n  const input = envelope?.body ?? envelope;\n  const headerRequestId = envelope?.headers?.[\"x-request-id\"];\n  const requestId = normalizeRequestId(headerRequestId, executionId);\n  const schema = policy.inputSchema;\n  const violations = [];\n\n  if (!input || typeof input !== \"object\" || Array.isArray(input)) {\n    violations.push({ field: \"$\", code: \"invalid_type\", message: \"Request body must be a JSON object\", expected: \"object\" });\n  } else {\n    for (const field of schema.required) {\n      if (!hasValue(input[field])) {\n        violations.push({ field, code: \"required\", message: `${field} is required`, expected: schema.properties[field].type });\n      }\n    }\n    for (const [field, contract] of Object.entries(schema.properties)) {\n      if (hasValue(input[field])) violations.push(...validateValue(field, input[field], contract));\n    }\n  }\n\n  if (violations.length > 0) {\n    return {\n      ok: false,\n      httpStatus: 400,\n      requestId,\n      error: \"validation_error\",\n      message: \"Request does not match the workflow input contract\",\n      details: {\n        violations,\n        missingFields: violations.filter((item) => item.code === \"required\").map((item) => item.field)\n      },\n      requestSchema: schema\n    };\n  }\n\n  const matchedRules = policy.rules\n    .map((rule, index) => ({ ...rule, ruleId: rule.id ?? `${rule.field}_${rule.operator}_${index + 1}` }))\n    .filter((rule) => matchesRule(rule, input[rule.field]))\n    .map(({ ruleId, field, points, reason, minimumBand }) => ({ ruleId, field, points, reason, ...(minimumBand ? { minimumBand } : {}) }));\n  const rawScore = matchedRules.reduce((total, rule) => total + rule.points, 0);\n  const minimumScore = matchedRules.reduce((floor, rule) => Math.max(floor, rule.minimumBand ? policy.thresholds[rule.minimumBand] : 0), 0);\n  const score = Math.max(0, Math.min(100, Math.max(rawScore, minimumScore)));\n  const priorityBand = score >= policy.thresholds.high ? \"high\" : score >= policy.thresholds.medium ? \"medium\" : \"low\";\n\n  return {\n    ok: true,\n    httpStatus: 200,\n    requestId,\n    workflow: policy.slug,\n    policyVersion: policy.policyVersion,\n    decision: policy.decisions[priorityBand],\n    priorityBand,\n    score,\n    matchedRules,\n    recommendedActions: policy.actions,\n    evaluatedAt\n  };\n};\n    return evaluatePolicy({\n      policy: {\"slug\":\"phishing-report-triage\",\"policyVersion\":\"1.0.0\",\"inputSchema\":{\"type\":\"object\",\"required\":[\"reportId\",\"reporterId\",\"sender\",\"subject\"],\"properties\":{\"reportId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"reporterId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"sender\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"subject\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":500},\"credentialRequested\":{\"type\":\"boolean\"},\"suspiciousAttachment\":{\"type\":\"boolean\"},\"executiveImpersonation\":{\"type\":\"boolean\"},\"linkClicked\":{\"type\":\"boolean\"},\"multipleRecipients\":{\"type\":\"boolean\"}},\"additionalProperties\":true},\"rules\":[{\"field\":\"credentialRequested\",\"operator\":\"truthy\",\"points\":40,\"reason\":\"Message requests credentials\"},{\"field\":\"suspiciousAttachment\",\"operator\":\"truthy\",\"points\":35,\"reason\":\"Suspicious attachment present\"},{\"field\":\"executiveImpersonation\",\"operator\":\"truthy\",\"points\":30,\"reason\":\"Executive impersonation detected\"},{\"field\":\"linkClicked\",\"operator\":\"truthy\",\"points\":55,\"minimumBand\":\"high\",\"reason\":\"A user clicked the reported link\"},{\"field\":\"multipleRecipients\",\"operator\":\"truthy\",\"points\":25,\"reason\":\"Possible campaign affects multiple recipients\"}],\"thresholds\":{\"medium\":30,\"high\":70},\"decisions\":{\"low\":\"queue_analyst_review\",\"medium\":\"expedite_investigation\",\"high\":\"initiate_containment_review\"},\"actions\":[\"Create a case in the security queue\",\"Preserve message evidence\",\"Require analyst approval before quarantine or account actions\"]},\n      envelope: $('Receive request').first().json,\n      executionId: $execution.id,\n      evaluatedAt: $now.toUTC().toISO()\n    });\n  })() }}",
+        "includeOtherFields": false,
+        "options": {}
       },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        -80,
+        -60,
         80
       ],
       "id": "d40c959e-462f-4bd6-a913-e1d7aea82a76",
       "name": "Evaluate policy signals",
-      "notes": "Pure policy evaluation. It performs no external writes and returns matched reasons for human review."
+      "notes": "Evaluates one request with a native expression, enforces the documented input contract, and returns matched reasons without external writes."
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ $json }}",
+        "responseBody": "={{ $('Evaluate policy signals').item.json }}",
         "options": {
-          "responseCode": "={{ $json.httpStatus }}",
+          "responseCode": "={{ $('Evaluate policy signals').item.json.httpStatus }}",
           "responseHeaders": {
             "entries": [
               {
                 "name": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              },
+              {
+                "name": "X-Request-Id",
+                "value": "={{ $('Evaluate policy signals').item.json.requestId }}"
               }
             ]
           }
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
+      "typeVersion": 1.5,
       "position": [
-        220,
+        240,
         80
       ],
       "id": "d2f545a8-2cdf-4f04-a1d2-39353212a2e1",

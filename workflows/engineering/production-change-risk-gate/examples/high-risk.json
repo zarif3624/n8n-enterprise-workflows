@@ -1,0 +1,11 @@
+{
+  "changeId": "changeId-001",
+  "service": "service-001",
+  "changeType": "changeType-001",
+  "plannedAt": "2026-08-07T03:00:00Z",
+  "customerImpact": true,
+  "databaseMigration": true,
+  "rollbackTested": false,
+  "duringPeakHours": true,
+  "securityRelevant": true
+}
