@@ -172,6 +172,7 @@ and [security model](SECURITY.md).
 
 ```bash
 npm run check
+npm run test:coverage
 ```
 
 The validator checks workflow shape, node identity, graph reachability,
@@ -181,6 +182,7 @@ companion documentation, and catalog coverage. The test suite then exercises
 every required field, declared type, rule boundary, safety floor, and deterministic adversarial-input invariant.
 The same command also runs a redacted sensitive-data scan across every repository text file, not only exported workflows.
 It fails when a policy-owner review is overdue; see [policy lifecycle governance](docs/policy-lifecycle.md) for the review and deprecation process.
+Pull-request CI additionally enforces floors of 90% line, 70% branch, and 90% function coverage across production scripts; the separate command prints the file-level report locally.
 
 ## Extend the catalog
 

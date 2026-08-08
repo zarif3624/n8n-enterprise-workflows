@@ -33,3 +33,15 @@ test("validation CI publishes the honest readiness report without changing its e
   assert.match(source, /npm run --silent readiness >> "\$GITHUB_STEP_SUMMARY"/);
   assert.doesNotMatch(source, /readiness -- --json/);
 });
+
+test("validation CI enforces explicit production-script coverage floors", async () => {
+  const [workflow, packageManifest] = await Promise.all([
+    readFile(join(root, ".github", "workflows", "validate.yml"), "utf8"),
+    readFile(join(root, "package.json"), "utf8").then(JSON.parse)
+  ]);
+  assert.match(workflow, /npm run test:coverage/);
+  assert.match(packageManifest.scripts["test:coverage"], /--test-coverage-include='scripts\/\*\.mjs'/);
+  assert.match(packageManifest.scripts["test:coverage"], /--test-coverage-lines=90/);
+  assert.match(packageManifest.scripts["test:coverage"], /--test-coverage-branches=70/);
+  assert.match(packageManifest.scripts["test:coverage"], /--test-coverage-functions=90/);
+});

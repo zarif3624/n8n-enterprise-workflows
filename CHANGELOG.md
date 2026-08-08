@@ -7,6 +7,7 @@ All notable changes to this project are documented here. The project follows Sem
 ### Added
 
 - Standardized successful `--help` and `-h` discovery across all documented operator CLIs.
+- CI-enforced production-script coverage floors (90% lines, 70% branches, and 90% functions) with a local file-level coverage command.
 - A deterministic `policy-lock.json` with canonical SHA-256 fingerprints for all executable policy behavior.
 - Local generation and pull-request guards that reject silent policy changes, engine changes without an engine-version bump, and policy-version regressions.
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.

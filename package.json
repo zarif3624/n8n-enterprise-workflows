@@ -26,6 +26,7 @@
     "verify:bundle": "node scripts/verify-bundle-cli.mjs",
     "verify:release-tag": "node scripts/verify-release-tag.mjs",
     "test": "node --test tests/*.test.mjs",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='scripts/*.mjs' --test-coverage-lines=90 --test-coverage-branches=70 --test-coverage-functions=90 tests/*.test.mjs",
     "test:adversarial": "node --test tests/adversarial-inputs.test.mjs",
     "check": "npm run generate && npm run validate && npm run contracts -- validate && npm run compatibility -- validate && npm run lifecycle -- validate && npm run validate:links && npm run scan:sensitive && npm test"
   },
