@@ -25,7 +25,7 @@ Inspect a workflow's typed fields, rules, hard gates, decisions, owner, endpoint
 npm run catalog -- show invoice-exception-triage
 ```
 
-Add `--json` to `list`, `search`, `show`, or `plan` when another tool will consume the result.
+Add `--json` to `list`, `search`, `show`, or `plan` when another tool will consume the result, and invoke it as `npm run --silent catalog -- ... --json` so npm's own banner does not contaminate the JSON stream.
 
 ## Generate an adoption plan
 

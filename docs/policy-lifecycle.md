@@ -22,9 +22,11 @@ lifecycle contract. For audit or planning, produce a Markdown or JSON report:
 
 ```bash
 npm run lifecycle -- report
-npm run lifecycle -- report --json
+npm run --silent lifecycle -- report --json
 npm run lifecycle -- report --as-of 2027-01-20
 ```
+
+The CLI rejects unknown, repeated, missing-value, and command-incompatible options so mistyped flags cannot be mistaken for lifecycle evidence.
 
 `current` means more than 30 days remain, `due-soon` means 0–30 days remain,
 and `overdue` means the next review date has passed. The report contains only

@@ -67,7 +67,7 @@ Browse the machine-readable [catalog](catalog.json), the generated
 [OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [policy lifecycle contract](policy-lifecycle.json), the [runtime compatibility plan](runtime-compatibility.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
 Machine integrations can validate adoption-tool JSON against the published
 [Draft 2020-12 schemas](schemas/README.md), including the complete catalog contract.
-Use `npm run contracts -- list --json` to discover every repository document and generated CLI output with its schema; `npm run contracts -- validate` checks the registry, every document, and complete schema coverage.
+Use `npm run --silent contracts -- list --json` to discover every repository document and generated CLI output with its schema; `npm run contracts -- validate` checks the registry, every document, and complete schema coverage.
 
 Get an honest deployment-facing summary without exposing payloads:
 
@@ -123,7 +123,7 @@ After mapping source fields, evaluate a sanitized JSON array or JSONL sample
 without emitting payload values or per-record results:
 
 ```bash
-npm run mapping -- init invoice-exception-triage > invoice-mapping.json
+npm run --silent mapping -- init invoice-exception-triage > invoice-mapping.json
 npm run mapping -- check invoice-mapping.json
 npm run conformance -- invoice-exception-triage ./sanitized-invoices.jsonl \
   --mapping invoice-mapping.json \

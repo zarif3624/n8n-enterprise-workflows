@@ -54,6 +54,8 @@ All notable changes to this project are documented here. The project follows Sem
 - All 200, 400, and sanitized 500 webhook responses now send `X-Content-Type-Options: nosniff`; OpenAPI, structural validation, and real-runtime smoke checks enforce the header.
 - Explicit non-JSON request media types now fail closed with a sanitized, documented HTTP 415 response; JSON suffix media types remain compatible. The shared engine and all embedded policies move to patch version `1.0.4`.
 - Static workflow validation and the live forced-error probe now require explicit JSON response media types on both normal and internal-error paths.
+- Lifecycle reporting now rejects unknown, duplicated, missing-value, and command-incompatible options instead of silently ignoring ambiguous governance input.
+- Machine-output documentation now uses silent npm invocation, preventing npm banners from corrupting redirected JSON mapping, conformance, lifecycle, readiness, catalog, and contract artifacts.
 - Policy lifecycle entries are now bound to the exact policy version and behavior fingerprint, preventing prior approval metadata from silently carrying forward after executable behavior changes.
 
 ## 0.2.0

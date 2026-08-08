@@ -10,10 +10,33 @@ if (args.includes("--help") || args.includes("-h")) {
   process.stdout.write(usage);
   process.exit(0);
 }
-const command = args[0] ?? "report";
-const asOfIndex = args.indexOf("--as-of");
-const asOf = asOfIndex >= 0 ? args[asOfIndex + 1] : new Date().toISOString().slice(0, 10);
-const json = args.includes("--json");
+let command = "report";
+let asOf = new Date().toISOString().slice(0, 10);
+let json = false;
+const remaining = [...args];
+if (remaining[0] && !remaining[0].startsWith("-")) command = remaining.shift();
+try {
+  if (!new Set(["validate", "report"]).has(command)) throw new Error(`Unknown command: ${command}`);
+  const seen = new Set();
+  while (remaining.length) {
+    const argument = remaining.shift();
+    if (!new Set(["--as-of", "--json"]).has(argument)) throw new Error(`Unknown option: ${argument}`);
+    if (seen.has(argument)) throw new Error(`Option ${argument} may only be provided once`);
+    seen.add(argument);
+    if (argument === "--json") {
+      json = true;
+      continue;
+    }
+    const value = remaining.shift();
+    if (!value || value.startsWith("--")) throw new Error("Option --as-of requires a value");
+    asOf = value;
+  }
+  if (command === "validate" && json) throw new Error("Option --json is only supported by the report command");
+} catch (error) {
+  console.error(error.message);
+  console.error(usage.trimEnd());
+  process.exit(2);
+}
 const [document, catalog, policyLock] = await Promise.all([
   readFile(join(root, "policy-lifecycle.json"), "utf8").then(JSON.parse),
   readFile(join(root, "catalog.json"), "utf8").then(JSON.parse),
@@ -40,7 +63,4 @@ if (command === "validate") {
   console.log(`Validated ${report.summary.policyCount} policy lifecycles; no reviews are overdue as of ${asOf}. ${report.summary.draft} draft(s) await owner approval.`);
 } else if (command === "report") {
   process.stdout.write(json ? `${JSON.stringify(report, null, 2)}\n` : renderPolicyLifecycleReport(report));
-} else {
-  console.error(usage.trimEnd());
-  process.exit(2);
 }

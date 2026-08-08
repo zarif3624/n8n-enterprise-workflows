@@ -48,3 +48,26 @@ test("lifecycle CLI reserves exit 2 for overdue review gates", () => {
   assert.equal(overdue.status, 2);
   assert.match(overdue.stderr, /15 policy review\(s\) are overdue/);
 });
+
+test("lifecycle CLI rejects ambiguous or ignored governance options", () => {
+  const cases = [
+    [["report", "--as-of"], /requires a value/],
+    [["report", "--json", "--json"], /only be provided once/],
+    [["validate", "--json"], /only supported by the report command/],
+    [["report", "--unknown"], /Unknown option/],
+    [["unknown"], /Unknown command/]
+  ];
+  for (const [args, expected] of cases) {
+    const result = spawnSync(process.execPath, ["scripts/policy-lifecycle-cli.mjs", ...args], { cwd: root, encoding: "utf8" });
+    assert.equal(result.status, 2, `${args.join(" ")}: ${result.stderr}`);
+    assert.match(result.stderr, expected);
+    assert.doesNotMatch(result.stderr, /node:internal|at file:/);
+  }
+});
+
+test("documented silent lifecycle invocation emits uncontaminated JSON", () => {
+  const result = spawnSync("npm", ["run", "--silent", "lifecycle", "--", "report", "--json", "--as-of", "2026-08-08"], { cwd: root, encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).lifecycleVersion, 1);
+  assert.doesNotMatch(result.stdout, /> n8n-enterprise-workflows/);
+});

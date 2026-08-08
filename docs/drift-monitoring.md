@@ -3,7 +3,7 @@
 Compare two privacy-safe conformance reports to detect operational movement
 after a mapping, workflow, or upstream population is put into use. The comparer
 never needs source records; it consumes only the aggregate JSON emitted by
-`npm run conformance -- --json`.
+`npm run --silent conformance -- ... --json`.
 Machine-readable comparison output conforms to
 [`conformance-comparison.schema.json`](../schemas/conformance-comparison.schema.json).
 
@@ -12,7 +12,7 @@ Machine-readable comparison output conforms to
 Use a representative, sanitized UAT sample and the approved mapping:
 
 ```bash
-npm run conformance -- invoice-exception-triage ./sanitized-uat.jsonl \
+npm run --silent conformance -- invoice-exception-triage ./sanitized-uat.jsonl \
   --mapping invoice-mapping.json --json > baseline-conformance.json
 ```
 
@@ -25,7 +25,7 @@ Run the same policy and mapping against a comparable current sample, then
 compare the reports:
 
 ```bash
-npm run conformance -- invoice-exception-triage ./sanitized-current.jsonl \
+npm run --silent conformance -- invoice-exception-triage ./sanitized-current.jsonl \
   --mapping invoice-mapping.json --json > current-conformance.json
 
 npm run conformance:compare -- baseline-conformance.json current-conformance.json

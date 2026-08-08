@@ -69,7 +69,7 @@ safe.
 Use `--json` for a machine-readable report:
 
 ```bash
-npm run conformance -- invoice-exception-triage ./sanitized-invoices.jsonl \
+npm run --silent conformance -- invoice-exception-triage ./sanitized-invoices.jsonl \
   --max-invalid-rate 0.02 --json > conformance-report.json
 ```
 

@@ -12,7 +12,7 @@ Its portable structure is published as
 Generate an identity template from the current policy snapshot:
 
 ```bash
-npm run mapping -- init invoice-exception-triage > invoice-mapping.json
+npm run --silent mapping -- init invoice-exception-triage > invoice-mapping.json
 ```
 
 The template maps each target field from a same-named top-level source field.
