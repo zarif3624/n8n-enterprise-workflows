@@ -48,6 +48,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Portable bundle and release manifest schemas now validate embedded file identities plus the outer archive inventory, scopes, byte sizes, and digests produced by the release builder.
 - A privacy-safe readiness report now separates repository validity from deployment authorization, surfaces draft and overdue policy blockers, enumerates required environment controls, and states the limits of its evidence.
 - Validation CI now publishes the readiness report to the job summary, while contribution, pull-request, and release guidance explicitly preserve draft/approval truthfulness.
+- All 200, 400, and sanitized 500 webhook responses now send `X-Content-Type-Options: nosniff`; OpenAPI, structural validation, and real-runtime smoke checks enforce the header.
 
 ## 0.2.0
 

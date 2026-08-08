@@ -133,7 +133,7 @@ for (const entry of catalog) {
   if (!sameJson(openApiOperation?.requestBody?.content?.["application/json"]?.schema, entry.inputSchema)) fail(entry.path, "OpenAPI input schema drifted from the catalog");
   for (const status of ["200", "400", "500"]) {
     const headers = openApiOperation?.responses?.[status]?.headers;
-    if (!headers?.["X-Request-Id"] || headers?.["Cache-Control"]?.schema?.const !== "no-store") fail(entry.path, `OpenAPI ${status} response headers are incomplete`);
+    if (!headers?.["X-Request-Id"] || headers?.["Cache-Control"]?.schema?.const !== "no-store" || headers?.["X-Content-Type-Options"]?.schema?.const !== "nosniff") fail(entry.path, `OpenAPI ${status} response headers are incomplete`);
   }
   const decisionOverlay = openApiOperation?.responses?.["200"]?.content?.["application/json"]?.schema?.allOf?.[1]?.properties;
   if (decisionOverlay?.workflow?.const !== definition.slug || decisionOverlay?.policyVersion?.const !== definition.policyVersion) fail(entry.path, "OpenAPI success identity is not policy-specific");
@@ -190,6 +190,7 @@ for (const entry of catalog) {
   if (responder?.parameters?.options?.responseCode !== "={{ $('Evaluate policy signals').item.json.httpStatus }}") fail(entry.path, "response status must reference the evaluator by name");
   const responseHeaders = Object.fromEntries((responder?.parameters?.options?.responseHeaders?.entries ?? []).map(({ name, value }) => [name.toLowerCase(), value]));
   if (responseHeaders["cache-control"] !== "no-store") fail(entry.path, "decision responses must disable intermediary caching");
+  if (responseHeaders["x-content-type-options"] !== "nosniff") fail(entry.path, "decision responses must disable MIME-type sniffing");
   if (responseHeaders["x-request-id"] !== "={{ $('Evaluate policy signals').item.json.requestId }}") fail(entry.path, "decision responses must expose the correlation ID as a header");
 
   if (errorResponder?.typeVersion !== 1.5) fail(entry.path, "internal-error responder must use v1.5");
@@ -197,7 +198,7 @@ for (const entry of catalog) {
   if (!errorResponder?.parameters?.responseBody?.startsWith("={{") || !errorResponder?.parameters?.responseBody?.includes("internal_error")) fail(entry.path, "internal-error responder body is missing");
   if (/stack|details|node/i.test(errorResponder?.parameters?.responseBody ?? "")) fail(entry.path, "internal-error response may expose implementation details");
   const errorHeaders = Object.fromEntries((errorResponder?.parameters?.options?.responseHeaders?.entries ?? []).map(({ name, value }) => [name.toLowerCase(), value]));
-  if (errorHeaders["cache-control"] !== "no-store" || !errorHeaders["x-request-id"]?.startsWith("={{")) fail(entry.path, "internal-error response headers are incomplete");
+  if (errorHeaders["cache-control"] !== "no-store" || errorHeaders["x-content-type-options"] !== "nosniff" || !errorHeaders["x-request-id"]?.startsWith("={{")) fail(entry.path, "internal-error response headers are incomplete");
   const evaluatorOutputs = workflow.connections?.["Evaluate policy signals"]?.main;
   if (evaluatorOutputs?.length !== 2 || evaluatorOutputs?.[0]?.[0]?.node !== responder?.name || evaluatorOutputs?.[1]?.[0]?.node !== errorResponder?.name) {
     fail(entry.path, "policy evaluator success and error outputs are not both wired to responders");

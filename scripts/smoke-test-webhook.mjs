@@ -41,6 +41,7 @@ export async function smokeTestWebhook({ baseUrl, slug }) {
     assert.equal(response.status, testCase.status, `${testCase.name}: HTTP status`);
     assert.match(response.headers.get("content-type") ?? "", /^application\/json/i, `${testCase.name}: content type`);
     assert.equal(response.headers.get("cache-control"), "no-store", `${testCase.name}: cache control`);
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff", `${testCase.name}: MIME sniffing protection`);
     assert.equal(response.headers.get("x-request-id"), requestId, `${testCase.name}: response header request ID`);
     assert.equal(body.requestId, requestId, `${testCase.name}: response body request ID`);
     assert.equal(JSON.stringify(body).includes("must-not-echo"), false, `${testCase.name}: private input leaked`);
@@ -77,6 +78,7 @@ export async function smokeTestInternalError({ baseUrl, slug }) {
 
   assert.equal(response.status, 500);
   assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(response.headers.get("x-content-type-options"), "nosniff");
   assert.equal(response.headers.get("x-request-id"), requestId);
   assert.deepEqual(body, {
     ok: false,

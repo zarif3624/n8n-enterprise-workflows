@@ -148,6 +148,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -270,6 +277,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -371,6 +385,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -522,6 +543,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -642,6 +670,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -742,6 +777,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -890,6 +932,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -1016,6 +1065,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -1112,6 +1168,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -1261,6 +1324,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -1382,6 +1452,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -1479,6 +1556,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -1630,6 +1714,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -1750,6 +1841,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -1849,6 +1947,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -2001,6 +2106,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -2123,6 +2235,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -2223,6 +2342,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -2373,6 +2499,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -2499,6 +2632,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -2597,6 +2737,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -2745,6 +2892,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -2871,6 +3025,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -2967,6 +3128,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -3115,6 +3283,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -3241,6 +3416,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -3337,6 +3519,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -3488,6 +3677,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -3610,6 +3806,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -3709,6 +3912,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -3859,6 +4069,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -3980,6 +4197,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -4078,6 +4302,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -4228,6 +4459,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -4349,6 +4587,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -4447,6 +4692,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -4597,6 +4849,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -4719,6 +4978,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -4817,6 +5083,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -4974,6 +5247,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -5096,6 +5376,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -5199,6 +5486,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },
@@ -5350,6 +5644,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -5472,6 +5773,13 @@
                   "type": "string",
                   "const": "no-store"
                 }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
               }
             },
             "content": {
@@ -5571,6 +5879,13 @@
                 "schema": {
                   "type": "string",
                   "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
                 }
               }
             },

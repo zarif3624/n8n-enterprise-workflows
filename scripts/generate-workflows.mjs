@@ -145,6 +145,7 @@ function buildWorkflow(definition) {
               entries: [
                 { name: "Content-Type", value: "application/json" },
                 { name: "Cache-Control", value: "no-store" },
+                { name: "X-Content-Type-Options", value: "nosniff" },
                 { name: "X-Request-Id", value: `={{ $('${evaluateName}').item.json.requestId }}` }
               ]
             }
@@ -179,6 +180,7 @@ function buildWorkflow(definition) {
               entries: [
                 { name: "Content-Type", value: "application/json" },
                 { name: "Cache-Control", value: "no-store" },
+                { name: "X-Content-Type-Options", value: "nosniff" },
                 {
                   name: "X-Request-Id",
                   value: `={{ (() => {
@@ -355,7 +357,8 @@ function operationIdFor(slug) {
 function openApiResponseHeaders() {
   return {
     "X-Request-Id": { description: "Correlation ID returned in the body", schema: { type: "string" } },
-    "Cache-Control": { description: "Decision responses are not cacheable", schema: { type: "string", const: "no-store" } }
+    "Cache-Control": { description: "Decision responses are not cacheable", schema: { type: "string", const: "no-store" } },
+    "X-Content-Type-Options": { description: "Prevents MIME-type sniffing of JSON responses", schema: { type: "string", const: "nosniff" } }
   };
 }
 

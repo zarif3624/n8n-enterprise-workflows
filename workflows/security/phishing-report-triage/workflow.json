@@ -72,6 +72,10 @@
                 "value": "no-store"
               },
               {
+                "name": "X-Content-Type-Options",
+                "value": "nosniff"
+              },
+              {
                 "name": "X-Request-Id",
                 "value": "={{ $('Evaluate policy signals').item.json.requestId }}"
               }
@@ -103,6 +107,10 @@
               {
                 "name": "Cache-Control",
                 "value": "no-store"
+              },
+              {
+                "name": "X-Content-Type-Options",
+                "value": "nosniff"
               },
               {
                 "name": "X-Request-Id",
