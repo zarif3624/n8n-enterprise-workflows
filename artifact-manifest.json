@@ -35,8 +35,8 @@
     {
       "path": "policy-lifecycle.json",
       "kind": "policy-lifecycle",
-      "bytes": 2522,
-      "sha256": "sha256:06004c9b332a1650be0987f47e452673409ef6cef367e97be9369efce0593c70"
+      "bytes": 4952,
+      "sha256": "sha256:ab5df175b2f7a07c04b74b550b8e918f2e2f81527a5ab613c0ae12114bad85c0"
     },
     {
       "path": "policy-lock.json",
@@ -101,8 +101,8 @@
     {
       "path": "schemas/policy-lifecycle.schema.json",
       "kind": "json-schema",
-      "bytes": 1784,
-      "sha256": "sha256:9f61e878dfcc96979239d63d07a13e63c6543acbb892c90a792194941e30fa8d"
+      "bytes": 2100,
+      "sha256": "sha256:a050a04d658cf1a37dedf72dcc859dac352b555efb804427eff55345b109cc74"
     },
     {
       "path": "schemas/policy-lock.schema.json",

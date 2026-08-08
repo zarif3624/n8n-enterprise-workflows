@@ -42,7 +42,7 @@ try {
     registry,
     artifactManifestMatches: JSON.stringify(artifactManifest) === JSON.stringify(expectedArtifactManifest),
     contractIssues: await contractRegistryIssues({ root, registry }),
-    lifecycleIssues: policyLifecycleIssues(lifecycle, { catalog }),
+    lifecycleIssues: policyLifecycleIssues(lifecycle, { catalog, policyLock }),
     compatibilityIssues: runtimeCompatibilityIssues(compatibility, { catalog, policyEngineVersion: policyLock.policyEngineVersion })
   });
 } catch (error) {

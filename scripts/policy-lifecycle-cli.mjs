@@ -9,11 +9,12 @@ const command = args[0] ?? "report";
 const asOfIndex = args.indexOf("--as-of");
 const asOf = asOfIndex >= 0 ? args[asOfIndex + 1] : new Date().toISOString().slice(0, 10);
 const json = args.includes("--json");
-const [document, catalog] = await Promise.all([
+const [document, catalog, policyLock] = await Promise.all([
   readFile(join(root, "policy-lifecycle.json"), "utf8").then(JSON.parse),
-  readFile(join(root, "catalog.json"), "utf8").then(JSON.parse)
+  readFile(join(root, "catalog.json"), "utf8").then(JSON.parse),
+  readFile(join(root, "policy-lock.json"), "utf8").then(JSON.parse)
 ]);
-const issues = policyLifecycleIssues(document, { catalog });
+const issues = policyLifecycleIssues(document, { catalog, policyLock });
 if (issues.length) {
   console.error(`Policy lifecycle contract is invalid:\n- ${issues.join("\n- ")}`);
   process.exit(1);

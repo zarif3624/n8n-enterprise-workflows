@@ -83,7 +83,7 @@ if (policyLock.lockVersion !== policyLockVersion) fail("policy-lock.json", "lock
 if (!sameJson(policyLock, expectedPolicyLock)) fail("policy-lock.json", "policy fingerprints drifted from source definitions or engine");
 if (policySnapshot.snapshotVersion !== policySnapshotVersion) fail("policy-snapshot.json", "snapshot format version is unsupported");
 if (!sameJson(policySnapshot, expectedPolicySnapshot)) fail("policy-snapshot.json", "review snapshot drifted from source definitions or engine");
-for (const issue of policyLifecycleIssues(policyLifecycle, { catalog })) fail("policy-lifecycle.json", issue);
+for (const issue of policyLifecycleIssues(policyLifecycle, { catalog, policyLock })) fail("policy-lifecycle.json", issue);
 for (const issue of runtimeCompatibilityIssues(runtimeCompatibility, { catalog, policyEngineVersion })) fail("runtime-compatibility.json", issue);
 if (new Set(definitions.map((definition) => definition.slug)).size !== definitions.length) fail("workflow-definitions.mjs", "workflow slugs must be unique");
 for (const definition of definitions) {

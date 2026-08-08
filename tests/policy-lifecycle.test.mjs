@@ -7,10 +7,10 @@ import { buildPolicyLifecycleReport, policyLifecycleIssues, renderPolicyLifecycl
 
 const root = new URL("../", import.meta.url).pathname;
 const readJson = async (path) => JSON.parse(await readFile(join(root, path), "utf8"));
-const [document, catalog] = await Promise.all([readJson("policy-lifecycle.json"), readJson("catalog.json")]);
+const [document, catalog, policyLock] = await Promise.all([readJson("policy-lifecycle.json"), readJson("catalog.json"), readJson("policy-lock.json")]);
 
 test("every catalog policy has an honest draft, owner, and approval deadline", () => {
-  assert.deepEqual(policyLifecycleIssues(document, { catalog }), []);
+  assert.deepEqual(policyLifecycleIssues(document, { catalog, policyLock }), []);
   const report = buildPolicyLifecycleReport(document, { asOf: "2026-08-08" });
   assert.deepEqual(report.summary, { policyCount: 15, draft: 15, active: 0, deprecated: 0, current: 0, dueSoon: 15, overdue: 0 });
   assert.ok(report.policies.every((entry) => entry.daysUntilReview === 30));
@@ -31,11 +31,13 @@ test("lifecycle validation rejects drifted owners, unsafe intervals, duplicates,
   changed.policies[0].reviewDueOn = "2028-01-01";
   changed.policies.push(structuredClone(changed.policies[0]));
   changed.policies[0].status = "deprecated";
-  const issues = policyLifecycleIssues(changed, { catalog });
+  changed.policies[0].fingerprint = "sha256:0000000000000000000000000000000000000000000000000000000000000000";
+  const issues = policyLifecycleIssues(changed, { catalog, policyLock });
   assert.ok(issues.some((issue) => issue.includes("owner must match")));
   assert.ok(issues.some((issue) => issue.includes("approval interval exceeds")));
   assert.ok(issues.some((issue) => issue.includes("duplicated")));
   assert.ok(issues.some((issue) => issue.includes("require real announcedOn")));
+  assert.ok(issues.some((issue) => issue.includes("fingerprint must match policy lock")));
 });
 
 test("lifecycle CLI reserves exit 2 for overdue review gates", () => {

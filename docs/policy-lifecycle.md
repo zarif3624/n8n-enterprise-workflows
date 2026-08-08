@@ -4,6 +4,9 @@ Decision logic can become unsafe without a code change. Regulations, risk
 appetite, operating procedures, and system behavior evolve, so every catalog
 policy has an accountable owner and a bounded approval or review interval in
 [`policy-lifecycle.json`](../policy-lifecycle.json).
+Each entry is bound to the exact `policyVersion` and policy-lock `fingerprint`;
+approval evidence cannot silently carry forward to different executable
+behavior.
 
 ## Review gate
 
@@ -38,6 +41,11 @@ After a real owner review, change the status to `active`, remove `introducedOn`,
 record `lastReviewedOn`, and set `reviewDueOn` no later than
 `defaultReviewPeriodDays`. Never infer or backfill an approval date from a code
 review, passing test, or repository release.
+
+When an active policy's version or fingerprint changes, move it back to
+`draft`, record the new identity and introduction date, and obtain a new owner
+review. The lifecycle validator fails until its identity exactly matches
+`policy-lock.json`.
 
 The named owner should review the typed input contract, every rule and hard
 floor, thresholds, outcome names, recommended actions, human-approval gates,

@@ -19,7 +19,7 @@ Every workflow package includes:
 - Low-risk, high-risk, and invalid fixtures that can be sent to the test webhook.
 - Explainable scoring with stable rule IDs, policy versions, and hard risk floors.
 - Tamper-evident policy fingerprints with CI-enforced version bumps for behavior changes.
-- Honest draft status, owner-bound approval/review deadlines, overdue CI gates, and explicit deprecation windows.
+- Fingerprint-bound draft/approval status, owner review deadlines, overdue CI gates, and explicit deprecation windows.
 - Human-readable policy snapshots and pull-request summaries for owner review.
 - Before/after policy replay across both branches' fixtures and every declared rule witness.
 - A SHA-256 artifact manifest and reproducible full-catalog and per-department release archives.

@@ -10,10 +10,11 @@ function daysBetween(left, right) {
   return Math.round((right.valueOf() - left.valueOf()) / dayMilliseconds);
 }
 
-export function policyLifecycleIssues(document, { catalog }) {
+export function policyLifecycleIssues(document, { catalog, policyLock }) {
   const issues = [];
   const catalogEntries = Array.isArray(catalog) ? catalog : [];
   const catalogBySlug = new Map(catalogEntries.map((entry) => [entry.slug, entry]));
+  const lockBySlug = new Map((Array.isArray(policyLock?.policies) ? policyLock.policies : []).map((entry) => [entry.slug, entry]));
   const policies = Array.isArray(document?.policies) ? document.policies : [];
   const seen = new Set();
   if (document?.lifecycleVersion !== 1) issues.push("lifecycleVersion must be 1");
@@ -31,8 +32,14 @@ export function policyLifecycleIssues(document, { catalog }) {
     if (seen.has(label)) issues.push(`${label}: lifecycle entry is duplicated`);
     seen.add(label);
     const catalogEntry = catalogBySlug.get(label);
+    const lockEntry = lockBySlug.get(label);
     if (!catalogEntry) issues.push(`${label}: lifecycle entry has no catalog policy`);
     else if (entry.owner !== catalogEntry.owner) issues.push(`${label}: lifecycle owner must match catalog owner`);
+    if (!lockEntry) issues.push(`${label}: lifecycle entry has no policy-lock identity`);
+    else {
+      if (entry.policyVersion !== lockEntry.policyVersion) issues.push(`${label}: lifecycle policyVersion must match policy lock`);
+      if (entry.fingerprint !== lockEntry.fingerprint) issues.push(`${label}: lifecycle fingerprint must match policy lock`);
+    }
     if (!["draft", "active", "deprecated"].includes(entry?.status)) issues.push(`${label}: status must be draft, active, or deprecated`);
     const due = dateValue(entry?.reviewDueOn);
     if (!due) issues.push(`${label}: reviewDueOn must be a real YYYY-MM-DD date`);
