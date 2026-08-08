@@ -2,13 +2,14 @@ import { readFile, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { evaluatePolicy, policyEngineVersion, policySchemaVersion } from "./policy-engine.mjs";
-import { buildPolicyLock, policyLockVersion } from "./policy-governance.mjs";
+import { buildPolicyLock, buildPolicySnapshot, policyLockVersion, policySnapshotVersion } from "./policy-governance.mjs";
 import { inputSchemaFor, policyFor, workflows as definitions } from "./workflow-definitions.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "catalog.json"), "utf8"));
 const openApi = JSON.parse(await readFile(join(root, "openapi.json"), "utf8"));
 const policyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
+const policySnapshot = JSON.parse(await readFile(join(root, "policy-snapshot.json"), "utf8"));
 const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
 const engineSource = await readFile(join(root, "scripts", "policy-engine.mjs"), "utf8");
 const errors = [];
@@ -55,8 +56,17 @@ const expectedPolicyLock = buildPolicyLock({
   engineVersion: policyEngineVersion,
   engineSource
 });
+const expectedPolicySnapshot = buildPolicySnapshot({
+  definitions,
+  policyFor,
+  schemaVersion: policySchemaVersion,
+  engineVersion: policyEngineVersion,
+  engineSource
+});
 if (policyLock.lockVersion !== policyLockVersion) fail("policy-lock.json", "lock format version is unsupported");
 if (!sameJson(policyLock, expectedPolicyLock)) fail("policy-lock.json", "policy fingerprints drifted from source definitions or engine");
+if (policySnapshot.snapshotVersion !== policySnapshotVersion) fail("policy-snapshot.json", "snapshot format version is unsupported");
+if (!sameJson(policySnapshot, expectedPolicySnapshot)) fail("policy-snapshot.json", "review snapshot drifted from source definitions or engine");
 if (new Set(definitions.map((definition) => definition.slug)).size !== definitions.length) fail("workflow-definitions.mjs", "workflow slugs must be unique");
 for (const definition of definitions) {
   const path = `workflow-definitions.mjs:${definition.slug}`;
@@ -248,4 +258,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated ${catalog.length} workflows: contracts, fixtures, policy fingerprints, expression parity, graph reachability, safety, and documentation.`);
+console.log(`Validated ${catalog.length} workflows: contracts, fixtures, policy fingerprints, review snapshots, expression parity, graph reachability, safety, and documentation.`);

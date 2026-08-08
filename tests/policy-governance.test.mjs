@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   buildPolicyLock,
+  buildPolicySnapshot,
   canonicalize,
   compareSemanticVersions,
   fingerprint,
@@ -34,6 +35,20 @@ test("policy locks are deterministic and contain every definition", () => {
   assert.deepEqual(first, second);
   assert.equal(first.policies.length, workflows.length);
   assert.ok(first.policies.every((entry) => /^sha256:[a-f0-9]{64}$/.test(entry.fingerprint)));
+});
+
+test("policy review snapshots retain canonical executable behavior", () => {
+  const snapshot = buildPolicySnapshot({
+    definitions: workflows,
+    policyFor,
+    schemaVersion: policySchemaVersion,
+    engineVersion: policyEngineVersion,
+    engineSource
+  });
+  assert.equal(snapshot.policies.length, workflows.length);
+  assert.deepEqual(snapshot.policies.map((entry) => entry.slug), [...snapshot.policies.map((entry) => entry.slug)].sort());
+  assert.ok(snapshot.policies.every((entry) => entry.behavior.inputSchema && entry.behavior.rules.length));
+  assert.match(snapshot.policyEngineFingerprint, /^sha256:[a-f0-9]{64}$/);
 });
 
 test("behavior changes require a newer per-policy version", () => {

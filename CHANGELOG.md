@@ -11,7 +11,8 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules, increasing the suite from 58 to 137 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance/report coverage, increasing the suite from 58 to 143 tests.
+- A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
 
 ### Changed
 

@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildPolicyExpression, evaluatePolicy, policyEngineVersion, policySchemaVersion } from "./policy-engine.mjs";
-import { buildPolicyLock, policyLockIssues } from "./policy-governance.mjs";
+import { buildPolicyLock, buildPolicySnapshot, policyLockIssues } from "./policy-governance.mjs";
 import { adaptersFor, inputSchemaFor, policyFor, thresholds, workflows } from "./workflow-definitions.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -545,6 +545,13 @@ const policyLock = buildPolicyLock({
   engineVersion: policyEngineVersion,
   engineSource
 });
+const policySnapshot = buildPolicySnapshot({
+  definitions: workflows,
+  policyFor,
+  schemaVersion: policySchemaVersion,
+  engineVersion: policyEngineVersion,
+  engineSource
+});
 
 try {
   const previousPolicyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
@@ -594,5 +601,6 @@ for (const definition of workflows) {
 await writeFile(join(root, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
 await writeFile(join(root, "openapi.json"), `${JSON.stringify(buildOpenApi(), null, 2)}\n`);
 await writeFile(join(root, "policy-lock.json"), `${JSON.stringify(policyLock, null, 2)}\n`);
+await writeFile(join(root, "policy-snapshot.json"), `${JSON.stringify(policySnapshot, null, 2)}\n`);
 await writeFile(join(root, "docs", "catalog.md"), buildCatalogDoc());
-console.log(`Generated ${catalog.length} enterprise workflow packages, typed contracts, fixtures, and policy fingerprints.`);
+console.log(`Generated ${catalog.length} enterprise workflow packages, typed contracts, fixtures, policy fingerprints, and review snapshots.`);

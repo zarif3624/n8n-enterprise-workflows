@@ -19,6 +19,7 @@ Every workflow package includes:
 - Low-risk, high-risk, and invalid fixtures that can be sent to the test webhook.
 - Explainable scoring with stable rule IDs, policy versions, and hard risk floors.
 - Tamper-evident policy fingerprints with CI-enforced version bumps for behavior changes.
+- Human-readable policy snapshots and pull-request summaries for owner review.
 - Structured HTTP 200, 400, and sanitized retryable 500 responses with correlation IDs.
 - A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
 - Security, operations, human-approval, adapter, and ROI guidance.
@@ -55,7 +56,7 @@ This project makes those concerns part of each workflow package.
 | Privacy | [Data subject request triage](workflows/privacy/data-subject-request-triage) | Keep identity, deadline, and legal constraints visible |
 
 Browse the machine-readable [catalog](catalog.json), the generated
-[OpenAPI 3.1 contract](openapi.json), or the [department index](docs/catalog.md).
+[OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), or the [department index](docs/catalog.md).
 
 ## Five-minute start
 
@@ -115,7 +116,7 @@ npm run check
 ```
 
 The validator checks workflow shape, node identity, graph reachability,
-policy-expression parity, policy fingerprints and version discipline, independent rule coverage, typed contracts, representative fixtures, unique
+policy-expression parity, policy fingerprints, review-snapshot parity and version discipline, independent rule coverage, typed contracts, representative fixtures, unique
 webhook paths, inactive status, response behavior, credential leakage,
 companion documentation, and catalog coverage. The test suite then exercises
 every required field, declared type, rule boundary, and safety floor.
@@ -126,6 +127,7 @@ The source of truth is [scripts/workflow-definitions.mjs](scripts/workflow-defin
 
 ```bash
 npm run check
+npm run report:policy-changes -- origin/main
 git diff --exit-code
 ```
 

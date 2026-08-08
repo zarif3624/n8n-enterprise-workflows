@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 export const policyLockVersion = 1;
+export const policySnapshotVersion = 1;
 
 export function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -20,6 +21,16 @@ export function engineSourceFingerprint(source) {
   return fingerprint(source.replace(/\r\n/g, "\n"));
 }
 
+export function executablePolicyBehavior({ definition, policyFor, schemaVersion, engineVersion }) {
+  const { policyVersion: _policyVersion, ...behavior } = policyFor(definition);
+  return {
+    policySchemaVersion: schemaVersion,
+    policyEngineVersion: engineVersion,
+    department: definition.department,
+    ...behavior
+  };
+}
+
 export function buildPolicyLock({ definitions, policyFor, schemaVersion, engineVersion, engineSource }) {
   return {
     lockVersion: policyLockVersion,
@@ -28,17 +39,37 @@ export function buildPolicyLock({ definitions, policyFor, schemaVersion, engineV
     policyEngineFingerprint: engineSourceFingerprint(engineSource),
     policies: definitions
       .map((definition) => {
-        const { policyVersion, ...behavior } = policyFor(definition);
+        const { policyVersion } = policyFor(definition);
+        const behavior = executablePolicyBehavior({ definition, policyFor, schemaVersion, engineVersion });
         return {
           department: definition.department,
           slug: definition.slug,
           policyVersion,
-          fingerprint: fingerprint({
-            policySchemaVersion: schemaVersion,
-            policyEngineVersion: engineVersion,
-            department: definition.department,
-            ...behavior
-          })
+          fingerprint: fingerprint(behavior)
+        };
+      })
+      .sort((left, right) => left.slug.localeCompare(right.slug))
+  };
+}
+
+export function buildPolicySnapshot({ definitions, policyFor, schemaVersion, engineVersion, engineSource }) {
+  return {
+    snapshotVersion: policySnapshotVersion,
+    policySchemaVersion: schemaVersion,
+    policyEngineVersion: engineVersion,
+    policyEngineFingerprint: engineSourceFingerprint(engineSource),
+    policies: definitions
+      .map((definition) => {
+        const policy = policyFor(definition);
+        const behavior = executablePolicyBehavior({ definition, policyFor, schemaVersion, engineVersion });
+        return {
+          department: definition.department,
+          slug: definition.slug,
+          name: definition.name,
+          owner: definition.owner,
+          policyVersion: policy.policyVersion,
+          fingerprint: fingerprint(behavior),
+          behavior: canonicalize(behavior)
         };
       })
       .sort((left, right) => left.slug.localeCompare(right.slug))

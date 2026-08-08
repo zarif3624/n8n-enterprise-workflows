@@ -25,5 +25,8 @@ jobs:
       - name: Enforce policy version bumps
         if: github.event_name == 'pull_request'
         run: npm run validate:policy-versions -- "origin/${{ github.base_ref }}"
+      - name: Summarize policy changes
+        if: github.event_name == 'pull_request'
+        run: npm run --silent report:policy-changes -- "origin/${{ github.base_ref }}" >> "$GITHUB_STEP_SUMMARY"
       - name: Ensure generated files are committed
         run: git diff --exit-code
