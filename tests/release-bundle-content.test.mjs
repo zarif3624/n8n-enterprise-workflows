@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { posix, join } from "node:path";
 import test from "node:test";
 import { buildRelease } from "../scripts/build-release.mjs";
 import { readTarGzip } from "../scripts/release-archive.mjs";
@@ -12,6 +12,18 @@ function bundleFiles(archive) {
   const entries = readTarGzip(archive);
   const rootName = entries[0].path.split("/")[0];
   return new Map(entries.map((entry) => [entry.path.slice(rootName.length + 1), entry.content]));
+}
+
+function assertInternalMarkdownLinks(files) {
+  for (const [path, content] of files) {
+    if (!path.endsWith(".md")) continue;
+    for (const match of content.toString("utf8").matchAll(/\]\(([^)]+)\)/g)) {
+      const destination = match[1].split("#")[0];
+      if (!destination || /^[a-z][a-z0-9+.-]*:/i.test(destination)) continue;
+      const resolved = posix.normalize(posix.join(posix.dirname(path), decodeURIComponent(destination)));
+      assert.ok(files.has(resolved), `${path}: bundled link target is missing: ${destination}`);
+    }
+  }
 }
 
 test("full and department release bundles carry lifecycle and compatibility contracts", async () => {
@@ -48,4 +60,5 @@ test("full and department release bundles carry lifecycle and compatibility cont
   assert.equal(mapping.workflow, "invoice-exception-triage");
   assert.equal(mapping.policyFingerprint, lifecycle.policies[0].fingerprint);
   assert.ok(Object.keys(mapping.fields).length > 0);
+  assertInternalMarkdownLinks(financeFiles);
 });
