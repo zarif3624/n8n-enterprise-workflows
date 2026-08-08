@@ -16,7 +16,8 @@ export async function smokeTestWebhook({ baseUrl, slug }) {
     { name: "invalid", fixture: entry.examples.invalid, status: 400, error: "validation_error", minimumViolations: 2 },
     // n8n normalizes an HTTP JSON null body to an empty object before the
     // workflow executes. The engine itself still preserves explicit body:null.
-    { name: "null-body", payload: null, status: 400, error: "validation_error", minimumViolations: 1 }
+    { name: "null-body", payload: null, status: 400, error: "validation_error", minimumViolations: 1 },
+    { name: "non-json", fixture: entry.examples.lowRisk, contentType: "text/plain", status: 415, error: "unsupported_media_type" }
   ];
 
   for (const testCase of cases) {
@@ -30,7 +31,7 @@ export async function smokeTestWebhook({ baseUrl, slug }) {
     const response = await fetch(new URL(entry.endpoint, baseUrl), {
       method: "POST",
       headers: {
-        "content-type": "application/json",
+        "content-type": testCase.contentType ?? "application/json",
         "x-request-id": requestId
       },
       body: JSON.stringify(requestBody),
@@ -55,11 +56,12 @@ export async function smokeTestWebhook({ baseUrl, slug }) {
     } else {
       assert.equal(body.ok, false, `${testCase.name}: success flag`);
       assert.equal(body.error, testCase.error, `${testCase.name}: error code`);
-      assert.ok(body.details?.violations?.length >= testCase.minimumViolations, `${testCase.name}: field violations`);
+      if (testCase.minimumViolations) assert.ok(body.details?.violations?.length >= testCase.minimumViolations, `${testCase.name}: field violations`);
+      if (testCase.status === 415) assert.equal(body.expectedContentType, "application/json", `${testCase.name}: expected content type`);
     }
   }
 
-  console.log(`Runtime-smoked ${entry.slug}: low/high decisions, fixture/null 400s, headers, version, and response privacy.`);
+  console.log(`Runtime-smoked ${entry.slug}: low/high decisions, fixture/null 400s, non-JSON 415, headers, version, and response privacy.`);
 }
 
 export async function smokeTestInternalError({ baseUrl, slug }) {

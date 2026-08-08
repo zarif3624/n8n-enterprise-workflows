@@ -12,7 +12,7 @@ A defensible routing decision with urgency, ownership guidance, and escalation r
 
 - **Primary owner:** IT Service Management
 - **Primary metric:** Mean time to assignment
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `incidents per month x minutes faster assignment x outage cost per minute`
 
 ## Five-minute adoption
@@ -70,7 +70,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "service-desk-priority-routing",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "route_standard_queue",
   "priorityBand": "low",
   "score": 0,

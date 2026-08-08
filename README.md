@@ -25,7 +25,7 @@ Every workflow package includes:
 - A SHA-256 artifact manifest and reproducible full-catalog and per-department release archives.
 - Privacy-safe batch conformance analysis with contract, outcome, score, and rule-coverage gates.
 - Fingerprint-locked aggregate drift comparison for invalid-rate, score, outcome, rule, and mapping shifts.
-- Structured HTTP 200, 400, and sanitized retryable 500 responses with correlation IDs, no-store caching, and MIME-sniffing protection.
+- Structured HTTP 200, 400, 415, and sanitized retryable 500 responses with correlation IDs, no-store caching, and MIME-sniffing protection.
 - A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
 - Security, operations, human-approval, adapter, and ROI guidance.
 

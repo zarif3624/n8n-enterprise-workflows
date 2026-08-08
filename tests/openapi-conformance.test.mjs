@@ -16,10 +16,10 @@ function responseSchema(operation, status) {
   return operation.responses[status].content["application/json"].schema;
 }
 
-function evaluate(snapshotPolicy, body, requestId) {
+function evaluate(snapshotPolicy, body, requestId, contentType) {
   return evaluatePolicy({
     policy: { ...snapshotPolicy.behavior, policyVersion: snapshotPolicy.policyVersion },
-    envelope: { body, headers: { "x-request-id": requestId } },
+    envelope: { body, headers: { "x-request-id": requestId, ...(contentType ? { "content-type": contentType } : {}) } },
     executionId: requestId,
     evaluatedAt: "2026-08-08T00:00:00.000Z"
   });
@@ -45,11 +45,14 @@ for (const entry of catalog) {
     const highResult = evaluate(snapshotPolicy, high, `openapi-high-${entry.slug}`);
     const invalidResult = evaluate(snapshotPolicy, invalid, `openapi-invalid-${entry.slug}`);
     const nullResult = evaluate(snapshotPolicy, null, `openapi-null-${entry.slug}`);
+    const unsupportedResult = evaluate(snapshotPolicy, low, `openapi-media-${entry.slug}`, "text/plain");
     assert.deepEqual(schemaContractIssues(lowResult, responseSchema(operation, "200"), openApi), []);
     assert.deepEqual(schemaContractIssues(highResult, responseSchema(operation, "200"), openApi), []);
     assert.deepEqual(schemaContractIssues(invalidResult, responseSchema(operation, "400"), openApi), []);
     assert.deepEqual(schemaContractIssues(nullResult, responseSchema(operation, "400"), openApi), []);
+    assert.deepEqual(schemaContractIssues(unsupportedResult, responseSchema(operation, "415"), openApi), []);
     assert.deepEqual(nullResult.details.violations.map(({ field, code }) => ({ field, code })), [{ field: "$", code: "invalid_type" }]);
+    assert.equal(unsupportedResult.error, "unsupported_media_type");
 
     const internalError = {
       ok: false,

@@ -131,7 +131,7 @@ for (const entry of catalog) {
   const openApiOperation = openApi.paths?.[entry.endpoint]?.post;
   if (!openApiOperation || openApiOperation.operationId !== `evaluate${entry.slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join("")}`) fail(entry.path, "OpenAPI operation is missing or unstable");
   if (!sameJson(openApiOperation?.requestBody?.content?.["application/json"]?.schema, entry.inputSchema)) fail(entry.path, "OpenAPI input schema drifted from the catalog");
-  for (const status of ["200", "400", "500"]) {
+  for (const status of ["200", "400", "415", "500"]) {
     const headers = openApiOperation?.responses?.[status]?.headers;
     if (!headers?.["X-Request-Id"] || headers?.["Cache-Control"]?.schema?.const !== "no-store" || headers?.["X-Content-Type-Options"]?.schema?.const !== "nosniff") fail(entry.path, `OpenAPI ${status} response headers are incomplete`);
   }
@@ -139,6 +139,7 @@ for (const entry of catalog) {
   if (decisionOverlay?.workflow?.const !== definition.slug || decisionOverlay?.policyVersion?.const !== definition.policyVersion) fail(entry.path, "OpenAPI success identity is not policy-specific");
   if (!sameJson(decisionOverlay?.decision?.enum, Object.values(definition.decisions))) fail(entry.path, "OpenAPI decision enum drifted from the policy");
   if (openApiOperation?.responses?.["500"]?.content?.["application/json"]?.schema?.$ref !== "#/components/schemas/InternalErrorResponse") fail(entry.path, "OpenAPI internal-error contract is missing");
+  if (openApiOperation?.responses?.["415"]?.content?.["application/json"]?.schema?.$ref !== "#/components/schemas/UnsupportedMediaTypeResponse") fail(entry.path, "OpenAPI unsupported-media-type contract is missing");
 
   if (!workflow.id || !workflow.name || !Array.isArray(workflow.nodes) || workflow.nodes.length < 5) fail(entry.path, "workflow shape is incomplete");
   if (!workflow.description || workflow.description.split(/[.!?](?:\s|$)/).filter(Boolean).length < 2) fail(entry.path, "workflow description must explain what it does and why");

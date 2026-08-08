@@ -12,7 +12,7 @@ A transparent routing recommendation with matched reasons and a clear next actio
 
 - **Primary owner:** Revenue Operations
 - **Primary metric:** Speed to lead for qualified accounts
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `qualified leads x conversion lift x average contract value`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "enterprise-lead-routing",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "route_to_nurture_or_review",
   "priorityBand": "low",
   "score": 0,

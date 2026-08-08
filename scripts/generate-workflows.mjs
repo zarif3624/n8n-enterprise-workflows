@@ -431,6 +431,23 @@ function buildOpenApi() {
               }
             }
           },
+          415: {
+            description: "Unsupported request media type",
+            headers: openApiResponseHeaders(),
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/UnsupportedMediaTypeResponse" },
+                example: {
+                  ok: false,
+                  httpStatus: 415,
+                  requestId: "example-request-001",
+                  error: "unsupported_media_type",
+                  message: "Request Content-Type must be application/json",
+                  expectedContentType: "application/json"
+                }
+              }
+            }
+          },
           500: {
             description: "Sanitized internal policy-evaluation failure",
             headers: openApiResponseHeaders(),
@@ -519,6 +536,19 @@ function buildOpenApi() {
               }
             },
             requestSchema: { type: "object" }
+          },
+          additionalProperties: false
+        },
+        UnsupportedMediaTypeResponse: {
+          type: "object",
+          required: ["ok", "httpStatus", "requestId", "error", "message", "expectedContentType"],
+          properties: {
+            ok: { type: "boolean", const: false },
+            httpStatus: { type: "integer", const: 415 },
+            requestId: { type: "string" },
+            error: { type: "string", const: "unsupported_media_type" },
+            message: { type: "string", const: "Request Content-Type must be application/json" },
+            expectedContentType: { type: "string", const: "application/json" }
           },
           additionalProperties: false
         },

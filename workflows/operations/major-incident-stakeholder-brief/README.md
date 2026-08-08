@@ -12,7 +12,7 @@ A severity tier, communication cadence, stakeholder list, and next update deadli
 
 - **Primary owner:** Business Operations and Incident Command
 - **Primary metric:** Minutes from incident declaration to first stakeholder brief
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `major incidents x minutes faster communication x affected staff loaded cost per minute`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "major-incident-stakeholder-brief",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "standard_operations_update",
   "priorityBand": "low",
   "score": 0,

@@ -12,7 +12,7 @@ A visible approval route that prevents high-risk messages from bypassing account
 
 - **Primary owner:** Corporate Communications
 - **Primary metric:** Time from draft to approved external communication
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `external messages x coordination minutes saved x reviewer hourly cost / 60`
 
 ## Five-minute adoption
@@ -70,7 +70,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "external-communication-approval",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "continue_standard_editorial_review",
   "priorityBand": "low",
   "score": 0,

@@ -12,7 +12,7 @@ A structured decision with a risk score, matched policy reasons, and the next re
 
 - **Primary owner:** Accounts Payable Operations
 - **Primary metric:** Minutes of manual review avoided per invoice
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `monthly invoice volume x exception rate x minutes saved x loaded hourly cost / 60`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "invoice-exception-triage",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "continue_standard_processing",
   "priorityBand": "low",
   "score": 0,

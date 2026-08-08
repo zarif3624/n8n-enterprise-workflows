@@ -11,7 +11,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, lifecycle, readiness, and CI supply-chain coverage, increasing the suite from 58 to 230 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, lifecycle, readiness, and CI supply-chain coverage, increasing the suite from 58 to 231 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
 - A generated SHA-256 manifest covering all 96 public generated and machine-contract artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
@@ -49,6 +49,7 @@ All notable changes to this project are documented here. The project follows Sem
 - A privacy-safe readiness report now separates repository validity from deployment authorization, surfaces draft and overdue policy blockers, enumerates required environment controls, and states the limits of its evidence.
 - Validation CI now publishes the readiness report to the job summary, while contribution, pull-request, and release guidance explicitly preserve draft/approval truthfulness.
 - All 200, 400, and sanitized 500 webhook responses now send `X-Content-Type-Options: nosniff`; OpenAPI, structural validation, and real-runtime smoke checks enforce the header.
+- Explicit non-JSON request media types now fail closed with a sanitized, documented HTTP 415 response; JSON suffix media types remain compatible. The shared engine and all embedded policies move to patch version `1.0.4`.
 
 ## 0.2.0
 

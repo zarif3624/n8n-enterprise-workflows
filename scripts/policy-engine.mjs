@@ -1,5 +1,5 @@
 export const policySchemaVersion = "1.0";
-export const policyEngineVersion = "1.0.3";
+export const policyEngineVersion = "1.0.4";
 
 function hasValue(value) {
   return value !== undefined && value !== null && !(typeof value === "string" && value.trim() === "");
@@ -85,6 +85,17 @@ export function evaluatePolicy({ policy, envelope, executionId, evaluatedAt }) {
     : envelope;
   const headerRequestId = envelope?.headers?.["x-request-id"];
   const requestId = normalizeRequestId(headerRequestId, executionId);
+  const contentType = envelope?.headers?.["content-type"];
+  if (hasValue(contentType) && !/^application\/(?:[a-z0-9!#$&^_.+-]+\+)?json(?:\s*;|$)/i.test(String(contentType).trim())) {
+    return {
+      ok: false,
+      httpStatus: 415,
+      requestId,
+      error: "unsupported_media_type",
+      message: "Request Content-Type must be application/json",
+      expectedContentType: "application/json"
+    };
+  }
   const schema = policy.inputSchema;
   const violations = [];
 

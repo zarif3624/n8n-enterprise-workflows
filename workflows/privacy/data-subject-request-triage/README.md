@@ -12,7 +12,7 @@ A deadline-aware route that keeps identity verification and legal constraints vi
 
 - **Primary owner:** Privacy Operations
 - **Primary metric:** Data subject requests completed within policy deadline
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `annual privacy requests x handling hours saved x privacy operations hourly cost`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "data-subject-request-triage",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "continue_standard_privacy_queue",
   "priorityBand": "low",
   "score": 0,

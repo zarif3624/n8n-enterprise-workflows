@@ -12,7 +12,7 @@ A transparent governance route that separates standard access from data-owner, p
 
 - **Primary owner:** Data Governance
 - **Primary metric:** Time from request to governed data access
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `monthly data requests x review minutes saved x governance hourly cost / 60`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "data-access-request-triage",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "approve_standard_data_access",
   "priorityBand": "low",
   "score": 0,

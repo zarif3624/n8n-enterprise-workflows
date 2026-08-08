@@ -12,7 +12,7 @@ A coordinated due-diligence route with the reasons each review is required.
 
 - **Primary owner:** Procurement Operations
 - **Primary metric:** Vendor request time to correct review path
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `vendor requests x days removed from routing delay x internal cost per delay day`
 
 ## Five-minute adoption
@@ -70,7 +70,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "vendor-risk-intake",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "start_standard_procurement",
   "priorityBand": "low",
   "score": 0,

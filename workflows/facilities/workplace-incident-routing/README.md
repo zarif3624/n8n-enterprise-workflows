@@ -12,7 +12,7 @@ A defensible urgency tier with clear escalation reasons and a named human respon
 
 - **Primary owner:** Workplace Operations
 - **Primary metric:** Minutes from report to accountable responder
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `workplace incidents x minutes faster routing x disruption cost per minute`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "workplace-incident-routing",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "route_standard_facilities_queue",
   "priorityBand": "low",
   "score": 0,

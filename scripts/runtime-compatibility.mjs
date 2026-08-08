@@ -34,6 +34,7 @@ export function runtimeCompatibilityIssues(document, { catalog, policyEngineVers
     "high-risk-decision",
     "invalid-fixture",
     "null-body",
+    "unsupported-content-type",
     "forced-internal-error"
   ];
   if (JSON.stringify(document?.scope?.probes) !== JSON.stringify(expectedProbes)) {

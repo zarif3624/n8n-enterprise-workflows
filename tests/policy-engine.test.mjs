@@ -183,3 +183,33 @@ test("an explicit null webhook body is validated as the body, not the envelope",
   assert.deepEqual(result.details.missingFields, []);
   assert.equal(result.requestId, "null-body");
 });
+
+test("explicit non-JSON media types fail closed while JSON suffix types remain compatible", () => {
+  const definition = workflows[0];
+  const schema = inputSchemaFor(definition);
+  const payload = Object.fromEntries(definition.required.map((field) => [
+    field,
+    schema.properties[field].type === "number" ? 1 : field === "currency" ? "USD" : `${field}-001`
+  ]));
+  const unsupported = evaluatePolicy({
+    policy: policyFor(definition),
+    envelope: { body: payload, headers: { "content-type": "text/plain", "x-request-id": "media-type" } },
+    executionId: "unit-test-execution",
+    evaluatedAt: "2026-08-08T00:00:00.000Z"
+  });
+  assert.deepEqual(unsupported, {
+    ok: false,
+    httpStatus: 415,
+    requestId: "media-type",
+    error: "unsupported_media_type",
+    message: "Request Content-Type must be application/json",
+    expectedContentType: "application/json"
+  });
+  const compatible = evaluatePolicy({
+    policy: policyFor(definition),
+    envelope: { body: payload, headers: { "content-type": "application/vnd.example+json; charset=utf-8" } },
+    executionId: "unit-test-execution",
+    evaluatedAt: "2026-08-08T00:00:00.000Z"
+  });
+  assert.equal(compatible.httpStatus, 200);
+});

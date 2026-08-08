@@ -1,98 +1,98 @@
 {
   "lockVersion": 1,
   "policySchemaVersion": "1.0",
-  "policyEngineVersion": "1.0.3",
-  "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
+  "policyEngineVersion": "1.0.4",
+  "policyEngineFingerprint": "sha256:fc01eed19014b378a76413c5e93d3c4d2af37e92cbcae2602a75f55b353bc91b",
   "policies": [
     {
       "department": "marketing",
       "slug": "campaign-lead-compliance-gate",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:720ff138429a129ce7a7844c01b96f5afa5a134695f46906121aff095c014be6"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:541b099f3ef285dbe060625d4a05b0bfd79eee090cbc4d82741f01cc94034822"
     },
     {
       "department": "legal",
       "slug": "contract-intake-routing",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:5ae799447988966c9542d73f7bcb2a580d528fcd6c01ed4eefdc583e17ee4798"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:10aa36610499497f0a32bbad3c29e3b77ff22b46c206dfdcd44d7966de896b13"
     },
     {
       "department": "customer-success",
       "slug": "customer-risk-escalation",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:a96c5bd63d27b44ea8eccfc013b81bb658e7221e60a76adc234111b406420b3c"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:eae76dfee6af7b72cb973defaad623403d02beba0907b8464865478a4bd7734f"
     },
     {
       "department": "data-and-analytics",
       "slug": "data-access-request-triage",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:1a354333ea366cfb1f3fae5af81021bcfe798eaedcfc810a4f9910e2f6d75dca"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:6567ff8f1d1d84ef94367228a98157b11ef765bb53f1e6edd22bd64cd5de7e91"
     },
     {
       "department": "privacy",
       "slug": "data-subject-request-triage",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:e1864d61a3b0e2d0e2ba5809b20c0c93e8acef32a41dc1f1b3ac79ec89a92114"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:a87f23a022557aa59256bb5e5ffc695be89f5dcaa43c833071d4419a1d673404"
     },
     {
       "department": "human-resources",
       "slug": "employee-access-request-triage",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:587e77e8b05a7a3ae89d3fdb916cc0c77d275e6d004fd8a246483a0541db068b"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:8a69fa582f98fff6c53c2191389be4f5ef05ef816dd3b6979c877aef9ba17818"
     },
     {
       "department": "sales",
       "slug": "enterprise-lead-routing",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:05043eec8288c388b156579dd209980e54e4efadff54a742793f3506635c8032"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:aaba8cbcaa4e27e90d32192197825bc1f80418ced47072e2ccaf72685952864d"
     },
     {
       "department": "corporate-communications",
       "slug": "external-communication-approval",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:5d95e21ad8075e29b853906b14829797e7dc1b5fb2b5fd0d3bf1eb4dfa3853e1"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:da470f635422abfa062d3496966070621413fbc7344f329e29bbc3881bc0300b"
     },
     {
       "department": "finance",
       "slug": "invoice-exception-triage",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:77fece7db9614359bb13b104af93ada6bfc33ffd9a6052465aa24dbad6ab9688"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:bf44281b1046fc732589a0d936e04ff1023ae938d68edfe2ffaca42faa4af5c2"
     },
     {
       "department": "operations",
       "slug": "major-incident-stakeholder-brief",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:b6a17b505cc910e8c70e3073f2446a3bdc16fba9c658e05c7bba1c7fc933feef"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:ec22e5a998af6868fabab9842d037db7c81e53123267a21f3e08ac38965be6b5"
     },
     {
       "department": "security",
       "slug": "phishing-report-triage",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:91ffc1454420999034e2d099b51fd10996948657a08c11760b64222a8f5027bf"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:34f28d9eb4a5a84e9cc387e49c22c695d57065e966872280cab19654b329666e"
     },
     {
       "department": "engineering",
       "slug": "production-change-risk-gate",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:6f480abe9bc614afc470336332dece8f54739ba898bdd059e5a5b672ea391edb"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:56322898d103d640ed81377f1f5bd75882169f0e2b517bcd89f4d90537da834b"
     },
     {
       "department": "information-technology",
       "slug": "service-desk-priority-routing",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:e83bb0f8d31748226c28da24f26881bded886a57e21a6931025b527bf0ce296d"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:43a4c67f460ab1ed943729624295264f8ee49c3d2fbfc2229146700397656685"
     },
     {
       "department": "procurement",
       "slug": "vendor-risk-intake",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:9f3c6039f3700920cc403b6ff76938ebeb3e04617e003033d2227fcaf35cbd4e"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:7ab1be1b0add1f4a2d3616787338e588ec9b7b2ddf956133e5676951764e2e66"
     },
     {
       "department": "facilities",
       "slug": "workplace-incident-routing",
-      "policyVersion": "1.0.3",
-      "fingerprint": "sha256:5a5c0e5ee09d85f1add62c14dced83e1279c8fd5431472c31ae063ba7cc0ba3e"
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:2421aadf64ce645d048164ba88c5fc165524b0285c7b6fec9704a176216dbdd6"
     }
   ]
 }

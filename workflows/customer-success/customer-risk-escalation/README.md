@@ -12,7 +12,7 @@ An explainable intervention priority and recommended customer-success action pla
 
 - **Primary owner:** Customer Success Operations
 - **Primary metric:** At-risk accounts engaged before renewal
-- **Policy version:** `1.0.3`
+- **Policy version:** `1.0.4`
 - **ROI starting point:** `at-risk ARR x reduction in preventable churn rate`
 
 ## Five-minute adoption
@@ -70,7 +70,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "customer-risk-escalation",
-  "policyVersion": "1.0.3",
+  "policyVersion": "1.0.4",
   "decision": "continue_success_plan",
   "priorityBand": "low",
   "score": 0,

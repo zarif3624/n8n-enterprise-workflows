@@ -1,6 +1,6 @@
 {
   "compatibilityVersion": 1,
-  "policyEngineVersion": "1.0.3",
+  "policyEngineVersion": "1.0.4",
   "nodeVersion": "22",
   "minimumSupportedN8nVersion": "2.13.0",
   "scheduledN8nVersions": [
@@ -15,6 +15,7 @@
       "high-risk-decision",
       "invalid-fixture",
       "null-body",
+      "unsupported-content-type",
       "forced-internal-error"
     ]
   },
