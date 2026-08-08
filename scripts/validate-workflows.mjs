@@ -190,6 +190,7 @@ for (const entry of catalog) {
   if (responder?.parameters?.responseBody !== "={{ $('Evaluate policy signals').item.json }}") fail(entry.path, "response must reference the evaluator by name and pass an object");
   if (responder?.parameters?.options?.responseCode !== "={{ $('Evaluate policy signals').item.json.httpStatus }}") fail(entry.path, "response status must reference the evaluator by name");
   const responseHeaders = Object.fromEntries((responder?.parameters?.options?.responseHeaders?.entries ?? []).map(({ name, value }) => [name.toLowerCase(), value]));
+  if (responseHeaders["content-type"] !== "application/json") fail(entry.path, "decision responses must declare the JSON media type");
   if (responseHeaders["cache-control"] !== "no-store") fail(entry.path, "decision responses must disable intermediary caching");
   if (responseHeaders["x-content-type-options"] !== "nosniff") fail(entry.path, "decision responses must disable MIME-type sniffing");
   if (responseHeaders["x-request-id"] !== "={{ $('Evaluate policy signals').item.json.requestId }}") fail(entry.path, "decision responses must expose the correlation ID as a header");
@@ -199,7 +200,7 @@ for (const entry of catalog) {
   if (!errorResponder?.parameters?.responseBody?.startsWith("={{") || !errorResponder?.parameters?.responseBody?.includes("internal_error")) fail(entry.path, "internal-error responder body is missing");
   if (/stack|details|node/i.test(errorResponder?.parameters?.responseBody ?? "")) fail(entry.path, "internal-error response may expose implementation details");
   const errorHeaders = Object.fromEntries((errorResponder?.parameters?.options?.responseHeaders?.entries ?? []).map(({ name, value }) => [name.toLowerCase(), value]));
-  if (errorHeaders["cache-control"] !== "no-store" || errorHeaders["x-content-type-options"] !== "nosniff" || !errorHeaders["x-request-id"]?.startsWith("={{")) fail(entry.path, "internal-error response headers are incomplete");
+  if (errorHeaders["content-type"] !== "application/json" || errorHeaders["cache-control"] !== "no-store" || errorHeaders["x-content-type-options"] !== "nosniff" || !errorHeaders["x-request-id"]?.startsWith("={{")) fail(entry.path, "internal-error response headers are incomplete");
   const evaluatorOutputs = workflow.connections?.["Evaluate policy signals"]?.main;
   if (evaluatorOutputs?.length !== 2 || evaluatorOutputs?.[0]?.[0]?.node !== responder?.name || evaluatorOutputs?.[1]?.[0]?.node !== errorResponder?.name) {
     fail(entry.path, "policy evaluator success and error outputs are not both wired to responders");

@@ -79,6 +79,7 @@ export async function smokeTestInternalError({ baseUrl, slug }) {
   const body = await response.json();
 
   assert.equal(response.status, 500);
+  assert.match(response.headers.get("content-type") ?? "", /^application\/json/i);
   assert.equal(response.headers.get("cache-control"), "no-store");
   assert.equal(response.headers.get("x-content-type-options"), "nosniff");
   assert.equal(response.headers.get("x-request-id"), requestId);
@@ -94,7 +95,7 @@ export async function smokeTestInternalError({ baseUrl, slug }) {
   });
   assert.equal(JSON.stringify(body).includes("must-not-echo"), false);
   assert.equal(/stack|node|intentional runtime error probe/i.test(JSON.stringify(body)), false);
-  console.log(`Runtime-smoked ${entry.slug}: forced evaluator failure returned a sanitized retryable 500.`);
+  console.log(`Runtime-smoked ${entry.slug}: forced evaluator failure returned a JSON, sanitized, retryable 500.`);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
