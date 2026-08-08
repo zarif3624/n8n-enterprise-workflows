@@ -67,6 +67,7 @@ for (const definition of definitions) {
   if (!["low", "medium", "high"].every((band) => typeof definition.decisions?.[band] === "string")) fail(path, "all three decision bands are required");
   for (const rule of definition.rules) {
     if (!allFields.includes(rule.field)) fail(path, `rule references undeclared field ${rule.field}`);
+    if (rule.operator === "missing" && definition.required.includes(rule.field)) fail(path, `missing rule on required field ${rule.field} can never execute`);
     if (!["missing", "truthy", "falsy", "equals", "includes", "gt", "gte", "lt"].includes(rule.operator)) fail(path, `unsupported rule operator ${rule.operator}`);
     if (!Number.isFinite(rule.points) || !rule.reason) fail(path, `rule ${rule.field} needs finite points and a reason`);
     if (rule.minimumBand && !["medium", "high"].includes(rule.minimumBand)) fail(path, `rule ${rule.field} has an invalid minimum band`);
@@ -102,8 +103,16 @@ for (const entry of catalog) {
   const openApiOperation = openApi.paths?.[entry.endpoint]?.post;
   if (!openApiOperation || openApiOperation.operationId !== `evaluate${entry.slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join("")}`) fail(entry.path, "OpenAPI operation is missing or unstable");
   if (!sameJson(openApiOperation?.requestBody?.content?.["application/json"]?.schema, entry.inputSchema)) fail(entry.path, "OpenAPI input schema drifted from the catalog");
+  for (const status of ["200", "400", "500"]) {
+    const headers = openApiOperation?.responses?.[status]?.headers;
+    if (!headers?.["X-Request-Id"] || headers?.["Cache-Control"]?.schema?.const !== "no-store") fail(entry.path, `OpenAPI ${status} response headers are incomplete`);
+  }
+  const decisionOverlay = openApiOperation?.responses?.["200"]?.content?.["application/json"]?.schema?.allOf?.[1]?.properties;
+  if (decisionOverlay?.workflow?.const !== definition.slug || decisionOverlay?.policyVersion?.const !== definition.policyVersion) fail(entry.path, "OpenAPI success identity is not policy-specific");
+  if (!sameJson(decisionOverlay?.decision?.enum, Object.values(definition.decisions))) fail(entry.path, "OpenAPI decision enum drifted from the policy");
+  if (openApiOperation?.responses?.["500"]?.content?.["application/json"]?.schema?.$ref !== "#/components/schemas/InternalErrorResponse") fail(entry.path, "OpenAPI internal-error contract is missing");
 
-  if (!workflow.id || !workflow.name || !Array.isArray(workflow.nodes) || workflow.nodes.length < 4) fail(entry.path, "workflow shape is incomplete");
+  if (!workflow.id || !workflow.name || !Array.isArray(workflow.nodes) || workflow.nodes.length < 5) fail(entry.path, "workflow shape is incomplete");
   if (!workflow.description || workflow.description.split(/[.!?](?:\s|$)/).filter(Boolean).length < 2) fail(entry.path, "workflow description must explain what it does and why");
   if (workflow.active !== false) fail(entry.path, "template must ship inactive");
   if (workflow.settings?.executionTimeout !== 120) fail(entry.path, "execution timeout must be 120 seconds");
@@ -138,11 +147,15 @@ for (const entry of catalog) {
   if (evaluator?.type !== "n8n-nodes-base.set" || evaluator?.typeVersion !== 3.4) fail(entry.path, "policy evaluator must use Edit Fields (Set) v3.4");
   if (evaluator?.parameters?.mode !== "raw" || evaluator?.parameters?.includeOtherFields !== false) fail(entry.path, "policy evaluator must return a clean raw object");
   if (!evaluator?.parameters?.jsonOutput?.startsWith("={{")) fail(entry.path, "policy evaluator expression is missing");
+  if (evaluator?.onError !== "continueErrorOutput") fail(entry.path, "policy evaluator must route thrown errors to a dedicated output");
   if (!evaluator?.parameters?.jsonOutput?.endsWith("}}") || evaluator?.parameters?.jsonOutput?.slice(3, -2).includes("}}")) {
     fail(entry.path, "policy evaluator contains an internal n8n expression terminator");
   }
 
-  const responder = workflow.nodes.find((node) => node.type === "n8n-nodes-base.respondToWebhook");
+  const responders = workflow.nodes.filter((node) => node.type === "n8n-nodes-base.respondToWebhook");
+  const responder = responders.find((node) => node.name === "Return structured decision");
+  const errorResponder = responders.find((node) => node.name === "Return internal error");
+  if (responders.length !== 2) fail(entry.path, "exactly two webhook responders are required");
   if (!responder) fail(entry.path, "Respond to Webhook node is required");
   if (responder?.typeVersion !== 1.5) fail(entry.path, "Respond to Webhook must use v1.5");
   if (responder?.parameters?.responseBody !== "={{ $('Evaluate policy signals').item.json }}") fail(entry.path, "response must reference the evaluator by name and pass an object");
@@ -150,6 +163,17 @@ for (const entry of catalog) {
   const responseHeaders = Object.fromEntries((responder?.parameters?.options?.responseHeaders?.entries ?? []).map(({ name, value }) => [name.toLowerCase(), value]));
   if (responseHeaders["cache-control"] !== "no-store") fail(entry.path, "decision responses must disable intermediary caching");
   if (responseHeaders["x-request-id"] !== "={{ $('Evaluate policy signals').item.json.requestId }}") fail(entry.path, "decision responses must expose the correlation ID as a header");
+
+  if (errorResponder?.typeVersion !== 1.5) fail(entry.path, "internal-error responder must use v1.5");
+  if (errorResponder?.parameters?.options?.responseCode !== 500) fail(entry.path, "internal-error responder must return HTTP 500");
+  if (!errorResponder?.parameters?.responseBody?.startsWith("={{") || !errorResponder?.parameters?.responseBody?.includes("internal_error")) fail(entry.path, "internal-error responder body is missing");
+  if (/stack|details|node/i.test(errorResponder?.parameters?.responseBody ?? "")) fail(entry.path, "internal-error response may expose implementation details");
+  const errorHeaders = Object.fromEntries((errorResponder?.parameters?.options?.responseHeaders?.entries ?? []).map(({ name, value }) => [name.toLowerCase(), value]));
+  if (errorHeaders["cache-control"] !== "no-store" || !errorHeaders["x-request-id"]?.startsWith("={{")) fail(entry.path, "internal-error response headers are incomplete");
+  const evaluatorOutputs = workflow.connections?.["Evaluate policy signals"]?.main;
+  if (evaluatorOutputs?.length !== 2 || evaluatorOutputs?.[0]?.[0]?.node !== responder?.name || evaluatorOutputs?.[1]?.[0]?.node !== errorResponder?.name) {
+    fail(entry.path, "policy evaluator success and error outputs are not both wired to responders");
+  }
 
   for (const [source, outputs] of Object.entries(workflow.connections ?? {})) {
     if (!names.has(source)) fail(entry.path, `connection source does not exist: ${source}`);

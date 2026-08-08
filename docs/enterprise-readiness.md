@@ -27,6 +27,7 @@ one with production data or systems.
 - Add deduplication or idempotency keys before creating external records.
 - Configure timeouts and a private error workflow.
 - Test 4xx, 5xx, timeout, duplicate, and partial-data paths.
+- Preserve the template's evaluator error output and sanitized 500 responder when extending the success path.
 - Run all three package fixtures and preserve the observed decision evidence with the release.
 - Propagate `X-Request-Id` through downstream systems and alerts.
 

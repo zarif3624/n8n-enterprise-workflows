@@ -9,12 +9,15 @@ All notable changes to this project are documented here. The project follows Sem
 - A deterministic `policy-lock.json` with canonical SHA-256 fingerprints for all executable policy behavior.
 - Local generation and pull-request guards that reject silent policy changes, engine changes without an engine-version bump, and policy-version regressions.
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
-- A reusable HTTP runtime smoke tester and scheduled live-webhook checks across the supported n8n compatibility matrix.
+- A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
+- Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
+- Independent decision assertions for all 79 declared policy rules, increasing the suite from 58 to 137 tests.
 
 ### Changed
 
 - Clarified that unknown request fields are accepted for compatibility but ignored and never echoed.
 - Pretty-serialized embedded policy JSON so n8n cannot misread nested `}}` as an early expression terminator; all policies and the shared engine move to patch version `1.0.1`.
+- OpenAPI operations now constrain workflow identity, policy version, and decision enums per endpoint and document correlation/cache headers on 200, 400, and 500 responses.
 
 ### Fixed
 

@@ -23,7 +23,7 @@ scripts/generate-workflows.mjs
         └── docs/catalog.md
         │
         ▼
-scripts/validate-workflows.mjs + tests/policy-engine.test.mjs
+scripts/validate-workflows.mjs + tests/policy-*.test.mjs
 ```
 
 Only edit generated artifacts to diagnose generator output. Make lasting changes in the source definition or engine, regenerate, and review the complete diff.
@@ -79,7 +79,7 @@ The response carries `policyVersion`; catalog entries carry both `policyVersion`
 - Minor: backward-compatible optional fields or rules that can change scoring.
 - Major: required-field, response-shape, operator-semantics, or decision-label changes.
 
-When one policy's behavior changes, update that definition's policy version and include before/after fixture evidence. Policies are versioned independently; the current definitions begin at `1.0.0`, while the shared response schema is version `1.0`.
+When one policy's behavior changes, update that definition's policy version and include before/after fixture evidence. Policies are versioned independently; they began at `1.0.0` and are currently recorded in `policy-lock.json`, while the shared response schema is version `1.0`.
 
 `policy-lock.json` stores a canonical SHA-256 fingerprint for every policy's executable behavior. Generation fails when a fingerprint changes without a newer `policyVersion`, and pull-request CI compares the committed lock with the target branch so manually replacing the lock cannot bypass the rule. Version regressions also fail.
 
@@ -96,8 +96,10 @@ The lock separately fingerprints `scripts/policy-engine.mjs`. Any engine source 
 - Hard gates cannot be canceled by negative scoring.
 - Generated n8n expressions produce the same result as the source engine.
 - Generated expressions contain no internal `}}` delimiter that n8n would interpret as an early expression terminator.
+- Every declared policy rule independently matches, contributes its exact points and hard floor, and maps to the expected decision band.
+- Every evaluator has both `onError: "continueErrorOutput"` and a wired error output terminating in a sanitized HTTP 500 responder.
 
-The weekly compatibility workflow imports the complete catalog into isolated n8n versions, publishes one credential-free representative workflow, and sends low-risk, high-risk, and invalid requests through the real production webhook path. This catches parser and runtime behavior that JSON import validation cannot.
+The weekly compatibility workflow imports the complete catalog into isolated n8n versions, publishes one credential-free representative workflow, and sends low-risk, high-risk, and invalid requests through the real production webhook path. It then imports a test-only copy whose evaluator deliberately throws and proves the error output returns the sanitized 500 contract. This catches parser and runtime behavior that JSON import validation cannot.
 
 After the check, inspect the generated diff. A green test cannot decide whether a policy is appropriate for a particular organization; it only proves the implementation matches the declared policy.
 

@@ -43,6 +43,8 @@ adopter-controlled trust boundary. Before adding one:
 - **Intermediary caching:** response headers include `Cache-Control: no-store`.
 - **Untraceable calls:** callers can provide `X-Request-Id`; CR/LF is removed, the value is capped at 200 characters, and every response returns it in both the body and header.
 - **Generated-artifact drift:** validation executes the exported n8n expression and compares it with the source policy engine.
+- **Silent evaluator failure:** the evaluator's dedicated error output terminates in a sanitized, retryable HTTP 500 instead of an empty success response; stack traces and node details remain private.
+- **Unreviewed policy mutation:** canonical fingerprints and target-branch CI comparison require a newer policy version for executable behavior changes.
 
 ## Threats adopters must address
 

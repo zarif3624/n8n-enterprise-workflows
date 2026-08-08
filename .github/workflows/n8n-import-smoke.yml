@@ -52,25 +52,54 @@ jobs:
         run: |
           workflow_id="$(./node_modules/.bin/n8n list:workflow | awk -F'|' '$2 == "Triage enterprise invoice exceptions" { print $1; exit }')"
           test -n "${workflow_id}"
+
+          start_n8n() {
+            ./node_modules/.bin/n8n start > "${n8n_log}" 2>&1 &
+            n8n_pid=$!
+            trap 'kill "${n8n_pid}" 2>/dev/null || true; wait "${n8n_pid}" 2>/dev/null || true' EXIT
+          }
+
+          wait_for_n8n() {
+            for attempt in $(seq 1 60); do
+              if curl --fail --silent http://127.0.0.1:5691/healthz >/dev/null; then
+                return 0
+              fi
+              if ! kill -0 "${n8n_pid}" 2>/dev/null; then
+                cat "${n8n_log}"
+                return 1
+              fi
+              sleep 1
+            done
+            cat "${n8n_log}"
+            return 1
+          }
+
+          stop_n8n() {
+            kill "${n8n_pid}" 2>/dev/null || true
+            wait "${n8n_pid}" 2>/dev/null || true
+            trap - EXIT
+          }
+
           ./node_modules/.bin/n8n publish:workflow --id="${workflow_id}"
-          ./node_modules/.bin/n8n start > "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log" 2>&1 &
-          n8n_pid=$!
-          trap 'kill "${n8n_pid}" 2>/dev/null || true; wait "${n8n_pid}" 2>/dev/null || true' EXIT
-          for attempt in $(seq 1 60); do
-            if curl --fail --silent http://127.0.0.1:5691/healthz >/dev/null; then
-              break
-            fi
-            if ! kill -0 "${n8n_pid}" 2>/dev/null; then
-              cat "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
-              exit 1
-            fi
-            sleep 1
-          done
-          if ! curl --fail --silent http://127.0.0.1:5691/healthz >/dev/null; then
-            cat "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
+          n8n_log="${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
+          start_n8n
+          wait_for_n8n
+          if ! npm run smoke:webhook -- http://127.0.0.1:5691 invoice-exception-triage; then
+            cat "${n8n_log}"
             exit 1
           fi
-          if ! npm run smoke:webhook -- http://127.0.0.1:5691 invoice-exception-triage; then
-            cat "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
+          stop_n8n
+
+          ./node_modules/.bin/n8n unpublish:workflow --id="${workflow_id}"
+          node scripts/create-runtime-error-probe.mjs \
+            workflows/finance/invoice-exception-triage/workflow.json \
+            "${RUNNER_TEMP}/invoice-error-probe.json"
+          ./node_modules/.bin/n8n import:workflow --input="${RUNNER_TEMP}/invoice-error-probe.json"
+          ./node_modules/.bin/n8n publish:workflow --id="${workflow_id}"
+          n8n_log="${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}-error.log"
+          start_n8n
+          wait_for_n8n
+          if ! npm run smoke:webhook -- http://127.0.0.1:5691 invoice-exception-triage --expect-internal-error; then
+            cat "${n8n_log}"
             exit 1
           fi

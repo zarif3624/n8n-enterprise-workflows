@@ -53,11 +53,44 @@ export async function smokeTestWebhook({ baseUrl, slug }) {
   console.log(`Runtime-smoked ${entry.slug}: low/high decisions, invalid 400, headers, version, and response privacy.`);
 }
 
+export async function smokeTestInternalError({ baseUrl, slug }) {
+  const catalog = JSON.parse(await readFile(join(root, "catalog.json"), "utf8"));
+  const entry = catalog.find((item) => item.slug === slug);
+  assert.ok(entry, `Unknown workflow slug: ${slug}`);
+  const fixture = JSON.parse(await readFile(join(root, entry.examples.lowRisk), "utf8"));
+  const requestId = "runtime-smoke-forced-error";
+  const response = await fetch(new URL(entry.endpoint, baseUrl), {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-request-id": requestId },
+    body: JSON.stringify({ ...fixture, privateSmokeContext: "must-not-echo" }),
+    signal: AbortSignal.timeout(10_000)
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 500);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(response.headers.get("x-request-id"), requestId);
+  assert.deepEqual(body, {
+    ok: false,
+    httpStatus: 500,
+    requestId,
+    workflow: entry.slug,
+    policyVersion: entry.policyVersion,
+    error: "internal_error",
+    message: "The policy could not be evaluated",
+    retryable: true
+  });
+  assert.equal(JSON.stringify(body).includes("must-not-echo"), false);
+  assert.equal(/stack|node|intentional runtime error probe/i.test(JSON.stringify(body)), false);
+  console.log(`Runtime-smoked ${entry.slug}: forced evaluator failure returned a sanitized retryable 500.`);
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
-  const [baseUrl, slug = "invoice-exception-triage"] = process.argv.slice(2);
+  const [baseUrl, slug = "invoice-exception-triage", mode] = process.argv.slice(2);
   if (!baseUrl) {
     console.error("Usage: node scripts/smoke-test-webhook.mjs <base-url> [workflow-slug]");
     process.exit(2);
   }
-  await smokeTestWebhook({ baseUrl, slug });
+  if (mode === "--expect-internal-error") await smokeTestInternalError({ baseUrl, slug });
+  else await smokeTestWebhook({ baseUrl, slug });
 }

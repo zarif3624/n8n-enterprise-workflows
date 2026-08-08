@@ -83,7 +83,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
 }
 ```
 
-The high-risk example returns `hold_for_identity_or_legal_review` in the `high` band with score 100. Invalid requests return HTTP 400 with `error: "validation_error"`, field-level violations, and the complete request schema so callers can self-correct.
+The high-risk example returns `hold_for_identity_or_legal_review` in the `high` band with score 100. Invalid requests return HTTP 400 with `error: "validation_error"`, field-level violations, and the complete request schema so callers can self-correct. Unexpected evaluator failures follow the wired error output and return a sanitized, retryable HTTP 500 with `error: "internal_error"`; stack traces and caller data are never returned.
 
 ## Recommended production extensions
 

@@ -153,7 +153,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "invoice-exception-triage"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "continue_standard_processing",
+                            "route_to_finance_review",
+                            "hold_payment_and_escalate"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -235,6 +257,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -316,6 +353,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "invoice-exception-triage",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -455,7 +527,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "employee-access-request-triage"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "queue_standard_fulfillment",
+                            "require_security_review",
+                            "block_until_approved"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -535,6 +629,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -615,6 +724,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "employee-access-request-triage",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -751,7 +895,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "service-desk-priority-routing"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "route_standard_queue",
+                            "assign_priority_support",
+                            "open_major_incident"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -837,6 +1003,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -913,6 +1094,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "service-desk-priority-routing",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -1050,7 +1266,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "phishing-report-triage"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "queue_analyst_review",
+                            "expedite_investigation",
+                            "initiate_containment_review"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -1131,6 +1369,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -1208,6 +1461,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "phishing-report-triage",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -1347,7 +1635,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "enterprise-lead-routing"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "route_to_nurture_or_review",
+                            "assign_sdr_queue",
+                            "assign_enterprise_owner"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -1427,6 +1737,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -1506,6 +1831,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "enterprise-lead-routing",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -1646,7 +2006,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "campaign-lead-compliance-gate"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "allow_campaign_follow_up",
+                            "route_to_compliance_review",
+                            "suppress_automated_outreach"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -1728,6 +2110,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -1808,6 +2205,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "campaign-lead-compliance-gate",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -1946,7 +2378,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "customer-risk-escalation"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "continue_success_plan",
+                            "open_risk_workstream",
+                            "launch_executive_save_plan"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -2032,6 +2486,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -2110,6 +2579,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "customer-risk-escalation",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -2246,7 +2750,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "contract-intake-routing"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "use_standard_legal_queue",
+                            "assign_specialist_review",
+                            "open_cross_functional_review"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -2332,6 +2858,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -2408,6 +2949,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "contract-intake-routing",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -2544,7 +3120,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "vendor-risk-intake"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "start_standard_procurement",
+                            "add_security_or_privacy_review",
+                            "open_full_vendor_due_diligence"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -2630,6 +3228,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -2706,6 +3319,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "vendor-risk-intake",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -2845,7 +3493,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "major-incident-stakeholder-brief"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "standard_operations_update",
+                            "activate_incident_command",
+                            "activate_executive_and_legal_response"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -2927,6 +3597,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -3006,6 +3691,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "major-incident-stakeholder-brief",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -3144,7 +3864,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "data-access-request-triage"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "approve_standard_data_access",
+                            "require_owner_and_privacy_review",
+                            "block_until_governance_approval"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -3225,6 +3967,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -3303,6 +4060,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "data-access-request-triage",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -3441,7 +4233,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "production-change-risk-gate"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "continue_standard_change_process",
+                            "require_senior_engineering_review",
+                            "hold_for_change_advisory_approval"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -3522,6 +4336,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -3600,6 +4429,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "production-change-risk-gate",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -3738,7 +4602,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "workplace-incident-routing"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "route_standard_facilities_queue",
+                            "dispatch_urgent_workplace_response",
+                            "activate_safety_and_security_response"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -3820,6 +4706,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -3898,6 +4799,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "workplace-incident-routing",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -4043,7 +4979,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "external-communication-approval"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "continue_standard_editorial_review",
+                            "require_cross_functional_approval",
+                            "hold_for_executive_and_legal_approval"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -4125,6 +5083,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -4208,6 +5181,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "external-communication-approval",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -4347,7 +5355,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionResponse"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "data-subject-request-triage"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.1"
+                        },
+                        "decision": {
+                          "enum": [
+                            "continue_standard_privacy_queue",
+                            "assign_privacy_specialist_review",
+                            "hold_for_identity_or_legal_review"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 },
                 "examples": {
                   "lowRisk": {
@@ -4429,6 +5459,21 @@
           },
           "400": {
             "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -4508,6 +5553,41 @@
                     },
                     "additionalProperties": true
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "data-subject-request-triage",
+                  "policyVersion": "1.0.1",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
                 }
               }
             }
@@ -4700,6 +5780,51 @@
           },
           "requestSchema": {
             "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternalErrorResponse": {
+        "type": "object",
+        "required": [
+          "ok",
+          "httpStatus",
+          "requestId",
+          "workflow",
+          "policyVersion",
+          "error",
+          "message",
+          "retryable"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": false
+          },
+          "httpStatus": {
+            "type": "integer",
+            "const": 500
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "workflow": {
+            "type": "string"
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string",
+            "const": "internal_error"
+          },
+          "message": {
+            "type": "string",
+            "const": "The policy could not be evaluated"
+          },
+          "retryable": {
+            "type": "boolean",
+            "const": true
           }
         },
         "additionalProperties": false

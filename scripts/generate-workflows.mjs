@@ -83,6 +83,7 @@ function buildWorkflow(definition) {
   const triggerName = "Receive request";
   const evaluateName = "Evaluate policy signals";
   const respondName = "Return structured decision";
+  const errorRespondName = "Return internal error";
   const policy = policyFor(definition);
 
   return {
@@ -130,7 +131,8 @@ function buildWorkflow(definition) {
         position: [-60, 80],
         id: idFor(`${definition.slug}:evaluate`),
         name: evaluateName,
-        notes: "Evaluates one request with a native expression, enforces the documented input contract, and returns matched reasons without external writes."
+        notes: "Evaluates one request with a native expression, enforces the documented input contract, and returns matched reasons without external writes.",
+        onError: "continueErrorOutput"
       },
       {
         parameters: {
@@ -152,11 +154,57 @@ function buildWorkflow(definition) {
         position: [240, 80],
         id: idFor(`${definition.slug}:respond`),
         name: respondName
+      },
+      {
+        parameters: {
+          respondWith: "json",
+          responseBody: `={{ (() => {
+            const supplied = $('${triggerName}').first().json.headers?.['x-request-id'];
+            const requestId = String(supplied ?? $execution.id).replace(/[\\r\\n]/g, '').trim().slice(0, 200) || String($execution.id);
+            return {
+              ok: false,
+              httpStatus: 500,
+              requestId,
+              workflow: ${JSON.stringify(definition.slug)},
+              policyVersion: ${JSON.stringify(definition.policyVersion)},
+              error: 'internal_error',
+              message: 'The policy could not be evaluated',
+              retryable: true
+            };
+          })() }}`,
+          options: {
+            responseCode: 500,
+            responseHeaders: {
+              entries: [
+                { name: "Content-Type", value: "application/json" },
+                { name: "Cache-Control", value: "no-store" },
+                {
+                  name: "X-Request-Id",
+                  value: `={{ (() => {
+                    const supplied = $('${triggerName}').first().json.headers?.['x-request-id'];
+                    return String(supplied ?? $execution.id).replace(/[\\r\\n]/g, '').trim().slice(0, 200) || String($execution.id);
+                  })() }}`
+                }
+              ]
+            }
+          }
+        },
+        type: "n8n-nodes-base.respondToWebhook",
+        typeVersion: 1.5,
+        position: [240, 260],
+        id: idFor(`${definition.slug}:respond-error`),
+        name: errorRespondName,
+        notes: "Returns a sanitized, retryable 500 response without exposing stack traces, node details, or caller data."
       }
     ],
     connections: {
       [triggerName]: { main: [[{ node: evaluateName, type: "main", index: 0 }]] },
-      [evaluateName]: { main: [[{ node: respondName, type: "main", index: 0 }]] }
+      [evaluateName]: {
+        main: [
+          [{ node: respondName, type: "main", index: 0 }],
+          [{ node: errorRespondName, type: "main", index: 0 }]
+        ]
+      }
     },
     active: false,
     settings: {
@@ -253,7 +301,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
 ${JSON.stringify(lowResult, null, 2)}
 \`\`\`
 
-The high-risk example returns \`${highResult.decision}\` in the \`${highResult.priorityBand}\` band with score ${highResult.score}. Invalid requests return HTTP 400 with \`error: "validation_error"\`, field-level violations, and the complete request schema so callers can self-correct.
+The high-risk example returns \`${highResult.decision}\` in the \`${highResult.priorityBand}\` band with score ${highResult.score}. Invalid requests return HTTP 400 with \`error: "validation_error"\`, field-level violations, and the complete request schema so callers can self-correct. Unexpected evaluator failures follow the wired error output and return a sanitized, retryable HTTP 500 with \`error: "internal_error"\`; stack traces and caller data are never returned.
 
 ## Recommended production extensions
 
@@ -303,6 +351,13 @@ function operationIdFor(slug) {
   return `evaluate${slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join("")}`;
 }
 
+function openApiResponseHeaders() {
+  return {
+    "X-Request-Id": { description: "Correlation ID returned in the body", schema: { type: "string" } },
+    "Cache-Control": { description: "Decision responses are not cacheable", schema: { type: "string", const: "no-store" } }
+  };
+}
+
 function buildOpenApi() {
   const paths = {};
   for (const definition of workflows) {
@@ -339,13 +394,22 @@ function buildOpenApi() {
         responses: {
           200: {
             description: "Policy decision",
-            headers: {
-              "X-Request-Id": { description: "Correlation ID returned in the body", schema: { type: "string" } },
-              "Cache-Control": { description: "Decision responses are not cacheable", schema: { type: "string", const: "no-store" } }
-            },
+            headers: openApiResponseHeaders(),
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/DecisionResponse" },
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/DecisionResponse" },
+                    {
+                      type: "object",
+                      properties: {
+                        workflow: { const: definition.slug },
+                        policyVersion: { const: definition.policyVersion },
+                        decision: { enum: Object.values(definition.decisions) }
+                      }
+                    }
+                  ]
+                },
                 examples: {
                   lowRisk: { summary: "Low-band decision", value: lowResponse },
                   highRisk: { summary: "High-band decision", value: highResponse }
@@ -355,10 +419,30 @@ function buildOpenApi() {
           },
           400: {
             description: "Input contract violation",
+            headers: openApiResponseHeaders(),
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ValidationResponse" },
                 example: invalidResponse
+              }
+            }
+          },
+          500: {
+            description: "Sanitized internal policy-evaluation failure",
+            headers: openApiResponseHeaders(),
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/InternalErrorResponse" },
+                example: {
+                  ok: false,
+                  httpStatus: 500,
+                  requestId: "example-request-001",
+                  workflow: definition.slug,
+                  policyVersion: definition.policyVersion,
+                  error: "internal_error",
+                  message: "The policy could not be evaluated",
+                  retryable: true
+                }
               }
             }
           }
@@ -431,6 +515,21 @@ function buildOpenApi() {
               }
             },
             requestSchema: { type: "object" }
+          },
+          additionalProperties: false
+        },
+        InternalErrorResponse: {
+          type: "object",
+          required: ["ok", "httpStatus", "requestId", "workflow", "policyVersion", "error", "message", "retryable"],
+          properties: {
+            ok: { type: "boolean", const: false },
+            httpStatus: { type: "integer", const: 500 },
+            requestId: { type: "string" },
+            workflow: { type: "string" },
+            policyVersion: { type: "string" },
+            error: { type: "string", const: "internal_error" },
+            message: { type: "string", const: "The policy could not be evaluated" },
+            retryable: { type: "boolean", const: true }
           },
           additionalProperties: false
         }

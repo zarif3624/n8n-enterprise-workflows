@@ -52,7 +52,8 @@
       ],
       "id": "4157e267-a519-432e-afef-60f73d41bd56",
       "name": "Evaluate policy signals",
-      "notes": "Evaluates one request with a native expression, enforces the documented input contract, and returns matched reasons without external writes."
+      "notes": "Evaluates one request with a native expression, enforces the documented input contract, and returns matched reasons without external writes.",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -86,6 +87,40 @@
       ],
       "id": "ddf3f58c-3e20-41b1-ab0a-9702ba8716df",
       "name": "Return structured decision"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ (() => {\n            const supplied = $('Receive request').first().json.headers?.['x-request-id'];\n            const requestId = String(supplied ?? $execution.id).replace(/[\\r\\n]/g, '').trim().slice(0, 200) || String($execution.id);\n            return {\n              ok: false,\n              httpStatus: 500,\n              requestId,\n              workflow: \"employee-access-request-triage\",\n              policyVersion: \"1.0.1\",\n              error: 'internal_error',\n              message: 'The policy could not be evaluated',\n              retryable: true\n            };\n          })() }}",
+        "options": {
+          "responseCode": 500,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              },
+              {
+                "name": "X-Request-Id",
+                "value": "={{ (() => {\n                    const supplied = $('Receive request').first().json.headers?.['x-request-id'];\n                    return String(supplied ?? $execution.id).replace(/[\\r\\n]/g, '').trim().slice(0, 200) || String($execution.id);\n                  })() }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        260
+      ],
+      "id": "b9adad3f-4631-43c7-ab9c-f93c13c9ca0a",
+      "name": "Return internal error",
+      "notes": "Returns a sanitized, retryable 500 response without exposing stack traces, node details, or caller data."
     }
   ],
   "connections": {
@@ -105,6 +140,13 @@
         [
           {
             "node": "Return structured decision",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return internal error",
             "type": "main",
             "index": 0
           }
