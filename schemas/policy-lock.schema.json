@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/zarif3624/n8n-enterprise-workflows/main/schemas/policy-lock.schema.json",
+  "title": "n8n Enterprise Workflow Policy Lock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lockVersion", "policySchemaVersion", "policyEngineVersion", "policyEngineFingerprint", "policies"],
+  "properties": {
+    "lockVersion": { "const": 1 },
+    "policySchemaVersion": { "$ref": "#/$defs/semverCore" },
+    "policyEngineVersion": { "$ref": "#/$defs/semver" },
+    "policyEngineFingerprint": { "$ref": "#/$defs/sha256" },
+    "policies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["department", "slug", "policyVersion", "fingerprint"],
+        "properties": {
+          "department": { "$ref": "#/$defs/slug" },
+          "slug": { "$ref": "#/$defs/slug" },
+          "policyVersion": { "$ref": "#/$defs/semver" },
+          "fingerprint": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "semverCore": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+  }
+}

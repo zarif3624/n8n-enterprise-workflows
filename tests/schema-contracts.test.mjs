@@ -11,15 +11,19 @@ import { schemaContractIssues } from "../scripts/schema-contract-check.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const readJson = async (path) => JSON.parse(await readFile(join(root, path), "utf8"));
-const [catalogSchema, mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, lifecycleSchema, compatibility, lifecycle, catalog, snapshot] = await Promise.all([
+const [artifactSchema, catalogSchema, mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, lifecycleSchema, lockSchema, artifactManifest, compatibility, lifecycle, lock, catalog, snapshot] = await Promise.all([
+  readJson("schemas/artifact-manifest.schema.json"),
   readJson("schemas/catalog.schema.json"),
   readJson("schemas/field-mapping.schema.json"),
   readJson("schemas/conformance-report.schema.json"),
   readJson("schemas/conformance-comparison.schema.json"),
   readJson("schemas/runtime-compatibility.schema.json"),
   readJson("schemas/policy-lifecycle.schema.json"),
+  readJson("schemas/policy-lock.schema.json"),
+  readJson("artifact-manifest.json"),
   readJson("runtime-compatibility.json"),
   readJson("policy-lifecycle.json"),
+  readJson("policy-lock.json"),
   readJson("catalog.json"),
   readJson("policy-snapshot.json")
 ]);
@@ -38,6 +42,20 @@ test("published catalog schema accepts every workflow and rejects undocumented m
   const extended = structuredClone(catalog);
   extended[0].unreviewedExtension = true;
   assert.ok(schemaContractIssues(extended, catalogSchema, catalogSchema).some((issue) => issue.includes("unknown unreviewedExtension")));
+});
+
+test("published artifact manifest schema locks hashes, sizes, kinds, and safe paths", () => {
+  assertMatches(artifactManifest, artifactSchema);
+  const unsafe = structuredClone(artifactManifest);
+  unsafe.artifacts[0].path = "../outside";
+  assert.ok(schemaContractIssues(unsafe, artifactSchema, artifactSchema).some((issue) => issue.includes("pattern mismatch")));
+});
+
+test("published policy lock schema rejects malformed governed fingerprints", () => {
+  assertMatches(lock, lockSchema);
+  const malformed = structuredClone(lock);
+  malformed.policies[0].fingerprint = "sha256:not-a-digest";
+  assert.ok(schemaContractIssues(malformed, lockSchema, lockSchema).some((issue) => issue.includes("pattern mismatch")));
 });
 
 test("published field-mapping schema accepts generated mappings and rejects extensions", () => {

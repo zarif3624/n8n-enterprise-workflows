@@ -10,6 +10,7 @@ export function sha256(value) {
 
 export function generatedArtifactDescriptors(catalog) {
   const descriptors = [
+    { path: "schemas/artifact-manifest.schema.json", kind: "json-schema" },
     { path: "catalog.json", kind: "catalog" },
     { path: "docs/catalog.md", kind: "catalog-documentation" },
     { path: "openapi.json", kind: "api-contract" },
@@ -22,6 +23,7 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "schemas/conformance-report.schema.json", kind: "json-schema" },
     { path: "schemas/field-mapping.schema.json", kind: "json-schema" },
     { path: "schemas/policy-lifecycle.schema.json", kind: "json-schema" },
+    { path: "schemas/policy-lock.schema.json", kind: "json-schema" },
     { path: "schemas/runtime-compatibility.schema.json", kind: "json-schema" }
   ];
 
