@@ -2,6 +2,7 @@ import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildArtifactManifest, sha256 } from "./artifact-integrity.mjs";
+import { createIdentityMapping } from "./field-mapping.mjs";
 import { createTarGzip, readTarGzip } from "./release-archive.mjs";
 import { verifyReleaseBundle } from "./verify-bundle.mjs";
 
@@ -82,7 +83,7 @@ function archiveFor(entries, rootName, metadata) {
 
 function departmentReadme(department, entries, version) {
   const rows = entries.map((entry) => `- **${entry.name}** — import \`${entry.workflow}\``).join("\n");
-  return Buffer.from(`# ${titleCase(department)} workflow bundle\n\nVersion ${version} of the n8n Enterprise Workflows ${titleCase(department)} bundle.\n\n${rows}\n\nEvery workflow ships inactive and credential-free. Read its companion README, use the supplied fixtures on the test webhook, configure authentication, and obtain the named business owner's approval before production activation.\n\n- \`catalog.json\` describes the included workflows and typed inputs.\n- \`openapi.json\` describes their HTTP contracts.\n- \`policy-lock.json\` and \`policy-snapshot.json\` identify the exact decision behavior.\n- \`policy-lifecycle.json\` records draft/active status, owner, and the next approval or review deadline.\n- \`runtime-compatibility.json\` records the pinned n8n/Node test matrix and live probe scope.\n- \`schemas/\` contains machine-readable contracts for the included governance and adoption files.\n- \`BUNDLE.json\` records a SHA-256 hash for every other file in this archive.\n\nVerify the archive itself with the release's \`SHA256SUMS\` file before extraction.\n`);
+  return Buffer.from(`# ${titleCase(department)} workflow bundle\n\nVersion ${version} of the n8n Enterprise Workflows ${titleCase(department)} bundle.\n\n${rows}\n\nEvery workflow ships inactive and credential-free. Read its companion README, use the supplied fixtures on the test webhook, configure authentication, and obtain the named business owner's approval before production activation.\n\n- \`catalog.json\` describes the included workflows and typed inputs.\n- \`openapi.json\` describes their HTTP contracts.\n- \`policy-lock.json\` and \`policy-snapshot.json\` identify the exact decision behavior.\n- \`policy-lifecycle.json\` records draft/active status, owner, and the next approval or review deadline.\n- \`mappings/\` contains fingerprint-bound identity templates to customize for source-system fields.\n- \`runtime-compatibility.json\` records the pinned n8n/Node test matrix and live probe scope.\n- \`schemas/\` contains machine-readable contracts for the included governance and adoption files.\n- \`BUNDLE.json\` records a SHA-256 hash for every other file in this archive.\n\nVerify the archive itself with the release's \`SHA256SUMS\` file before extraction.\n`);
 }
 
 function filteredOpenApi(openApi, entries) {
@@ -185,7 +186,10 @@ export async function buildRelease() {
     const entries = await readEntries([
       "LICENSE",
       "SECURITY.md",
+      "docs/conformance-testing.md",
+      "docs/drift-monitoring.md",
       "docs/enterprise-readiness.md",
+      "docs/field-mapping.md",
       "docs/policy-lifecycle.md",
       "docs/roi-model.md",
       "runtime-compatibility.json",
@@ -201,6 +205,11 @@ export async function buildRelease() {
       ["policy-snapshot.json", json(filteredPolicies(policySnapshot, departmentCatalog))]
     ]);
     for (const [path, content] of replace) entries.push({ path, content });
+    for (const catalogEntry of departmentCatalog) {
+      const snapshotPolicy = policySnapshot.policies.find((entry) => entry.slug === catalogEntry.slug);
+      if (!snapshotPolicy) throw new Error(`Policy snapshot is missing ${catalogEntry.slug}`);
+      entries.push({ path: `mappings/${catalogEntry.slug}.json`, content: json(createIdentityMapping(snapshotPolicy)) });
+    }
     const workflows = workflowIdentities.filter((entry) => entry.department === department);
     await emitArchive({
       file: `n8n-enterprise-workflows-${department}-v${version}.tar.gz`,

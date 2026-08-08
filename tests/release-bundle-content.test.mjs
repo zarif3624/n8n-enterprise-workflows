@@ -39,4 +39,13 @@ test("full and department release bundles carry lifecycle and compatibility cont
   assert.ok(financeFiles.has("runtime-compatibility.json"));
   assert.ok(financeFiles.has("schemas/runtime-compatibility.schema.json"));
   assert.ok(financeFiles.has("docs/policy-lifecycle.md"));
+  assert.ok(financeFiles.has("docs/field-mapping.md"));
+  assert.ok(financeFiles.has("docs/conformance-testing.md"));
+  assert.ok(financeFiles.has("docs/drift-monitoring.md"));
+  const mapping = JSON.parse(financeFiles.get("mappings/invoice-exception-triage.json"));
+  const mappingSchema = JSON.parse(financeFiles.get("schemas/field-mapping.schema.json"));
+  assert.deepEqual(schemaContractIssues(mapping, mappingSchema, mappingSchema), []);
+  assert.equal(mapping.workflow, "invoice-exception-triage");
+  assert.equal(mapping.policyFingerprint, lifecycle.policies[0].fingerprint);
+  assert.ok(Object.keys(mapping.fields).length > 0);
 });

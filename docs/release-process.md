@@ -36,7 +36,7 @@ fixes correctness, security, compatibility, observability, or adoption friction.
 `npm run build:release` creates `dist/` from validated source without timestamps or host-specific ownership metadata. It produces:
 
 - One complete archive with generated artifacts, source policy tooling, CI/release metadata, documentation, and tests.
-- One self-contained archive per department with that department's workflows; filtered catalog, OpenAPI, policy lock, policy snapshot, and lifecycle contract; plus runtime compatibility metadata, JSON Schemas, and deployment guidance.
+- One self-contained archive per department with that department's workflows; filtered catalog, OpenAPI, policy lock, policy snapshot, and lifecycle contract; fingerprint-bound field-mapping templates; plus conformance, drift, runtime compatibility, JSON Schema, and deployment guidance.
 - A `BUNDLE.json` inside every archive that hashes every other bundled file.
 - `release-manifest.json`, which records archive scope, workflow count, byte size, and SHA-256 identity.
 - `SHA256SUMS`, which covers every archive and the release manifest.

@@ -199,7 +199,7 @@ The final command should only be clean after generated changes have been reviewe
 
 ## Verify a release
 
-Each tagged release publishes one complete source/catalog archive and one self-contained archive per department. `SHA256SUMS` covers every archive and the release manifest; each archive's `BUNDLE.json` then covers every file inside it.
+Each tagged release publishes one complete source/catalog archive and one self-contained archive per department. Department archives include fingerprint-bound mapping templates plus conformance and drift guidance, so adoption can begin without generating missing artifacts from the source repository. `SHA256SUMS` covers every archive and the release manifest; each archive's `BUNDLE.json` then covers every file inside it.
 
 ```bash
 # Run from the directory containing the downloaded release files.
