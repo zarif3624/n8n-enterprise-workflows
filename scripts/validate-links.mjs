@@ -20,6 +20,10 @@ await discover(root);
 
 for (const markdownPath of markdownFiles) {
   const markdown = await readFile(markdownPath, "utf8");
+  const contaminatedJsonCommand = markdown.match(/npm run (?!--silent\b)[^`\n]*--json\b/);
+  if (contaminatedJsonCommand) {
+    errors.push(`${markdownPath}: machine JSON command must use npm run --silent: ${contaminatedJsonCommand[0]}`);
+  }
   const links = markdown.matchAll(/\[[^\]]*\]\(([^)]+)\)/g);
   for (const match of links) {
     const rawTarget = match[1].trim().replace(/^<|>$/g, "");

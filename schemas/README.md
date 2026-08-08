@@ -7,8 +7,8 @@ the local adoption tools:
 - `artifact-manifest.schema.json` — integrity metadata, safe artifact paths, byte sizes, and SHA-256 digests;
 - `bundle-manifest.schema.json` — the file and workflow identity manifest embedded in every release archive;
 - `field-mapping.schema.json` — declarative source-to-policy mapping files;
-- `conformance-report.schema.json` — aggregate output from `npm run conformance -- --json`;
-- `conformance-comparison.schema.json` — aggregate output from `npm run conformance:compare -- --json`;
+- `conformance-report.schema.json` — aggregate output from `npm run --silent conformance -- ... --json`;
+- `conformance-comparison.schema.json` — aggregate output from `npm run --silent conformance:compare -- ... --json`;
 - `contract-registry.schema.json` — discovery links from repository documents and CLI outputs to schemas;
 - `policy-lifecycle.schema.json` — owner review, due-date, and deprecation metadata;
 - `policy-lock.schema.json` — engine and per-policy versions and behavior fingerprints;

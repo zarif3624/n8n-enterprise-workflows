@@ -14,6 +14,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Release coverage validates mapping schemas, lifecycle fingerprints, catalog scope, internal manifests, and documentation closure across all 15 department archives rather than one representative bundle.
 - Readiness and security guidance now require upstream request-body size limits as well as rate limiting, since accepted-but-ignored fields are not a total payload-size bound.
 - Generated rollout plans now include ingress body-size/rate gates and use silent npm invocation when redirecting mapping JSON, preventing unusable plan-generated artifacts.
+- Markdown validation now rejects non-silent npm commands that claim to emit machine JSON, making clean stdout a documented contract.
 - A deterministic `policy-lock.json` with canonical SHA-256 fingerprints for all executable policy behavior.
 - Local generation and pull-request guards that reject silent policy changes, engine changes without an engine-version bump, and policy-version regressions.
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
