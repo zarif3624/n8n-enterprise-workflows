@@ -25,11 +25,16 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type", "workflow", "department"],
+          "required": ["type", "workflow", "department", "owner", "lifecycleStatus", "reviewDueOn", "policyVersion", "policyFingerprint"],
           "properties": {
             "type": { "const": "workflow" },
             "workflow": { "$ref": "#/$defs/slug" },
-            "department": { "type": "string", "minLength": 1 }
+            "department": { "type": "string", "minLength": 1 },
+            "owner": { "type": "string", "minLength": 1 },
+            "lifecycleStatus": { "type": "string", "enum": ["draft", "active", "deprecated"] },
+            "reviewDueOn": { "$ref": "#/$defs/date" },
+            "policyVersion": { "$ref": "#/$defs/semver" },
+            "policyFingerprint": { "$ref": "#/$defs/sha256" }
           }
         }
       ]

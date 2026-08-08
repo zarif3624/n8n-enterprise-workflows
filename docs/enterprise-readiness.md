@@ -4,7 +4,7 @@ An imported workflow is a starting point. Complete this checklist before using
 one with production data or systems.
 
 Start with `npm run catalog -- plan <workflow-slug>` to generate a workflow-specific field-mapping and rollout worksheet, then complete the controls below.
-Run `npm run readiness -- --workflow <workflow-slug>` for a schema-validated preflight scoped to that policy; add `--json` when another deployment system will consume the evidence.
+Run `npm run readiness -- --workflow <workflow-slug>` for a schema-validated preflight scoped to that policy; it binds the result to the exact owner, lifecycle state, review date, version, and policy fingerprint. Add `--json` when another deployment system will consume the evidence. Draft, overdue, and deprecated policies fail closed as deployment blockers.
 
 ## Ownership and policy
 

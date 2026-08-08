@@ -30,7 +30,7 @@ All notable changes to this project are documented here. The project follows Sem
 
 ### Changed
 
-- Readiness evidence can now be scoped to one workflow, exposing that policy's deployment gates without catalog-wide approval noise.
+- Readiness evidence can now be scoped and fingerprint-bound to one workflow, exposing its exact owner, lifecycle, review date, and deployment gates without catalog-wide approval noise; deprecated policies now fail closed.
 - Clarified that unknown request fields are accepted for compatibility but ignored and never echoed.
 - Pretty-serialized embedded policy JSON so n8n cannot misread nested `}}` as an early expression terminator; all policies and the shared engine move to patch version `1.0.1`.
 - OpenAPI operations now constrain workflow identity, policy version, and decision enums per endpoint and document correlation/cache headers on 200, 400, and 500 responses.

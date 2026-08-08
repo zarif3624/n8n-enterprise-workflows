@@ -20,6 +20,7 @@ export function buildReadinessReport({
   const scopedLifecycle = workflowSlug
     ? { ...lifecycle, policies: lifecycle.policies.filter((entry) => entry.slug === workflowSlug) }
     : lifecycle;
+  const scopedLifecycleEntry = workflowSlug ? scopedLifecycle.policies[0] : undefined;
   const lifecycleReport = buildPolicyLifecycleReport(scopedLifecycle, { asOf });
   const issues = [
     ...contractIssues.map((issue) => `contract: ${issue}`),
@@ -38,12 +39,26 @@ export function buildReadinessReport({
     count: lifecycleReport.summary.overdue,
     message: "Overdue policy reviews must be completed before production use"
   });
+  if (lifecycleReport.summary.deprecated > 0) blockers.push({
+    code: "policy_deprecated",
+    count: lifecycleReport.summary.deprecated,
+    message: "Deprecated policies must not be used for new production deployments"
+  });
   return {
     reportVersion: 2,
     asOf,
     packageVersion: packageManifest.version,
     scope: workflowSlug
-      ? { type: "workflow", workflow: workflowSlug, department: scopedEntry.department }
+      ? {
+          type: "workflow",
+          workflow: workflowSlug,
+          department: scopedEntry.department,
+          owner: scopedLifecycleEntry.owner,
+          lifecycleStatus: scopedLifecycleEntry.status,
+          reviewDueOn: scopedLifecycleEntry.reviewDueOn,
+          policyVersion: scopedLifecycleEntry.policyVersion,
+          policyFingerprint: scopedLifecycleEntry.fingerprint
+        }
       : { type: "catalog" },
     repositoryStatus: issues.length ? "invalid" : "ready",
     deploymentStatus: blockers.length ? "blocked" : "requires-environment-configuration",
@@ -104,6 +119,9 @@ export function renderReadinessReport(report) {
     `Repository: **${report.repositoryStatus}**. Deployment: **${report.deploymentStatus}**.`,
     "",
     `Scope: ${report.scope.type === "workflow" ? `workflow \`${report.scope.workflow}\` (${report.scope.department})` : "complete catalog"}.`,
+    ...(report.scope.type === "workflow"
+      ? [`Policy identity: ${report.scope.policyVersion}, \`${report.scope.policyFingerprint}\`; ${report.scope.lifecycleStatus}, owned by ${report.scope.owner}, review due ${report.scope.reviewDueOn}.`]
+      : []),
     `Repository inventory: ${report.inventory.workflows} workflows, ${report.inventory.departments} departments, ${report.inventory.artifacts} integrity-covered artifacts.`,
     `Governance: ${report.policyGovernance.draft} draft, ${report.policyGovernance.active} active, ${report.policyGovernance.deprecated} deprecated, ${report.policyGovernance.dueSoon} due soon, ${report.policyGovernance.overdue} overdue.`,
     `Compatibility: n8n ${report.runtimeCompatibility.scheduledN8nVersions.join(", ")} on Node ${report.runtimeCompatibility.nodeVersion}, ${report.runtimeCompatibility.probeCount} live probes.`,
