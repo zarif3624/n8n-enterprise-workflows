@@ -37,6 +37,7 @@ All notable changes to this project are documented here. The project follows Sem
 
 - A runtime-only failure where importable workflows produced empty HTTP 200 responses because the Edit Fields raw-expression parser rejected compact nested policy JSON.
 - Documented stdin (`-`) support now reads piped JSON reliably in both single-record evaluation and batch conformance commands without echoing malformed input.
+- Mapping validation now rejects omitted optional fields that drive policy rules, preventing silent signal suppression or permanently triggered `missing`/`falsy` behavior.
 
 ## 0.2.0
 

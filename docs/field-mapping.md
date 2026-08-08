@@ -49,9 +49,12 @@ lookup reads own properties only.
 | `strictBoolean` | Accept a boolean or the case-insensitive strings `true` and `false`. |
 
 There are intentionally no expressions, arbitrary code, implicit truthiness,
-or literal defaults. Required source values must exist; optional mappings may
-be omitted. The policy’s typed contract runs after mapping and remains the
-authority on valid target values.
+or literal defaults. Required contract fields and every field referenced by a
+policy rule must be mapped; otherwise mapping validation fails before records
+are processed. Optional fields not used by policy may be omitted. This prevents
+an absent mapping from silently disabling a signal or permanently activating a
+`missing`/`falsy` rule. The policy’s typed contract runs after mapping and
+remains the authority on valid target values.
 
 ## Validate and test
 

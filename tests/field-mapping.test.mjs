@@ -77,6 +77,10 @@ test("mapping validation rejects drift, unknown targets, and unsafe paths", () =
   delete missing.fields.invoiceId;
   assert.throws(() => validateFieldMapping(missing, snapshotPolicy), /Required target field invoiceId/);
 
+  const missingRuleSignal = createIdentityMapping(snapshotPolicy);
+  delete missingRuleSignal.fields.duplicateDetected;
+  assert.throws(() => validateFieldMapping(missingRuleSignal, snapshotPolicy), /Policy-relevant target field duplicateDetected/);
+
   const extra = { ...createIdentityMapping(snapshotPolicy), executable: "not-allowed" };
   assert.throws(() => validateFieldMapping(extra, snapshotPolicy), /unsupported option: executable/);
 });
@@ -113,6 +117,8 @@ test("mapping CLI emits, checks, and applies a current identity template", async
     const checked = spawnSync(process.execPath, ["scripts/field-mapping-cli.mjs", "check", path], { cwd: root, encoding: "utf8" });
     assert.equal(checked.status, 0, checked.stderr);
     assert.equal(JSON.parse(checked.stdout).mappedFieldCount, Object.keys(mapping.fields).length);
+    const relevantFields = new Set([...snapshotPolicy.behavior.inputSchema.required, ...snapshotPolicy.behavior.rules.map((rule) => rule.field)]);
+    assert.equal(JSON.parse(checked.stdout).policyRelevantFieldCount, relevantFields.size);
 
     const conformance = spawnSync(process.execPath, ["scripts/conformance-cli.mjs", "invoice-exception-triage", "-", "--mapping", path, "--json"], {
       cwd: root,

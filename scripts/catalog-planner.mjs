@@ -178,7 +178,7 @@ export function buildAdoptionPlan(detail, { adapter, capacity, fixtureOutcomes =
     conformanceCommand: `npm run conformance -- ${detail.slug} ./sanitized-records.jsonl --mapping ${detail.slug}.mapping.json --min-records 100 --max-invalid-rate 0.02 --min-rule-coverage 0.8`,
     rolloutGates: [
       { gate: "Policy approval", evidence: `Owner ${detail.owner} approves rules, thresholds, hard gates, decisions, and policy fingerprint.` },
-      { gate: "Data mapping", evidence: "Every required field has a typed source, classification, owner, and invalid-data path." },
+      { gate: "Data mapping", evidence: "Every required and policy-relevant field has a typed source, classification, owner, and invalid-data path." },
       { gate: "Authentication", evidence: "The production webhook uses an approved built-in credential plus upstream authorization or allowlisting." },
       { gate: "Side-effect safety", evidence: "Credentials are least privilege; consequential writes require human approval; retries are idempotent." },
       { gate: "Failure handling", evidence: "External-node error outputs, timeout behavior, private alerts, sanitized 5xx responses, and rollback are tested." },

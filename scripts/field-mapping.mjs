@@ -83,8 +83,15 @@ export function validateFieldMapping(mapping, snapshotPolicy) {
 
   const schema = snapshotPolicy.behavior.inputSchema;
   const knownFields = new Set(Object.keys(schema.properties));
-  for (const field of schema.required) {
-    if (!Object.hasOwn(mapping.fields, field)) throw new Error(`Required target field ${field} is not mapped`);
+  const policyRelevantFields = new Set([
+    ...schema.required,
+    ...snapshotPolicy.behavior.rules.map((rule) => rule.field)
+  ]);
+  for (const field of policyRelevantFields) {
+    if (!Object.hasOwn(mapping.fields, field)) {
+      const relevance = schema.required.includes(field) ? "Required" : "Policy-relevant";
+      throw new Error(`${relevance} target field ${field} is not mapped`);
+    }
   }
 
   const compiledFields = [];
@@ -109,6 +116,7 @@ export function validateFieldMapping(mapping, snapshotPolicy) {
     workflow: mapping.workflow,
     policyFingerprint: mapping.policyFingerprint,
     fingerprint: fingerprint(mapping),
+    policyRelevantFieldCount: policyRelevantFields.size,
     fields: compiledFields
   };
 }

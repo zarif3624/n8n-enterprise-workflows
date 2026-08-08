@@ -37,7 +37,8 @@ async function main() {
       workflow: compiled.workflow,
       policyFingerprint: compiled.policyFingerprint,
       mappingFingerprint: compiled.fingerprint,
-      mappedFieldCount: compiled.fields.length
+      mappedFieldCount: compiled.fields.length,
+      policyRelevantFieldCount: compiled.policyRelevantFieldCount
     }, null, 2)}\n`);
     return;
   }
