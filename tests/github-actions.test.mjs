@@ -53,3 +53,13 @@ test("release CI clean-installs and validates the packaged source archive", asyn
   assert.match(source, /test -f "\$\{packaged_root\}\/package-lock\.json"/);
   assert.match(source, /cd "\$\{packaged_root\}"\s+npm ci --ignore-scripts\s+npm run check/);
 });
+
+test("validation CI cancels stale runs without weakening release completion", async () => {
+  const [validation, release] = await Promise.all([
+    readFile(join(root, ".github", "workflows", "validate.yml"), "utf8"),
+    readFile(join(root, ".github", "workflows", "release.yml"), "utf8")
+  ]);
+  assert.match(validation, /group: validate-\$\{\{ github\.workflow \}\}-\$\{\{ github\.ref \}\}/);
+  assert.match(validation, /cancel-in-progress: true/);
+  assert.match(release, /cancel-in-progress: false/);
+});
