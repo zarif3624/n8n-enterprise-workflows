@@ -61,6 +61,15 @@ This project makes those concerns part of each workflow package.
 Browse the machine-readable [catalog](catalog.json), the generated
 [OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
 
+Find a starting point by business language or system, then generate a rollout worksheet:
+
+```bash
+npm run catalog -- search "security approval"
+npm run catalog -- plan invoice-exception-triage --adapter SAP
+```
+
+The planner combines typed field mapping, expected fixture outcomes, owner approval, production controls, observability, rollback, and optional capacity-value assumptions. See [catalog discovery and adoption planning](docs/adoption-planning.md).
+
 ## Five-minute start
 
 ### Option A: Import in n8n

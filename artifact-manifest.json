@@ -11,8 +11,8 @@
     {
       "path": "catalog.json",
       "kind": "catalog",
-      "bytes": 36009,
-      "sha256": "sha256:bcb95880557823316e054d6c484cbb841b6da9f32803d4cbd268f6de5c5cac4a"
+      "bytes": 37412,
+      "sha256": "sha256:e4e9b5767d76ce8ed45d32583f5d0eb13b00d9acb8b1453ae9bd847c637295dd"
     },
     {
       "path": "docs/catalog.md",

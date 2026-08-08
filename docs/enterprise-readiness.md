@@ -3,6 +3,8 @@
 An imported workflow is a starting point. Complete this checklist before using
 one with production data or systems.
 
+Start with `npm run catalog -- plan <workflow-slug>` to generate a workflow-specific field-mapping and rollout worksheet, then complete the controls below.
+
 ## Ownership and policy
 
 - Assign a business owner and technical owner.

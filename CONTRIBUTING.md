@@ -9,6 +9,8 @@ Open a workflow request before implementing a large addition. Describe the
 department, business problem, trigger, expected outcome, systems involved,
 human approval points, risk level, and measurable value.
 
+Search the existing catalog first with `npm run catalog -- search <terms>` so proposals extend rather than duplicate an existing policy service.
+
 ## Quality bar
 
 Every workflow must:

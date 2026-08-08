@@ -9,6 +9,7 @@
     "outcome": "A structured decision with a risk score, matched policy reasons, and the next recommended action.",
     "owner": "Accounts Payable Operations",
     "metric": "Minutes of manual review avoided per invoice",
+    "roiModel": "monthly invoice volume x exception rate x minutes saved x loaded hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -91,6 +92,7 @@
     "outcome": "A normalized access decision that separates standard fulfillment, security review, and blocked requests.",
     "owner": "People Operations and Identity Management",
     "metric": "Access-request cycle time",
+    "roiModel": "monthly access requests x minutes saved x loaded hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -171,6 +173,7 @@
     "outcome": "A defensible routing decision with urgency, ownership guidance, and escalation reasons.",
     "owner": "IT Service Management",
     "metric": "Mean time to assignment",
+    "roiModel": "incidents per month x minutes faster assignment x outage cost per minute",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -246,6 +249,7 @@
     "outcome": "A rapid containment recommendation without automatically taking destructive security actions.",
     "owner": "Security Operations",
     "metric": "Minutes from report to analyst triage",
+    "roiModel": "reports per month x minutes saved in initial triage x analyst hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -323,6 +327,7 @@
     "outcome": "A transparent routing recommendation with matched reasons and a clear next action for RevOps.",
     "owner": "Revenue Operations",
     "metric": "Speed to lead for qualified accounts",
+    "roiModel": "qualified leads x conversion lift x average contract value",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -401,6 +406,7 @@
     "outcome": "A follow-up decision that keeps compliance facts visible and routes ambiguous records for review.",
     "owner": "Marketing Operations",
     "metric": "Compliant leads processed per campaign",
+    "roiModel": "campaign leads x minutes saved in list review x marketing operations hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -480,6 +486,7 @@
     "outcome": "An explainable intervention priority and recommended customer-success action plan.",
     "owner": "Customer Success Operations",
     "metric": "At-risk accounts engaged before renewal",
+    "roiModel": "at-risk ARR x reduction in preventable churn rate",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -557,6 +564,7 @@
     "outcome": "A normalized legal intake route with risk reasons and required reviewers.",
     "owner": "Legal Operations",
     "metric": "Contract request time to first review",
+    "roiModel": "monthly contracts x reduction in intake rework minutes x legal hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -633,6 +641,7 @@
     "outcome": "A coordinated due-diligence route with the reasons each review is required.",
     "owner": "Procurement Operations",
     "metric": "Vendor request time to correct review path",
+    "roiModel": "vendor requests x days removed from routing delay x internal cost per delay day",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -708,6 +717,7 @@
     "outcome": "A severity tier, communication cadence, stakeholder list, and next update deadline.",
     "owner": "Business Operations and Incident Command",
     "metric": "Minutes from incident declaration to first stakeholder brief",
+    "roiModel": "major incidents x minutes faster communication x affected staff loaded cost per minute",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -787,6 +797,7 @@
     "outcome": "A transparent governance route that separates standard access from data-owner, privacy, and security review.",
     "owner": "Data Governance",
     "metric": "Time from request to governed data access",
+    "roiModel": "monthly data requests x review minutes saved x governance hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -866,6 +877,7 @@
     "outcome": "An explainable release route that preserves human authority for elevated and security-relevant changes.",
     "owner": "Engineering Operations",
     "metric": "Change lead time without increasing failure rate",
+    "roiModel": "monthly changes x approval minutes saved x engineering hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -945,6 +957,7 @@
     "outcome": "A defensible urgency tier with clear escalation reasons and a named human response path.",
     "owner": "Workplace Operations",
     "metric": "Minutes from report to accountable responder",
+    "roiModel": "workplace incidents x minutes faster routing x disruption cost per minute",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -1023,6 +1036,7 @@
     "outcome": "A visible approval route that prevents high-risk messages from bypassing accountable reviewers.",
     "owner": "Corporate Communications",
     "metric": "Time from draft to approved external communication",
+    "roiModel": "external messages x coordination minutes saved x reviewer hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -1106,6 +1120,7 @@
     "outcome": "A deadline-aware route that keeps identity verification and legal constraints visible before fulfillment.",
     "owner": "Privacy Operations",
     "metric": "Data subject requests completed within policy deadline",
+    "roiModel": "annual privacy requests x handling hours saved x privacy operations hourly cost",
     "inputSchema": {
       "type": "object",
       "required": [

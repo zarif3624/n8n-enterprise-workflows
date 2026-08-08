@@ -585,6 +585,7 @@ for (const definition of workflows) {
     outcome: definition.outcome,
     owner: definition.owner,
     metric: definition.primaryMetric,
+    roiModel: definition.roiExample,
     inputSchema: inputSchemaFor(definition),
     decisions: definition.decisions,
     adapters: adaptersFor(definition),

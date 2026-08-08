@@ -121,7 +121,7 @@ for (const entry of catalog) {
   }
   if (entry.schemaVersion !== policySchemaVersion || entry.policyVersion !== definition.policyVersion) fail(entry.path, "catalog policy/schema version is missing or unsupported");
   if (!sameJson(entry.inputSchema, inputSchemaFor(definition))) fail(entry.path, "catalog input schema drifted from the definition");
-  if (!entry.outcome || !entry.owner || !entry.metric || !entry.examples || !Array.isArray(entry.adapters)) fail(entry.path, "catalog adoption metadata is incomplete");
+  if (!entry.outcome || !entry.owner || !entry.metric || !entry.roiModel || !entry.examples || !Array.isArray(entry.adapters)) fail(entry.path, "catalog adoption metadata is incomplete");
   const openApiOperation = openApi.paths?.[entry.endpoint]?.post;
   if (!openApiOperation || openApiOperation.operationId !== `evaluate${entry.slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join("")}`) fail(entry.path, "OpenAPI operation is missing or unstable");
   if (!sameJson(openApiOperation?.requestBody?.content?.["application/json"]?.schema, entry.inputSchema)) fail(entry.path, "OpenAPI input schema drifted from the catalog");

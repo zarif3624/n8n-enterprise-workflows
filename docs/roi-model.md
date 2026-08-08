@@ -2,6 +2,8 @@
 
 Use a conservative model and publish assumptions next to results.
 
+For a quick capacity scenario, `npm run catalog -- plan <workflow-slug> --monthly-volume <n> --minutes-saved <n> --hourly-cost <n>` performs the capacity calculation and preserves its caveat next to the result.
+
 ## Capacity value
 
 ```text
