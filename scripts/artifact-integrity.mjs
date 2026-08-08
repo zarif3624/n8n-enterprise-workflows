@@ -17,6 +17,7 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "policy-lock.json", kind: "policy-lock" },
     { path: "policy-snapshot.json", kind: "policy-snapshot" },
     { path: "runtime-compatibility.json", kind: "runtime-compatibility" },
+    { path: "schemas/catalog.schema.json", kind: "json-schema" },
     { path: "schemas/conformance-comparison.schema.json", kind: "json-schema" },
     { path: "schemas/conformance-report.schema.json", kind: "json-schema" },
     { path: "schemas/field-mapping.schema.json", kind: "json-schema" },

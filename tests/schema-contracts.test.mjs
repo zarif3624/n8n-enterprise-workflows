@@ -11,7 +11,8 @@ import { schemaContractIssues } from "../scripts/schema-contract-check.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const readJson = async (path) => JSON.parse(await readFile(join(root, path), "utf8"));
-const [mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, lifecycleSchema, compatibility, lifecycle, catalog, snapshot] = await Promise.all([
+const [catalogSchema, mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, lifecycleSchema, compatibility, lifecycle, catalog, snapshot] = await Promise.all([
+  readJson("schemas/catalog.schema.json"),
   readJson("schemas/field-mapping.schema.json"),
   readJson("schemas/conformance-report.schema.json"),
   readJson("schemas/conformance-comparison.schema.json"),
@@ -31,6 +32,13 @@ const invalid = await readFile(join(examples, "invalid.json"), "utf8").then(JSON
 function assertMatches(document, schema) {
   assert.deepEqual(schemaContractIssues(document, schema, schema), []);
 }
+
+test("published catalog schema accepts every workflow and rejects undocumented metadata", () => {
+  assertMatches(catalog, catalogSchema);
+  const extended = structuredClone(catalog);
+  extended[0].unreviewedExtension = true;
+  assert.ok(schemaContractIssues(extended, catalogSchema, catalogSchema).some((issue) => issue.includes("unknown unreviewedExtension")));
+});
 
 test("published field-mapping schema accepts generated mappings and rejects extensions", () => {
   const mapping = createIdentityMapping(policy);

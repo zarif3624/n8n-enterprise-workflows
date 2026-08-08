@@ -4,7 +4,7 @@
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.3",
   "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
-  "artifactCount": 87,
+  "artifactCount": 88,
   "departmentCount": 15,
   "workflowCount": 15,
   "artifacts": [
@@ -49,6 +49,12 @@
       "kind": "runtime-compatibility",
       "bytes": 513,
       "sha256": "sha256:9f1e410c2350fd67aa2d5fbd83ac424c7c14dbbe6d0921e04a3f8b1af77d3959"
+    },
+    {
+      "path": "schemas/catalog.schema.json",
+      "kind": "json-schema",
+      "bytes": 4789,
+      "sha256": "sha256:17c23330a35557f46d0dbcf0ca71a4bf48112a3351952d974302778810bb9160"
     },
     {
       "path": "schemas/conformance-comparison.schema.json",

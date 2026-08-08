@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/zarif3624/n8n-enterprise-workflows/main/schemas/catalog.schema.json",
+  "title": "n8n Enterprise Workflow Catalog",
+  "type": "array",
+  "minItems": 1,
+  "items": { "$ref": "#/$defs/catalogEntry" },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "nonEmpty": { "type": "string", "minLength": 1 },
+    "decision": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$" },
+    "fieldContract": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "number" },
+            "minimum": { "type": "number" },
+            "maximum": { "type": "number" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "minLength", "maxLength"],
+          "properties": {
+            "type": { "const": "string" },
+            "minLength": { "type": "integer", "minimum": 0 },
+            "maxLength": { "type": "integer", "minimum": 1 },
+            "format": { "type": "string", "enum": ["email", "date-time"] },
+            "pattern": { "type": "string", "minLength": 1 },
+            "enum": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string" }
+            }
+          }
+        }
+      ]
+    },
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "required", "properties", "additionalProperties"],
+      "properties": {
+        "type": { "const": "object" },
+        "required": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" }
+        },
+        "properties": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9]*$" },
+          "additionalProperties": { "$ref": "#/$defs/fieldContract" }
+        },
+        "additionalProperties": { "const": true }
+      }
+    },
+    "catalogEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion", "policyVersion", "department", "slug", "name",
+        "summary", "outcome", "owner", "metric", "roiModel", "inputSchema",
+        "decisions", "adapters", "path", "endpoint", "workflow", "examples"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "policyVersion": { "$ref": "#/$defs/semver" },
+        "department": { "$ref": "#/$defs/slug" },
+        "slug": { "$ref": "#/$defs/slug" },
+        "name": { "$ref": "#/$defs/nonEmpty" },
+        "summary": { "$ref": "#/$defs/nonEmpty" },
+        "outcome": { "$ref": "#/$defs/nonEmpty" },
+        "owner": { "$ref": "#/$defs/nonEmpty" },
+        "metric": { "$ref": "#/$defs/nonEmpty" },
+        "roiModel": { "$ref": "#/$defs/nonEmpty" },
+        "inputSchema": { "$ref": "#/$defs/inputSchema" },
+        "decisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["low", "medium", "high"],
+          "properties": {
+            "low": { "$ref": "#/$defs/decision" },
+            "medium": { "$ref": "#/$defs/decision" },
+            "high": { "$ref": "#/$defs/decision" }
+          }
+        },
+        "adapters": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "path": { "type": "string", "pattern": "^workflows/[a-z0-9-]+/[a-z0-9-]+$" },
+        "endpoint": { "type": "string", "pattern": "^/webhook/enterprise/[a-z0-9-]+/[a-z0-9-]+$" },
+        "workflow": { "type": "string", "pattern": "^workflows/[a-z0-9-]+/[a-z0-9-]+/workflow\\.json$" },
+        "examples": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lowRisk", "highRisk", "invalid"],
+          "properties": {
+            "lowRisk": { "type": "string", "pattern": "^workflows/.+/examples/low-risk\\.json$" },
+            "highRisk": { "type": "string", "pattern": "^workflows/.+/examples/high-risk\\.json$" },
+            "invalid": { "type": "string", "pattern": "^workflows/.+/examples/invalid\\.json$" }
+          }
+        }
+      }
+    }
+  }
+}
