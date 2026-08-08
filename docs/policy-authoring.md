@@ -113,7 +113,7 @@ The lock separately fingerprints `scripts/policy-engine.mjs`. Any engine source 
 - Every declared policy rule independently matches, contributes its exact points and hard floor, and maps to the expected decision band.
 - Every evaluator has both `onError: "continueErrorOutput"` and a wired error output terminating in a sanitized HTTP 500 responder.
 
-The weekly compatibility workflow imports the complete catalog into isolated n8n versions, publishes one credential-free representative workflow, and sends low-risk, high-risk, and invalid requests through the real production webhook path. It then imports a test-only copy whose evaluator deliberately throws and proves the error output returns the sanitized 500 contract. This catches parser and runtime behavior that JSON import validation cannot.
+The weekly compatibility workflow imports the complete catalog into isolated n8n versions, publishes one credential-free representative workflow, and sends low-risk, high-risk, invalid-fixture, and explicit-null requests through the real production webhook path. It then imports a test-only copy whose evaluator deliberately throws and proves the error output returns the sanitized 500 contract. This catches parser and runtime behavior that JSON import validation cannot. n8n currently normalizes an HTTP JSON `null` payload to an empty object before workflow execution, so the live null probe requires a contract-valid 400 but does not require the engine's direct root-type violation.
 
 After the check, inspect the generated diff. A green test cannot decide whether a policy is appropriate for a particular organization; it only proves the implementation matches the declared policy.
 

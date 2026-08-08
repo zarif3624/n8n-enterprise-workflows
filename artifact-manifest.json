@@ -2,8 +2,8 @@
   "manifestVersion": 1,
   "packageVersion": "0.2.0",
   "policySchemaVersion": "1.0",
-  "policyEngineVersion": "1.0.1",
-  "policyEngineFingerprint": "sha256:7b0cfd1bacf3df283ec005312a575aeed4bbb790afaaf024859ae2370e8999d9",
+  "policyEngineVersion": "1.0.3",
+  "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
   "artifactCount": 83,
   "departmentCount": 15,
   "workflowCount": 15,
@@ -12,7 +12,7 @@
       "path": "catalog.json",
       "kind": "catalog",
       "bytes": 37412,
-      "sha256": "sha256:e4e9b5767d76ce8ed45d32583f5d0eb13b00d9acb8b1453ae9bd847c637295dd"
+      "sha256": "sha256:808d90a680eb88a4c375c3ce70fb9afc64c359ead661b6b764779aae9bf3a589"
     },
     {
       "path": "docs/catalog.md",
@@ -24,19 +24,19 @@
       "path": "openapi.json",
       "kind": "api-contract",
       "bytes": 210172,
-      "sha256": "sha256:3984ec663068560f436373a302270fb93832c210975f41d66491389959b0b195"
+      "sha256": "sha256:4a928b86e0f1614c169a0b97dc069a975c602be6ea60c3582ad172c9f443a05f"
     },
     {
       "path": "policy-lock.json",
       "kind": "policy-lock",
       "bytes": 3512,
-      "sha256": "sha256:c8f1686e8d72bd7978a8bce4b5a20893e36d42d788b7cb7dc0eca56999034832"
+      "sha256": "sha256:7211e291b0f4853e4152c9865d6ffab314ab60e8e7de20ed869e38a3ad1a6ab6"
     },
     {
       "path": "policy-snapshot.json",
       "kind": "policy-snapshot",
       "bytes": 49101,
-      "sha256": "sha256:83332dd29a320667f572e51831151393e7c1798cdd3632a7e663f895abbff435"
+      "sha256": "sha256:f489e96b8723662eccbd2bc1b6941af0be1ef0f0a64e188a1304e85e38e12ac7"
     },
     {
       "path": "schemas/conformance-comparison.schema.json",
@@ -62,7 +62,7 @@
       "department": "corporate-communications",
       "workflow": "external-communication-approval",
       "bytes": 5496,
-      "sha256": "sha256:63de53d71dd5693ebe7529e6f83fc5cbca201158b76ac47d2dc2863a5d8e6dd9"
+      "sha256": "sha256:3c25932eb93230c96565dac1937123e00a326c3acd4712c6b1fa0a7692bd8903"
     },
     {
       "path": "workflows/corporate-communications/external-communication-approval/examples/high-risk.json",
@@ -93,8 +93,8 @@
       "kind": "workflow",
       "department": "corporate-communications",
       "workflow": "external-communication-approval",
-      "bytes": 15393,
-      "sha256": "sha256:c53a9800392b116b612ae014899ebbfe343c432b3cd97f19fe384c66eaf07dce"
+      "bytes": 15488,
+      "sha256": "sha256:febe6709f365fd555da8be9eedf74d8b74bcc651a490e9e063999a719ed7a31c"
     },
     {
       "path": "workflows/customer-success/customer-risk-escalation/README.md",
@@ -102,7 +102,7 @@
       "department": "customer-success",
       "workflow": "customer-risk-escalation",
       "bytes": 5395,
-      "sha256": "sha256:e558bc0fa5e64ee6ef18d261eb45fd9f4e9c43717770e947054b8435b9555d72"
+      "sha256": "sha256:66a932c4d4461b7681316dc920e76681c6b37ae30d76721940123e8e427289d7"
     },
     {
       "path": "workflows/customer-success/customer-risk-escalation/examples/high-risk.json",
@@ -133,8 +133,8 @@
       "kind": "workflow",
       "department": "customer-success",
       "workflow": "customer-risk-escalation",
-      "bytes": 15292,
-      "sha256": "sha256:e530f67a476d28c20cbf89b21c1483782bfbb652250c4db97c3d3953902fa27b"
+      "bytes": 15387,
+      "sha256": "sha256:6df58d9c8aceeeb0612a0f7c44ba4a66eca08129fd49679f19ad51a230c17103"
     },
     {
       "path": "workflows/data-and-analytics/data-access-request-triage/README.md",
@@ -142,7 +142,7 @@
       "department": "data-and-analytics",
       "workflow": "data-access-request-triage",
       "bytes": 5412,
-      "sha256": "sha256:4fb232fe8a9fe7ea582513269f875f6d1874f5f4f5c61d154d1661caf158b8cc"
+      "sha256": "sha256:aa950cb0c6c7471de3728a5b5600f0bc3212cd0e64c21b49807346da6d67c1df"
     },
     {
       "path": "workflows/data-and-analytics/data-access-request-triage/examples/high-risk.json",
@@ -173,8 +173,8 @@
       "kind": "workflow",
       "department": "data-and-analytics",
       "workflow": "data-access-request-triage",
-      "bytes": 15230,
-      "sha256": "sha256:c5e840f95cbc76c2dfbfe80118068a51f8182090a35e02eca3fa23484dde966c"
+      "bytes": 15325,
+      "sha256": "sha256:c95bdcc4b9896bad5c98861d60b5f8fbb98f55ead81b62be2aba62d31739070b"
     },
     {
       "path": "workflows/engineering/production-change-risk-gate/README.md",
@@ -182,7 +182,7 @@
       "department": "engineering",
       "workflow": "production-change-risk-gate",
       "bytes": 5398,
-      "sha256": "sha256:21e9bf2a7f5fb18a4425e646dad22d6116607fd2fba8c9ec5ef7bcaa06cd6f81"
+      "sha256": "sha256:f70c2abdaa5e1e9cd60fa714ea2dc49b0d68f59119ecc6563ce235bb23545109"
     },
     {
       "path": "workflows/engineering/production-change-risk-gate/examples/high-risk.json",
@@ -213,8 +213,8 @@
       "kind": "workflow",
       "department": "engineering",
       "workflow": "production-change-risk-gate",
-      "bytes": 15201,
-      "sha256": "sha256:7bdecb0fe558cea5b6d1881e01cd79c5992abbe14a9120f3eafc4372f174dcfe"
+      "bytes": 15296,
+      "sha256": "sha256:0e2616b08ab65171d6b82f47440ea4d36f454cfd96bae99b6200dd5a4b422989"
     },
     {
       "path": "workflows/facilities/workplace-incident-routing/README.md",
@@ -222,7 +222,7 @@
       "department": "facilities",
       "workflow": "workplace-incident-routing",
       "bytes": 5421,
-      "sha256": "sha256:0e916ed422f69840448bcb9cd101387181404157f1492853c10b97db372e4fbf"
+      "sha256": "sha256:53daff84b8d108b6cf9fff8b90dc5fa2b5e7d72019365d0e4bdde0eccae254e2"
     },
     {
       "path": "workflows/facilities/workplace-incident-routing/examples/high-risk.json",
@@ -253,8 +253,8 @@
       "kind": "workflow",
       "department": "facilities",
       "workflow": "workplace-incident-routing",
-      "bytes": 15257,
-      "sha256": "sha256:e19ffeecc13b3ae465dbfcb455ef3d52501ad4e935826cd89b89e5d0f1f3da99"
+      "bytes": 15352,
+      "sha256": "sha256:26561eb0fcb6bac512fe81fa359ec2314e5edfe39c9b2a484ebb5e01ed222dcf"
     },
     {
       "path": "workflows/finance/invoice-exception-triage/README.md",
@@ -262,7 +262,7 @@
       "department": "finance",
       "workflow": "invoice-exception-triage",
       "bytes": 5458,
-      "sha256": "sha256:6b323217ddb8c7639952b86ec1906627707977336848f5dc8c16283d8539f3c0"
+      "sha256": "sha256:446e927e4b7298cef281f03cbc9a0127377d5a9d2a2eccec80c9403450dfafd9"
     },
     {
       "path": "workflows/finance/invoice-exception-triage/examples/high-risk.json",
@@ -293,8 +293,8 @@
       "kind": "workflow",
       "department": "finance",
       "workflow": "invoice-exception-triage",
-      "bytes": 15307,
-      "sha256": "sha256:27f52bcc053ed719b5df35bcf53de86a4bb2e521dacb2ae375757501363fb83b"
+      "bytes": 15402,
+      "sha256": "sha256:72528e9773c7e6be483bd45b3615172f1f90f32d5ddf5c345954006fa0837e35"
     },
     {
       "path": "workflows/human-resources/employee-access-request-triage/README.md",
@@ -302,7 +302,7 @@
       "department": "human-resources",
       "workflow": "employee-access-request-triage",
       "bytes": 5296,
-      "sha256": "sha256:941836e488ef8ceebcfc11200c954c04359a361ece07c30ace261531ccbd1139"
+      "sha256": "sha256:c654d63ede22d07c41ccce9b2cd5f95027226c463dcb73406b5aac5188410c46"
     },
     {
       "path": "workflows/human-resources/employee-access-request-triage/examples/high-risk.json",
@@ -333,8 +333,8 @@
       "kind": "workflow",
       "department": "human-resources",
       "workflow": "employee-access-request-triage",
-      "bytes": 15152,
-      "sha256": "sha256:fcd4c77f5e45ea33112de24d6465a344fba19c32e8ccbd2359bb4fd5aacef178"
+      "bytes": 15247,
+      "sha256": "sha256:25a21b1f75928ecba7af632b339ec1e918404bbd2c75b6288c31d50eeb996322"
     },
     {
       "path": "workflows/information-technology/service-desk-priority-routing/README.md",
@@ -342,7 +342,7 @@
       "department": "information-technology",
       "workflow": "service-desk-priority-routing",
       "bytes": 5381,
-      "sha256": "sha256:80d3d5a5a650c54483c507439591beba17b2bfb9b3df3fc6549d0b7ea5e4c5a6"
+      "sha256": "sha256:d65be193ae3060a733b9f8d976d3d64a49881d3f1c76142f43b5662bfa5e5bbb"
     },
     {
       "path": "workflows/information-technology/service-desk-priority-routing/examples/high-risk.json",
@@ -373,8 +373,8 @@
       "kind": "workflow",
       "department": "information-technology",
       "workflow": "service-desk-priority-routing",
-      "bytes": 15214,
-      "sha256": "sha256:0e3e9a1b216996ee1068f87cf3394485fe10a49ba46b80f861fcca6d67bfbf08"
+      "bytes": 15309,
+      "sha256": "sha256:747ee1e8b853a517c391df16c8de7a0c2a59ce137585fb4065bf1984a30a5686"
     },
     {
       "path": "workflows/legal/contract-intake-routing/README.md",
@@ -382,7 +382,7 @@
       "department": "legal",
       "workflow": "contract-intake-routing",
       "bytes": 5400,
-      "sha256": "sha256:a2395c9bcaa3320c7f910de600223b343f1c07c4ff78b7ea2d513b7a031d755c"
+      "sha256": "sha256:b9a21bcf2b04445d8197bc7dda41a48d475c08b6ea9db8774a454afdd07b9bd3"
     },
     {
       "path": "workflows/legal/contract-intake-routing/examples/high-risk.json",
@@ -413,8 +413,8 @@
       "kind": "workflow",
       "department": "legal",
       "workflow": "contract-intake-routing",
-      "bytes": 15214,
-      "sha256": "sha256:12d5bcb36aa02876a051480868b4dffe13aa8bda75296306f0c19f0ba38f7044"
+      "bytes": 15309,
+      "sha256": "sha256:da5cc34067a582dc4fd7bf7ba8fc9dcb024787f5a145a9a5c56d3fa73e3ede57"
     },
     {
       "path": "workflows/marketing/campaign-lead-compliance-gate/README.md",
@@ -422,7 +422,7 @@
       "department": "marketing",
       "workflow": "campaign-lead-compliance-gate",
       "bytes": 5316,
-      "sha256": "sha256:0311d24ff7d70cc1f52eee42ca36b20408067c0d7ffb945283782c5b81b2090c"
+      "sha256": "sha256:de27a27be81012ef57029a67a37ef612b07bdd8e9113e1f34087103a8d982a5a"
     },
     {
       "path": "workflows/marketing/campaign-lead-compliance-gate/examples/high-risk.json",
@@ -453,8 +453,8 @@
       "kind": "workflow",
       "department": "marketing",
       "workflow": "campaign-lead-compliance-gate",
-      "bytes": 15209,
-      "sha256": "sha256:5b3467bc737f57f242720e5f26f4d9004d381eab05212a9014bdf550d889a9a6"
+      "bytes": 15304,
+      "sha256": "sha256:2f809836a06c9e7c392797f3f5b76e2e93ccb4cae9bdedd6f5b93527cf3a7223"
     },
     {
       "path": "workflows/operations/major-incident-stakeholder-brief/README.md",
@@ -462,7 +462,7 @@
       "department": "operations",
       "workflow": "major-incident-stakeholder-brief",
       "bytes": 5499,
-      "sha256": "sha256:98e89997c6908319fabf9e3e1bc4fd50f4960ea1807f3c6acc7b45c941251ee1"
+      "sha256": "sha256:c4b773155102a5b01ddf821523a5b50871ea3a6a620f92d21892555626d6bc35"
     },
     {
       "path": "workflows/operations/major-incident-stakeholder-brief/examples/high-risk.json",
@@ -493,8 +493,8 @@
       "kind": "workflow",
       "department": "operations",
       "workflow": "major-incident-stakeholder-brief",
-      "bytes": 15302,
-      "sha256": "sha256:68032aec964425979f9c5377d0765f0ab9eda296fcf3af3368b8143b33257c94"
+      "bytes": 15397,
+      "sha256": "sha256:28c9ea2c179bca2f7e977126af1564e2439a9a5e95a7fb0251c1b2f417fbc844"
     },
     {
       "path": "workflows/privacy/data-subject-request-triage/README.md",
@@ -502,7 +502,7 @@
       "department": "privacy",
       "workflow": "data-subject-request-triage",
       "bytes": 5406,
-      "sha256": "sha256:11615dfa7adf672bc74e51e90361aa439bdf25e2183f36d248924605c822c9ee"
+      "sha256": "sha256:1709c110ed53ea57c3aafb0b8c69f206c66826055216a745ff6f7c560bd2ca61"
     },
     {
       "path": "workflows/privacy/data-subject-request-triage/examples/high-risk.json",
@@ -533,8 +533,8 @@
       "kind": "workflow",
       "department": "privacy",
       "workflow": "data-subject-request-triage",
-      "bytes": 15229,
-      "sha256": "sha256:5324c174bf86f212f799ff3afb35d35f526e06d1642fce1a181fcecc06b86807"
+      "bytes": 15324,
+      "sha256": "sha256:9117a6d6259abfd5153d07da288fba7c5ea840088a24d0753feefa4f32fba0eb"
     },
     {
       "path": "workflows/procurement/vendor-risk-intake/README.md",
@@ -542,7 +542,7 @@
       "department": "procurement",
       "workflow": "vendor-risk-intake",
       "bytes": 5427,
-      "sha256": "sha256:7c89d61838c949608969f1fb10d441f8663a55e185c61ee9a13c496fcf1fa64a"
+      "sha256": "sha256:53252cbe5fc1d7dd9d844109053400cc7253d3bb7fc19134c45ce3f70775decb"
     },
     {
       "path": "workflows/procurement/vendor-risk-intake/examples/high-risk.json",
@@ -573,8 +573,8 @@
       "kind": "workflow",
       "department": "procurement",
       "workflow": "vendor-risk-intake",
-      "bytes": 15220,
-      "sha256": "sha256:7cdf3edb9c4ea616bb0b0811f3ba882f43bb86a3ad53a6833e8daa729d4d3ed2"
+      "bytes": 15315,
+      "sha256": "sha256:2501a08f1058a207ea0645209c37e371209f6720288e4304c4a9f3e136fd11a9"
     },
     {
       "path": "workflows/sales/enterprise-lead-routing/README.md",
@@ -582,7 +582,7 @@
       "department": "sales",
       "workflow": "enterprise-lead-routing",
       "bytes": 5172,
-      "sha256": "sha256:1cb7ecf7cda49d798c2c9755171bc8366abed544f6e38fccea65e67078290b6c"
+      "sha256": "sha256:c0f304d20cbe035f881b52bc0768fb19d9f06e23b10c1de79ef9045a8a0e0810"
     },
     {
       "path": "workflows/sales/enterprise-lead-routing/examples/high-risk.json",
@@ -613,8 +613,8 @@
       "kind": "workflow",
       "department": "sales",
       "workflow": "enterprise-lead-routing",
-      "bytes": 15047,
-      "sha256": "sha256:7d9fdacafd2cb56941700a684778d8551b0e378efc06022db664176fdaa11231"
+      "bytes": 15142,
+      "sha256": "sha256:62b5d696730128f4096da18d7d6bdd7319314726fce4ed72ffbb3087ed314d92"
     },
     {
       "path": "workflows/security/phishing-report-triage/README.md",
@@ -622,7 +622,7 @@
       "department": "security",
       "workflow": "phishing-report-triage",
       "bytes": 5345,
-      "sha256": "sha256:240a5cadae045ef80aae9929c3d3f882716db8e66ac17edb90902b2dd3280492"
+      "sha256": "sha256:68c56b2372ebece487ed3837e79721954da0508d72c3f92a047b98c82f89462e"
     },
     {
       "path": "workflows/security/phishing-report-triage/examples/high-risk.json",
@@ -653,8 +653,8 @@
       "kind": "workflow",
       "department": "security",
       "workflow": "phishing-report-triage",
-      "bytes": 15109,
-      "sha256": "sha256:495721c949e439fb6863b41b08187021e185a940e53c0fefeace76f2dd2bbb73"
+      "bytes": 15204,
+      "sha256": "sha256:0c120507a93458a7b7fe3b8b85db0750b1a39e2bfce8c26abfcd1f2d0544e6c3"
     }
   ]
 }

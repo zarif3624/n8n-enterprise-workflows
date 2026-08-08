@@ -39,13 +39,17 @@ for (const entry of catalog) {
     assert.deepEqual(schemaContractIssues(low, requestSchema, openApi), []);
     assert.deepEqual(schemaContractIssues(high, requestSchema, openApi), []);
     assert.ok(schemaContractIssues(invalid, requestSchema, openApi).length >= 2);
+    assert.ok(schemaContractIssues(null, requestSchema, openApi).length >= 1);
 
     const lowResult = evaluate(snapshotPolicy, low, `openapi-low-${entry.slug}`);
     const highResult = evaluate(snapshotPolicy, high, `openapi-high-${entry.slug}`);
     const invalidResult = evaluate(snapshotPolicy, invalid, `openapi-invalid-${entry.slug}`);
+    const nullResult = evaluate(snapshotPolicy, null, `openapi-null-${entry.slug}`);
     assert.deepEqual(schemaContractIssues(lowResult, responseSchema(operation, "200"), openApi), []);
     assert.deepEqual(schemaContractIssues(highResult, responseSchema(operation, "200"), openApi), []);
     assert.deepEqual(schemaContractIssues(invalidResult, responseSchema(operation, "400"), openApi), []);
+    assert.deepEqual(schemaContractIssues(nullResult, responseSchema(operation, "400"), openApi), []);
+    assert.deepEqual(nullResult.details.violations.map(({ field, code }) => ({ field, code })), [{ field: "$", code: "invalid_type" }]);
 
     const internalError = {
       ok: false,

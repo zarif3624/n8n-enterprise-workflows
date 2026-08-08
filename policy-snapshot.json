@@ -1,16 +1,16 @@
 {
   "snapshotVersion": 1,
   "policySchemaVersion": "1.0",
-  "policyEngineVersion": "1.0.1",
-  "policyEngineFingerprint": "sha256:7b0cfd1bacf3df283ec005312a575aeed4bbb790afaaf024859ae2370e8999d9",
+  "policyEngineVersion": "1.0.3",
+  "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
   "policies": [
     {
       "department": "marketing",
       "slug": "campaign-lead-compliance-gate",
       "name": "Gate campaign leads for compliant follow-up",
       "owner": "Marketing Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:7fbc6253ec9c07c2d4f7f079860199fa19ea6303b44f9d2b09abbf4dd23bd2ca",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:720ff138429a129ce7a7844c01b96f5afa5a134695f46906121aff095c014be6",
       "behavior": {
         "actions": [
           "Record the policy decision",
@@ -73,7 +73,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -122,8 +122,8 @@
       "slug": "contract-intake-routing",
       "name": "Route enterprise contract requests",
       "owner": "Legal Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:d8d2e16def72247129bae7f058152a041f4895a2f5a05f9ebb35725874f9e81c",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:5ae799447988966c9542d73f7bcb2a580d528fcd6c01ed4eefdc583e17ee4798",
       "behavior": {
         "actions": [
           "Create the legal matter",
@@ -182,7 +182,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -235,8 +235,8 @@
       "slug": "customer-risk-escalation",
       "name": "Escalate at-risk enterprise customers",
       "owner": "Customer Success Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:d522c2fbd1abb21669bb17009208fd5d57c3af015bd49c5688fb3732dc4ab821",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:a96c5bd63d27b44ea8eccfc013b81bb658e7221e60a76adc234111b406420b3c",
       "behavior": {
         "actions": [
           "Update customer health in the CS platform",
@@ -297,7 +297,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -352,8 +352,8 @@
       "slug": "data-access-request-triage",
       "name": "Triage enterprise data access requests",
       "owner": "Data Governance",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:49494aa2566a0db930b87c7346864dd5117d8e57fa8bbec7c98784d71b2888f2",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:1a354333ea366cfb1f3fae5af81021bcfe798eaedcfc810a4f9910e2f6d75dca",
       "behavior": {
         "actions": [
           "Create the governed access ticket",
@@ -414,7 +414,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -462,8 +462,8 @@
       "slug": "data-subject-request-triage",
       "name": "Triage data subject requests",
       "owner": "Privacy Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:f11ec273c91f9b69eae0135a59408ba1a00b339acbc97ea4d9caf0d065ce2b49",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:e1864d61a3b0e2d0e2ba5809b20c0c93e8acef32a41dc1f1b3ac79ec89a92114",
       "behavior": {
         "actions": [
           "Create the privacy case",
@@ -525,7 +525,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -574,8 +574,8 @@
       "slug": "employee-access-request-triage",
       "name": "Triage employee access requests",
       "owner": "People Operations and Identity Management",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:f61c452538ee8b20c61c6fc3b3c805ed905db3f4ece46dfa9b27115b3fdec35b",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:587e77e8b05a7a3ae89d3fdb916cc0c77d275e6d004fd8a246483a0541db068b",
       "behavior": {
         "actions": [
           "Create an identity-governance ticket",
@@ -638,7 +638,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -684,8 +684,8 @@
       "slug": "enterprise-lead-routing",
       "name": "Route enterprise sales leads",
       "owner": "Revenue Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:6058ecb5b9508f00437c9dc66775390d18a514788a9ebf1eb5050a33240cef2c",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:05043eec8288c388b156579dd209980e54e4efadff54a742793f3506635c8032",
       "behavior": {
         "actions": [
           "Upsert the lead in CRM",
@@ -747,7 +747,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -794,8 +794,8 @@
       "slug": "external-communication-approval",
       "name": "Approve external enterprise communications",
       "owner": "Corporate Communications",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:ac960c4dc70aaa76b91514c1ab81fb58729cd8e0de635b46e7b270ed20f1c168",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:5d95e21ad8075e29b853906b14829797e7dc1b5fb2b5fd0d3bf1eb4dfa3853e1",
       "behavior": {
         "actions": [
           "Create the communication approval record",
@@ -861,7 +861,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -909,8 +909,8 @@
       "slug": "invoice-exception-triage",
       "name": "Triage enterprise invoice exceptions",
       "owner": "Accounts Payable Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:66a684df06c2eab1e9f5d5251b8f45b1c034d261d737b0a8c39fec00f06ba1f4",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:77fece7db9614359bb13b104af93ada6bfc33ffd9a6052465aa24dbad6ab9688",
       "behavior": {
         "actions": [
           "Persist the decision in the ERP or AP queue",
@@ -974,7 +974,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1023,8 +1023,8 @@
       "slug": "major-incident-stakeholder-brief",
       "name": "Prepare major incident stakeholder briefs",
       "owner": "Business Operations and Incident Command",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:d2be48ecc18cb0ec4211ecec68ba88860b8f8401714ff1458439ff32e99bb234",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:b6a17b505cc910e8c70e3073f2446a3bdc16fba9c658e05c7bba1c7fc933feef",
       "behavior": {
         "actions": [
           "Create the stakeholder brief",
@@ -1086,7 +1086,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1135,8 +1135,8 @@
       "slug": "phishing-report-triage",
       "name": "Triage employee phishing reports",
       "owner": "Security Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:948f47cc13a58072982e96ca3999fe5b49e2404173dd24f11b02a7fa8ded64b6",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:91ffc1454420999034e2d099b51fd10996948657a08c11760b64222a8f5027bf",
       "behavior": {
         "actions": [
           "Create a case in the security queue",
@@ -1196,7 +1196,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1243,8 +1243,8 @@
       "slug": "production-change-risk-gate",
       "name": "Gate production changes by operational risk",
       "owner": "Engineering Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:95943f90078a7e7ba6d53b5e85cd8e918720c2932a480d3667743d439241c815",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:6f480abe9bc614afc470336332dece8f54739ba898bdd059e5a5b672ea391edb",
       "behavior": {
         "actions": [
           "Update the change record",
@@ -1305,7 +1305,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1352,8 +1352,8 @@
       "slug": "service-desk-priority-routing",
       "name": "Route enterprise service desk incidents",
       "owner": "IT Service Management",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:68c39b75c68fafd46a89fbba54b1f0a3b77fcffb9b703f6f9e99e04d459ffb64",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:e83bb0f8d31748226c28da24f26881bded886a57e21a6931025b527bf0ce296d",
       "behavior": {
         "actions": [
           "Create or update the ITSM incident",
@@ -1412,7 +1412,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1465,8 +1465,8 @@
       "slug": "vendor-risk-intake",
       "name": "Triage enterprise vendor risk",
       "owner": "Procurement Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:4ea0b0dda4d639b657e3e9431a4c00d07284bec0a83b507dbea078eee8ba79bf",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:9f3c6039f3700920cc403b6ff76938ebeb3e04617e003033d2227fcaf35cbd4e",
       "behavior": {
         "actions": [
           "Create the vendor record",
@@ -1525,7 +1525,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1578,8 +1578,8 @@
       "slug": "workplace-incident-routing",
       "name": "Route workplace incidents safely",
       "owner": "Workplace Operations",
-      "policyVersion": "1.0.1",
-      "fingerprint": "sha256:10105d4ca10f67a8a883d34531296ad2db237eb19a31f35eb5cc877e7f0efaf9",
+      "policyVersion": "1.0.3",
+      "fingerprint": "sha256:5a5c0e5ee09d85f1add62c14dced83e1279c8fd5431472c31ae063ba7cc0ba3e",
       "behavior": {
         "actions": [
           "Create the facilities incident",
@@ -1640,7 +1640,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.1",
+        "policyEngineVersion": "1.0.3",
         "policySchemaVersion": "1.0",
         "rules": [
           {

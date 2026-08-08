@@ -12,7 +12,7 @@ A follow-up decision that keeps compliance facts visible and routes ambiguous re
 
 - **Primary owner:** Marketing Operations
 - **Primary metric:** Compliant leads processed per campaign
-- **Policy version:** `1.0.1`
+- **Policy version:** `1.0.3`
 - **ROI starting point:** `campaign leads x minutes saved in list review x marketing operations hourly cost / 60`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "campaign-lead-compliance-gate",
-  "policyVersion": "1.0.1",
+  "policyVersion": "1.0.3",
   "decision": "allow_campaign_follow_up",
   "priorityBand": "low",
   "score": 0,

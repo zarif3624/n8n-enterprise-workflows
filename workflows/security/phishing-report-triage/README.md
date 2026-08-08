@@ -12,7 +12,7 @@ A rapid containment recommendation without automatically taking destructive secu
 
 - **Primary owner:** Security Operations
 - **Primary metric:** Minutes from report to analyst triage
-- **Policy version:** `1.0.1`
+- **Policy version:** `1.0.3`
 - **ROI starting point:** `reports per month x minutes saved in initial triage x analyst hourly cost / 60`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "phishing-report-triage",
-  "policyVersion": "1.0.1",
+  "policyVersion": "1.0.3",
   "decision": "queue_analyst_review",
   "priorityBand": "low",
   "score": 0,

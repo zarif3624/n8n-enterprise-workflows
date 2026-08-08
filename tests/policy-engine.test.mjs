@@ -164,3 +164,22 @@ test("non-object request bodies return a self-describing 400", () => {
   assert.equal(result.details.violations[0].field, "$");
   assert.equal(result.requestSchema.type, "object");
 });
+
+test("an explicit null webhook body is validated as the body, not the envelope", () => {
+  const definition = workflows[0];
+  const result = evaluatePolicy({
+    policy: policyFor(definition),
+    envelope: { body: null, headers: { "x-request-id": "null-body" } },
+    executionId: "unit-test-execution",
+    evaluatedAt: "2026-08-07T03:00:00.000Z"
+  });
+  assert.equal(result.httpStatus, 400);
+  assert.deepEqual(result.details.violations, [{
+    field: "$",
+    code: "invalid_type",
+    message: "Request body must be a JSON object",
+    expected: "object"
+  }]);
+  assert.deepEqual(result.details.missingFields, []);
+  assert.equal(result.requestId, "null-body");
+});

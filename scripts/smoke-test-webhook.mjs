@@ -13,19 +13,27 @@ export async function smokeTestWebhook({ baseUrl, slug }) {
   const cases = [
     { name: "low", fixture: entry.examples.lowRisk, status: 200, band: "low" },
     { name: "high", fixture: entry.examples.highRisk, status: 200, band: "high" },
-    { name: "invalid", fixture: entry.examples.invalid, status: 400, error: "validation_error" }
+    { name: "invalid", fixture: entry.examples.invalid, status: 400, error: "validation_error", minimumViolations: 2 },
+    // n8n normalizes an HTTP JSON null body to an empty object before the
+    // workflow executes. The engine itself still preserves explicit body:null.
+    { name: "null-body", payload: null, status: 400, error: "validation_error", minimumViolations: 1 }
   ];
 
   for (const testCase of cases) {
     const requestId = `runtime-smoke-${testCase.name}`;
-    const fixture = JSON.parse(await readFile(join(root, testCase.fixture), "utf8"));
+    const fixture = testCase.fixture
+      ? JSON.parse(await readFile(join(root, testCase.fixture), "utf8"))
+      : testCase.payload;
+    const requestBody = fixture && typeof fixture === "object" && !Array.isArray(fixture)
+      ? { ...fixture, privateSmokeContext: "must-not-echo" }
+      : fixture;
     const response = await fetch(new URL(entry.endpoint, baseUrl), {
       method: "POST",
       headers: {
         "content-type": "application/json",
         "x-request-id": requestId
       },
-      body: JSON.stringify({ ...fixture, privateSmokeContext: "must-not-echo" }),
+      body: JSON.stringify(requestBody),
       signal: AbortSignal.timeout(10_000)
     });
     const body = await response.json();
@@ -46,11 +54,11 @@ export async function smokeTestWebhook({ baseUrl, slug }) {
     } else {
       assert.equal(body.ok, false, `${testCase.name}: success flag`);
       assert.equal(body.error, testCase.error, `${testCase.name}: error code`);
-      assert.ok(body.details?.violations?.length >= 2, `${testCase.name}: field violations`);
+      assert.ok(body.details?.violations?.length >= testCase.minimumViolations, `${testCase.name}: field violations`);
     }
   }
 
-  console.log(`Runtime-smoked ${entry.slug}: low/high decisions, invalid 400, headers, version, and response privacy.`);
+  console.log(`Runtime-smoked ${entry.slug}: low/high decisions, fixture/null 400s, headers, version, and response privacy.`);
 }
 
 export async function smokeTestInternalError({ baseUrl, slug }) {

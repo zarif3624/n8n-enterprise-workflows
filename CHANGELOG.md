@@ -11,7 +11,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, and CI supply-chain coverage, increasing the suite from 58 to 208 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, and CI supply-chain coverage, increasing the suite from 58 to 209 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
 - A generated SHA-256 manifest covering all 83 public generated and machine-contract artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
@@ -38,6 +38,7 @@ All notable changes to this project are documented here. The project follows Sem
 - A runtime-only failure where importable workflows produced empty HTTP 200 responses because the Edit Fields raw-expression parser rejected compact nested policy JSON.
 - Documented stdin (`-`) support now reads piped JSON reliably in both single-record evaluation and batch conformance commands without echoing malformed input.
 - Mapping validation now rejects omitted optional fields that drive policy rules, preventing silent signal suppression or permanently triggered `missing`/`falsy` behavior.
+- Explicit `body: null` engine envelopes now produce the root `invalid_type` violation instead of being mistaken for the surrounding envelope; live compatibility probes also verify n8n's transport-normalized empty-object form fails closed with a contract-valid 400. The shared engine and embedded policies move to patch version `1.0.3`.
 
 ## 0.2.0
 

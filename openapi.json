@@ -164,7 +164,7 @@
                           "const": "invoice-exception-triage"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -185,7 +185,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "invoice-exception-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "continue_standard_processing",
                       "priorityBand": "low",
                       "score": 0,
@@ -205,7 +205,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "invoice-exception-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "hold_payment_and_escalate",
                       "priorityBand": "high",
                       "score": 100,
@@ -384,7 +384,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "invoice-exception-triage",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -538,7 +538,7 @@
                           "const": "employee-access-request-triage"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -559,7 +559,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "employee-access-request-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "queue_standard_fulfillment",
                       "priorityBand": "low",
                       "score": 0,
@@ -579,7 +579,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "employee-access-request-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "block_until_approved",
                       "priorityBand": "high",
                       "score": 100,
@@ -755,7 +755,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "employee-access-request-triage",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -906,7 +906,7 @@
                           "const": "service-desk-priority-routing"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -927,7 +927,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "service-desk-priority-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "route_standard_queue",
                       "priorityBand": "low",
                       "score": 0,
@@ -947,7 +947,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "service-desk-priority-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "open_major_incident",
                       "priorityBand": "high",
                       "score": 100,
@@ -1125,7 +1125,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "service-desk-priority-routing",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -1277,7 +1277,7 @@
                           "const": "phishing-report-triage"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -1298,7 +1298,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "phishing-report-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "queue_analyst_review",
                       "priorityBand": "low",
                       "score": 0,
@@ -1318,7 +1318,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "phishing-report-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "initiate_containment_review",
                       "priorityBand": "high",
                       "score": 100,
@@ -1492,7 +1492,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "phishing-report-triage",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -1646,7 +1646,7 @@
                           "const": "enterprise-lead-routing"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -1667,7 +1667,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "enterprise-lead-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "route_to_nurture_or_review",
                       "priorityBand": "low",
                       "score": 0,
@@ -1687,7 +1687,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "enterprise-lead-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "assign_enterprise_owner",
                       "priorityBand": "high",
                       "score": 70,
@@ -1862,7 +1862,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "enterprise-lead-routing",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -2017,7 +2017,7 @@
                           "const": "campaign-lead-compliance-gate"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -2038,7 +2038,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "campaign-lead-compliance-gate",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "allow_campaign_follow_up",
                       "priorityBand": "low",
                       "score": 0,
@@ -2058,7 +2058,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "campaign-lead-compliance-gate",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "suppress_automated_outreach",
                       "priorityBand": "high",
                       "score": 100,
@@ -2236,7 +2236,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "campaign-lead-compliance-gate",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -2389,7 +2389,7 @@
                           "const": "customer-risk-escalation"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -2410,7 +2410,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "customer-risk-escalation",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "continue_success_plan",
                       "priorityBand": "low",
                       "score": 0,
@@ -2430,7 +2430,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "customer-risk-escalation",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "launch_executive_save_plan",
                       "priorityBand": "high",
                       "score": 100,
@@ -2610,7 +2610,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "customer-risk-escalation",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -2761,7 +2761,7 @@
                           "const": "contract-intake-routing"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -2782,7 +2782,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "contract-intake-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "use_standard_legal_queue",
                       "priorityBand": "low",
                       "score": 0,
@@ -2802,7 +2802,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "contract-intake-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "open_cross_functional_review",
                       "priorityBand": "high",
                       "score": 100,
@@ -2980,7 +2980,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "contract-intake-routing",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -3131,7 +3131,7 @@
                           "const": "vendor-risk-intake"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -3152,7 +3152,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "vendor-risk-intake",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "start_standard_procurement",
                       "priorityBand": "low",
                       "score": 0,
@@ -3172,7 +3172,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "vendor-risk-intake",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "open_full_vendor_due_diligence",
                       "priorityBand": "high",
                       "score": 100,
@@ -3350,7 +3350,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "vendor-risk-intake",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -3504,7 +3504,7 @@
                           "const": "major-incident-stakeholder-brief"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -3525,7 +3525,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "major-incident-stakeholder-brief",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "standard_operations_update",
                       "priorityBand": "low",
                       "score": 0,
@@ -3545,7 +3545,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "major-incident-stakeholder-brief",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "activate_executive_and_legal_response",
                       "priorityBand": "high",
                       "score": 100,
@@ -3722,7 +3722,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "major-incident-stakeholder-brief",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -3875,7 +3875,7 @@
                           "const": "data-access-request-triage"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -3896,7 +3896,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "data-access-request-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "approve_standard_data_access",
                       "priorityBand": "low",
                       "score": 0,
@@ -3916,7 +3916,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "data-access-request-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "block_until_governance_approval",
                       "priorityBand": "high",
                       "score": 100,
@@ -4091,7 +4091,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "data-access-request-triage",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -4244,7 +4244,7 @@
                           "const": "production-change-risk-gate"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -4265,7 +4265,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "production-change-risk-gate",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "continue_standard_change_process",
                       "priorityBand": "low",
                       "score": 0,
@@ -4285,7 +4285,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "production-change-risk-gate",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "hold_for_change_advisory_approval",
                       "priorityBand": "high",
                       "score": 100,
@@ -4460,7 +4460,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "production-change-risk-gate",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -4613,7 +4613,7 @@
                           "const": "workplace-incident-routing"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -4634,7 +4634,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "workplace-incident-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "route_standard_facilities_queue",
                       "priorityBand": "low",
                       "score": 0,
@@ -4654,7 +4654,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "workplace-incident-routing",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "activate_safety_and_security_response",
                       "priorityBand": "high",
                       "score": 100,
@@ -4830,7 +4830,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "workplace-incident-routing",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -4990,7 +4990,7 @@
                           "const": "external-communication-approval"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -5011,7 +5011,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "external-communication-approval",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "continue_standard_editorial_review",
                       "priorityBand": "low",
                       "score": 0,
@@ -5031,7 +5031,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "external-communication-approval",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "hold_for_executive_and_legal_approval",
                       "priorityBand": "high",
                       "score": 100,
@@ -5212,7 +5212,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "external-communication-approval",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true
@@ -5366,7 +5366,7 @@
                           "const": "data-subject-request-triage"
                         },
                         "policyVersion": {
-                          "const": "1.0.1"
+                          "const": "1.0.3"
                         },
                         "decision": {
                           "enum": [
@@ -5387,7 +5387,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "data-subject-request-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "continue_standard_privacy_queue",
                       "priorityBand": "low",
                       "score": 0,
@@ -5407,7 +5407,7 @@
                       "httpStatus": 200,
                       "requestId": "example-request-001",
                       "workflow": "data-subject-request-triage",
-                      "policyVersion": "1.0.1",
+                      "policyVersion": "1.0.3",
                       "decision": "hold_for_identity_or_legal_review",
                       "priorityBand": "high",
                       "score": 100,
@@ -5584,7 +5584,7 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "data-subject-request-triage",
-                  "policyVersion": "1.0.1",
+                  "policyVersion": "1.0.3",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",
                   "retryable": true

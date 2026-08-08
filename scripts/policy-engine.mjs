@@ -1,5 +1,5 @@
 export const policySchemaVersion = "1.0";
-export const policyEngineVersion = "1.0.1";
+export const policyEngineVersion = "1.0.3";
 
 function hasValue(value) {
   return value !== undefined && value !== null && !(typeof value === "string" && value.trim() === "");
@@ -80,7 +80,9 @@ export function matchesRule(rule, value) {
 }
 
 export function evaluatePolicy({ policy, envelope, executionId, evaluatedAt }) {
-  const input = envelope?.body ?? envelope;
+  const input = envelope && typeof envelope === "object" && typeof envelope.body !== "undefined"
+    ? envelope.body
+    : envelope;
   const headerRequestId = envelope?.headers?.["x-request-id"];
   const requestId = normalizeRequestId(headerRequestId, executionId);
   const schema = policy.inputSchema;

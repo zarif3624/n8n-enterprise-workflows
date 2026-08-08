@@ -12,7 +12,7 @@ A normalized access decision that separates standard fulfillment, security revie
 
 - **Primary owner:** People Operations and Identity Management
 - **Primary metric:** Access-request cycle time
-- **Policy version:** `1.0.1`
+- **Policy version:** `1.0.3`
 - **ROI starting point:** `monthly access requests x minutes saved x loaded hourly cost / 60`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "employee-access-request-triage",
-  "policyVersion": "1.0.1",
+  "policyVersion": "1.0.3",
   "decision": "queue_standard_fulfillment",
   "priorityBand": "low",
   "score": 0,

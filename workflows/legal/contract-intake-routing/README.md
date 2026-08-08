@@ -12,7 +12,7 @@ A normalized legal intake route with risk reasons and required reviewers.
 
 - **Primary owner:** Legal Operations
 - **Primary metric:** Contract request time to first review
-- **Policy version:** `1.0.1`
+- **Policy version:** `1.0.3`
 - **ROI starting point:** `monthly contracts x reduction in intake rework minutes x legal hourly cost / 60`
 
 ## Five-minute adoption
@@ -70,7 +70,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "contract-intake-routing",
-  "policyVersion": "1.0.1",
+  "policyVersion": "1.0.3",
   "decision": "use_standard_legal_queue",
   "priorityBand": "low",
   "score": 0,

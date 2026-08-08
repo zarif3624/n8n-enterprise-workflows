@@ -12,7 +12,7 @@ An explainable release route that preserves human authority for elevated and sec
 
 - **Primary owner:** Engineering Operations
 - **Primary metric:** Change lead time without increasing failure rate
-- **Policy version:** `1.0.1`
+- **Policy version:** `1.0.3`
 - **ROI starting point:** `monthly changes x approval minutes saved x engineering hourly cost / 60`
 
 ## Five-minute adoption
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "production-change-risk-gate",
-  "policyVersion": "1.0.1",
+  "policyVersion": "1.0.3",
   "decision": "continue_standard_change_process",
   "priorityBand": "low",
   "score": 0,
