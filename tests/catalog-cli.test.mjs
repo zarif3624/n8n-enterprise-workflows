@@ -44,9 +44,11 @@ test("adoption plans expose controls and calculate conservative capacity value",
   });
   assert.equal(plan.adapter.listedAsTypical, true);
   assert.equal(plan.roi.capacityEstimate.annualCapacityValue, 240000);
-  assert.equal(plan.rolloutGates.length, 7);
+  assert.equal(plan.rolloutGates.length, 8);
+  assert.ok(plan.rolloutGates.some((entry) => entry.gate === "Ingress protection" && /body size and rate limits/.test(entry.evidence)));
   assert.equal(plan.verificationCommands.length, 3);
   assert.equal(plan.mappingCommands.length, 2);
+  assert.match(plan.mappingCommands[0], /^npm run --silent mapping/);
   assert.match(plan.conformanceCommand, /sanitized-records\.jsonl/);
   assert.match(renderAdoptionPlan(plan), /Illustrative annual capacity value: \*\*\$240,000\*\*/);
 });

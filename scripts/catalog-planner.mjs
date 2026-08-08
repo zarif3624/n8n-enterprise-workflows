@@ -172,7 +172,7 @@ export function buildAdoptionPlan(detail, { adapter, capacity, fixtureOutcomes =
       `npm run evaluate -- ${detail.slug} ${detail.examples.invalid}`
     ],
     mappingCommands: [
-      `npm run mapping -- init ${detail.slug} > ${detail.slug}.mapping.json`,
+      `npm run --silent mapping -- init ${detail.slug} > ${detail.slug}.mapping.json`,
       `npm run mapping -- check ${detail.slug}.mapping.json`
     ],
     conformanceCommand: `npm run conformance -- ${detail.slug} ./sanitized-records.jsonl --mapping ${detail.slug}.mapping.json --min-records 100 --max-invalid-rate 0.02 --min-rule-coverage 0.8`,
@@ -180,6 +180,7 @@ export function buildAdoptionPlan(detail, { adapter, capacity, fixtureOutcomes =
       { gate: "Policy approval", evidence: `Owner ${detail.owner} approves rules, thresholds, hard gates, decisions, and policy fingerprint.` },
       { gate: "Data mapping", evidence: "Every required and policy-relevant field has a typed source, classification, owner, and invalid-data path." },
       { gate: "Authentication", evidence: "The production webhook uses an approved built-in credential plus upstream authorization or allowlisting." },
+      { gate: "Ingress protection", evidence: "An upstream gateway enforces owner-approved request-body size and rate limits before the webhook." },
       { gate: "Side-effect safety", evidence: "Credentials are least privilege; consequential writes require human approval; retries are idempotent." },
       { gate: "Failure handling", evidence: "External-node error outputs, timeout behavior, private alerts, sanitized 5xx responses, and rollback are tested." },
       { gate: "User acceptance", evidence: "Low-risk, high-risk, invalid, duplicate, timeout, downstream-failure, and aggregate batch-conformance evidence is retained." },

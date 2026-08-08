@@ -29,7 +29,7 @@ Add `--json` to `list`, `search`, `show`, or `plan` when another tool will consu
 
 ## Generate an adoption plan
 
-The plan command creates a fill-in field-mapping worksheet, evaluates the shipped fixtures, identifies the policy approver, and adds security, reliability, promotion, rollback, observability, and value-measurement gates:
+The plan command creates a fill-in field-mapping worksheet, evaluates the shipped fixtures, identifies the policy approver, and adds authentication, ingress body-size/rate, reliability, promotion, rollback, observability, and value-measurement gates:
 
 ```bash
 npm run catalog -- plan invoice-exception-triage --adapter SAP
