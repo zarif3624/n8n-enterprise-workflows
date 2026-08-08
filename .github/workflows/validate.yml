@@ -30,5 +30,8 @@ jobs:
       - name: Summarize policy changes
         if: github.event_name == 'pull_request'
         run: npm run --silent report:policy-changes -- "origin/${{ github.base_ref }}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Replay policy behavior
+        if: github.event_name == 'pull_request'
+        run: npm run --silent report:policy-impact -- "origin/${{ github.base_ref }}" >> "$GITHUB_STEP_SUMMARY"
       - name: Ensure generated files are committed
         run: git diff --exit-code

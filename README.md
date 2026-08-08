@@ -20,6 +20,7 @@ Every workflow package includes:
 - Explainable scoring with stable rule IDs, policy versions, and hard risk floors.
 - Tamper-evident policy fingerprints with CI-enforced version bumps for behavior changes.
 - Human-readable policy snapshots and pull-request summaries for owner review.
+- Before/after policy replay across both branches' fixtures and every declared rule witness.
 - A SHA-256 artifact manifest and reproducible full-catalog and per-department release archives.
 - Structured HTTP 200, 400, and sanitized retryable 500 responses with correlation IDs.
 - A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
@@ -27,6 +28,7 @@ Every workflow package includes:
 
 The shared test suite checks these guarantees across the full catalog instead of relying on screenshots or manual import checks.
 The scheduled compatibility matrix also boots supported n8n versions, exercises a representative webhook over HTTP, and forces an evaluator exception to prove the sanitized 500 path. This catches runtime behavior that import checks cannot see.
+Pull-request CI separately replays changed policies against target-branch and current fixtures plus isolated rule witnesses, then summarizes any score, band, decision, matched-rule, action, or validation delta for business-owner review.
 
 ## Why this project exists
 
@@ -129,6 +131,7 @@ The source of truth is [scripts/workflow-definitions.mjs](scripts/workflow-defin
 ```bash
 npm run check
 npm run report:policy-changes -- origin/main
+npm run report:policy-impact -- origin/main
 git diff --exit-code
 ```
 

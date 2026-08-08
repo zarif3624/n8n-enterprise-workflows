@@ -3,23 +3,10 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import test from "node:test";
 import { evaluatePolicy } from "../scripts/policy-engine.mjs";
+import { matchingValue } from "../scripts/policy-replay.mjs";
 import { policyFor, thresholds, workflows } from "../scripts/workflow-definitions.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
-
-function matchingValue(rule) {
-  switch (rule.operator) {
-    case "missing": return undefined;
-    case "truthy": return true;
-    case "falsy": return false;
-    case "equals": return rule.value;
-    case "includes": return [rule.value];
-    case "gt": return Number(rule.value) + 1;
-    case "gte": return Number(rule.value);
-    case "lt": return Number(rule.value) - 1;
-    default: throw new Error(`Unsupported rule operator: ${rule.operator}`);
-  }
-}
 
 function expectedBand(score) {
   return score >= thresholds.high ? "high" : score >= thresholds.medium ? "medium" : "low";

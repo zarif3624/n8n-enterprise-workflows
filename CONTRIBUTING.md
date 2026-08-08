@@ -36,8 +36,9 @@ For a policy change:
 4. Increase the definition's `policyVersion` using the compatibility rules in the authoring guide.
 5. Run `npm run check`; generation rejects behavior changes that keep the old version.
 6. Review every generated diff, especially the policy fingerprint and low-risk, high-risk, and invalid fixtures.
-7. Run `npm run report:policy-changes -- origin/main` and review the human-readable behavior summary with the named policy owner.
-8. Confirm `git diff --exit-code` is clean after committing generated artifacts.
+7. Run `npm run report:policy-changes -- origin/main` and review the human-readable definition summary with the named policy owner.
+8. Run `npm run report:policy-impact -- origin/main` and review every changed fixture/rule-witness outcome.
+9. Confirm `git diff --exit-code` is clean after committing generated artifacts.
 
 See [policy authoring](docs/policy-authoring.md) for the scoring and compatibility contract.
 

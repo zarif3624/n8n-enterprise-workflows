@@ -24,6 +24,7 @@ Describe validation and representative input used.
 - Policy version change: none / patch / minor / major
 - Policy lock reviewed and target-branch version guard passed: yes / not applicable
 - Human-readable policy change report reviewed with the named owner: yes / not applicable
+- Before/after policy replay reviewed with the named owner: yes / not applicable
 - Decision behavior before and after:
 - Hard safety floors added or changed:
 - Generated fixtures reviewed: low / high / invalid

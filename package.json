@@ -12,6 +12,7 @@
     "validate:links": "node scripts/validate-links.mjs",
     "validate:policy-versions": "node scripts/verify-policy-versions.mjs",
     "report:policy-changes": "node scripts/report-policy-changes.mjs",
+    "report:policy-impact": "node scripts/report-policy-impact.mjs",
     "build:release": "node scripts/build-release.mjs",
     "verify:release-tag": "node scripts/verify-release-tag.mjs",
     "test": "node --test tests/*.test.mjs",
