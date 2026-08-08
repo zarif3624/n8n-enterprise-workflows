@@ -4,7 +4,7 @@
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.3",
   "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
-  "artifactCount": 85,
+  "artifactCount": 87,
   "departmentCount": 15,
   "workflowCount": 15,
   "artifacts": [
@@ -25,6 +25,12 @@
       "kind": "api-contract",
       "bytes": 210172,
       "sha256": "sha256:4a928b86e0f1614c169a0b97dc069a975c602be6ea60c3582ad172c9f443a05f"
+    },
+    {
+      "path": "policy-lifecycle.json",
+      "kind": "policy-lifecycle",
+      "bytes": 2522,
+      "sha256": "sha256:06004c9b332a1650be0987f47e452673409ef6cef367e97be9369efce0593c70"
     },
     {
       "path": "policy-lock.json",
@@ -61,6 +67,12 @@
       "kind": "json-schema",
       "bytes": 1203,
       "sha256": "sha256:f27579945547f28b9b6d03e57a0d3ffe50427f0d3df97dee1f851ee95a3a6d1a"
+    },
+    {
+      "path": "schemas/policy-lifecycle.schema.json",
+      "kind": "json-schema",
+      "bytes": 1784,
+      "sha256": "sha256:9f61e878dfcc96979239d63d07a13e63c6543acbb892c90a792194941e30fa8d"
     },
     {
       "path": "schemas/runtime-compatibility.schema.json",

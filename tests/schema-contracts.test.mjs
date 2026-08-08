@@ -11,12 +11,14 @@ import { schemaContractIssues } from "../scripts/schema-contract-check.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const readJson = async (path) => JSON.parse(await readFile(join(root, path), "utf8"));
-const [mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, compatibility, catalog, snapshot] = await Promise.all([
+const [mappingSchema, reportSchema, comparisonSchema, compatibilitySchema, lifecycleSchema, compatibility, lifecycle, catalog, snapshot] = await Promise.all([
   readJson("schemas/field-mapping.schema.json"),
   readJson("schemas/conformance-report.schema.json"),
   readJson("schemas/conformance-comparison.schema.json"),
   readJson("schemas/runtime-compatibility.schema.json"),
+  readJson("schemas/policy-lifecycle.schema.json"),
   readJson("runtime-compatibility.json"),
+  readJson("policy-lifecycle.json"),
   readJson("catalog.json"),
   readJson("policy-snapshot.json")
 ]);
@@ -63,4 +65,11 @@ test("published runtime compatibility plan drives a pinned, complete CI matrix",
   const drifted = structuredClone(compatibility);
   drifted.policyEngineVersion = "0.0.0";
   assert.ok(runtimeCompatibilityIssues(drifted, { catalog, policyEngineVersion }).some((issue) => issue.includes("policyEngineVersion")));
+});
+
+test("published policy lifecycle contract accepts the governed catalog", () => {
+  assertMatches(lifecycle, lifecycleSchema);
+  const unsafe = structuredClone(lifecycle);
+  unsafe.policies[0].unreviewedOverride = true;
+  assert.ok(schemaContractIssues(unsafe, lifecycleSchema, lifecycleSchema).some((issue) => issue.includes("unknown unreviewedOverride")));
 });

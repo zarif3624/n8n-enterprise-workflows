@@ -19,6 +19,7 @@ Every workflow package includes:
 - Low-risk, high-risk, and invalid fixtures that can be sent to the test webhook.
 - Explainable scoring with stable rule IDs, policy versions, and hard risk floors.
 - Tamper-evident policy fingerprints with CI-enforced version bumps for behavior changes.
+- Honest draft status, owner-bound approval/review deadlines, overdue CI gates, and explicit deprecation windows.
 - Human-readable policy snapshots and pull-request summaries for owner review.
 - Before/after policy replay across both branches' fixtures and every declared rule witness.
 - A SHA-256 artifact manifest and reproducible full-catalog and per-department release archives.
@@ -63,7 +64,7 @@ This project makes those concerns part of each workflow package.
 | Privacy | [Data subject request triage](workflows/privacy/data-subject-request-triage) | Keep identity, deadline, and legal constraints visible |
 
 Browse the machine-readable [catalog](catalog.json), the generated
-[OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [runtime compatibility plan](runtime-compatibility.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
+[OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [policy lifecycle contract](policy-lifecycle.json), the [runtime compatibility plan](runtime-compatibility.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
 Machine integrations can validate adoption-tool JSON against the published
 [Draft 2020-12 schemas](schemas/README.md).
 
@@ -167,6 +168,7 @@ webhook paths, inactive status, response behavior, credential leakage,
 companion documentation, and catalog coverage. The test suite then exercises
 every required field, declared type, rule boundary, safety floor, and deterministic adversarial-input invariant.
 The same command also runs a redacted sensitive-data scan across every repository text file, not only exported workflows.
+It fails when a policy-owner review is overdue; see [policy lifecycle governance](docs/policy-lifecycle.md) for the review and deprecation process.
 
 ## Extend the catalog
 

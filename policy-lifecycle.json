@@ -1,0 +1,22 @@
+{
+  "lifecycleVersion": 1,
+  "defaultReviewPeriodDays": 180,
+  "defaultDraftApprovalDays": 30,
+  "policies": [
+    { "slug": "campaign-lead-compliance-gate", "owner": "Marketing Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "contract-intake-routing", "owner": "Legal Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "customer-risk-escalation", "owner": "Customer Success Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "data-access-request-triage", "owner": "Data Governance", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "data-subject-request-triage", "owner": "Privacy Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "employee-access-request-triage", "owner": "People Operations and Identity Management", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "enterprise-lead-routing", "owner": "Revenue Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "external-communication-approval", "owner": "Corporate Communications", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "invoice-exception-triage", "owner": "Accounts Payable Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "major-incident-stakeholder-brief", "owner": "Business Operations and Incident Command", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "phishing-report-triage", "owner": "Security Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "production-change-risk-gate", "owner": "Engineering Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "service-desk-priority-routing", "owner": "IT Service Management", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "vendor-risk-intake", "owner": "Procurement Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" },
+    { "slug": "workplace-incident-routing", "owner": "Workplace Operations", "status": "draft", "introducedOn": "2026-08-08", "reviewDueOn": "2026-09-07" }
+  ]
+}

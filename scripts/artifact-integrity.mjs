@@ -13,12 +13,14 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "catalog.json", kind: "catalog" },
     { path: "docs/catalog.md", kind: "catalog-documentation" },
     { path: "openapi.json", kind: "api-contract" },
+    { path: "policy-lifecycle.json", kind: "policy-lifecycle" },
     { path: "policy-lock.json", kind: "policy-lock" },
     { path: "policy-snapshot.json", kind: "policy-snapshot" },
     { path: "runtime-compatibility.json", kind: "runtime-compatibility" },
     { path: "schemas/conformance-comparison.schema.json", kind: "json-schema" },
     { path: "schemas/conformance-report.schema.json", kind: "json-schema" },
     { path: "schemas/field-mapping.schema.json", kind: "json-schema" },
+    { path: "schemas/policy-lifecycle.schema.json", kind: "json-schema" },
     { path: "schemas/runtime-compatibility.schema.json", kind: "json-schema" }
   ];
 

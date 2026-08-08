@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { artifactManifestVersion, buildArtifactManifest } from "./artifact-integrity.mjs";
 import { evaluatePolicy, policyEngineVersion, policySchemaVersion } from "./policy-engine.mjs";
 import { buildPolicyLock, buildPolicySnapshot, policyLockVersion, policySnapshotVersion } from "./policy-governance.mjs";
+import { policyLifecycleIssues } from "./policy-lifecycle.mjs";
 import { inputSchemaFor, policyFor, workflows as definitions } from "./workflow-definitions.mjs";
 import { runtimeCompatibilityIssues } from "./runtime-compatibility.mjs";
 
@@ -11,6 +12,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const artifactManifest = JSON.parse(await readFile(join(root, "artifact-manifest.json"), "utf8"));
 const catalog = JSON.parse(await readFile(join(root, "catalog.json"), "utf8"));
 const openApi = JSON.parse(await readFile(join(root, "openapi.json"), "utf8"));
+const policyLifecycle = JSON.parse(await readFile(join(root, "policy-lifecycle.json"), "utf8"));
 const policyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
 const policySnapshot = JSON.parse(await readFile(join(root, "policy-snapshot.json"), "utf8"));
 const runtimeCompatibility = JSON.parse(await readFile(join(root, "runtime-compatibility.json"), "utf8"));
@@ -81,6 +83,7 @@ if (policyLock.lockVersion !== policyLockVersion) fail("policy-lock.json", "lock
 if (!sameJson(policyLock, expectedPolicyLock)) fail("policy-lock.json", "policy fingerprints drifted from source definitions or engine");
 if (policySnapshot.snapshotVersion !== policySnapshotVersion) fail("policy-snapshot.json", "snapshot format version is unsupported");
 if (!sameJson(policySnapshot, expectedPolicySnapshot)) fail("policy-snapshot.json", "review snapshot drifted from source definitions or engine");
+for (const issue of policyLifecycleIssues(policyLifecycle, { catalog })) fail("policy-lifecycle.json", issue);
 for (const issue of runtimeCompatibilityIssues(runtimeCompatibility, { catalog, policyEngineVersion })) fail("runtime-compatibility.json", issue);
 if (new Set(definitions.map((definition) => definition.slug)).size !== definitions.length) fail("workflow-definitions.mjs", "workflow slugs must be unique");
 for (const definition of definitions) {

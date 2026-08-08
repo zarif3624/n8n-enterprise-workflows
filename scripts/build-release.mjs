@@ -82,7 +82,7 @@ function archiveFor(entries, rootName, metadata) {
 
 function departmentReadme(department, entries, version) {
   const rows = entries.map((entry) => `- **${entry.name}** — import \`${entry.workflow}\``).join("\n");
-  return Buffer.from(`# ${titleCase(department)} workflow bundle\n\nVersion ${version} of the n8n Enterprise Workflows ${titleCase(department)} bundle.\n\n${rows}\n\nEvery workflow ships inactive and credential-free. Read its companion README, use the supplied fixtures on the test webhook, configure authentication, and obtain the named business owner's approval before production activation.\n\n- \`catalog.json\` describes the included workflows and typed inputs.\n- \`openapi.json\` describes their HTTP contracts.\n- \`policy-lock.json\` and \`policy-snapshot.json\` identify the exact decision behavior.\n- \`BUNDLE.json\` records a SHA-256 hash for every other file in this archive.\n\nVerify the archive itself with the release's \`SHA256SUMS\` file before extraction.\n`);
+  return Buffer.from(`# ${titleCase(department)} workflow bundle\n\nVersion ${version} of the n8n Enterprise Workflows ${titleCase(department)} bundle.\n\n${rows}\n\nEvery workflow ships inactive and credential-free. Read its companion README, use the supplied fixtures on the test webhook, configure authentication, and obtain the named business owner's approval before production activation.\n\n- \`catalog.json\` describes the included workflows and typed inputs.\n- \`openapi.json\` describes their HTTP contracts.\n- \`policy-lock.json\` and \`policy-snapshot.json\` identify the exact decision behavior.\n- \`policy-lifecycle.json\` records draft/active status, owner, and the next approval or review deadline.\n- \`runtime-compatibility.json\` records the pinned n8n/Node test matrix and live probe scope.\n- \`schemas/\` contains machine-readable contracts for the included governance and adoption files.\n- \`BUNDLE.json\` records a SHA-256 hash for every other file in this archive.\n\nVerify the archive itself with the release's \`SHA256SUMS\` file before extraction.\n`);
 }
 
 function filteredOpenApi(openApi, entries) {
@@ -102,6 +102,7 @@ export async function buildRelease() {
   const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
   const catalog = JSON.parse(await readFile(join(root, "catalog.json"), "utf8"));
   const openApi = JSON.parse(await readFile(join(root, "openapi.json"), "utf8"));
+  const policyLifecycle = JSON.parse(await readFile(join(root, "policy-lifecycle.json"), "utf8"));
   const policyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
   const policySnapshot = JSON.parse(await readFile(join(root, "policy-snapshot.json"), "utf8"));
   const artifactManifestBytes = await readFile(join(root, "artifact-manifest.json"));
@@ -129,13 +130,14 @@ export async function buildRelease() {
   const rootFiles = [
     "CHANGELOG.md", "CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "LICENSE", "README.md", "SECURITY.md",
     "artifact-manifest.json", "catalog.json", "openapi.json", "package-lock.json", "package.json",
-    "policy-lock.json", "policy-snapshot.json"
+    "policy-lifecycle.json", "policy-lock.json", "policy-snapshot.json", "runtime-compatibility.json"
   ];
+  const schemaFiles = await filesUnder("schemas");
   const sourceFiles = [
     ...rootFiles,
     ...await filesUnder(".github"),
     ...await filesUnder("docs"),
-    ...await filesUnder("schemas"),
+    ...schemaFiles,
     ...await filesUnder("scripts"),
     ...await filesUnder("tests"),
     ...await filesUnder("workflows")
@@ -184,13 +186,17 @@ export async function buildRelease() {
       "LICENSE",
       "SECURITY.md",
       "docs/enterprise-readiness.md",
+      "docs/policy-lifecycle.md",
       "docs/roi-model.md",
+      "runtime-compatibility.json",
+      ...schemaFiles,
       ...artifactPaths
     ]);
     const replace = new Map([
       ["README.md", departmentReadme(department, departmentCatalog, version)],
       ["catalog.json", json(departmentCatalog)],
       ["openapi.json", json(filteredOpenApi(openApi, departmentCatalog))],
+      ["policy-lifecycle.json", json(filteredPolicies(policyLifecycle, departmentCatalog))],
       ["policy-lock.json", json(filteredPolicies(policyLock, departmentCatalog))],
       ["policy-snapshot.json", json(filteredPolicies(policySnapshot, departmentCatalog))]
     ]);

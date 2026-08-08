@@ -11,9 +11,9 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, and CI supply-chain coverage, increasing the suite from 58 to 211 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, schema, OpenAPI, adversarial, sensitive-data, privacy, lifecycle, and CI supply-chain coverage, increasing the suite from 58 to 217 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
-- A generated SHA-256 manifest covering all 85 public generated and machine-contract artifacts.
+- A generated SHA-256 manifest covering all 87 public generated and machine-contract artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
 - Immutable full-SHA pins for every external GitHub Action plus monthly Dependabot update checks.
 - Pull-request behavior replay across both branches' representative fixtures and isolated old/new rule witnesses, with observable decision deltas in the job summary.
@@ -40,6 +40,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Mapping validation now rejects omitted optional fields that drive policy rules, preventing silent signal suppression or permanently triggered `missing`/`falsy` behavior.
 - Explicit `body: null` engine envelopes now produce the root `invalid_type` violation instead of being mistaken for the surrounding envelope; live compatibility probes also verify n8n's transport-normalized empty-object form fails closed with a contract-valid 400. The shared engine and embedded policies move to patch version `1.0.3`.
 - A schema-validated `runtime-compatibility.json` contract now drives the scheduled n8n matrix, eliminating version and probe-scope drift between CI, documentation, and release artifacts.
+- Honest draft status, owner-bound approval/review schedules, current/due-soon/overdue reports, an overdue CI gate, and explicit deprecation notice windows now prevent unapproved or unchanged policies from aging silently.
 
 ## 0.2.0
 
