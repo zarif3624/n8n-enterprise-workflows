@@ -14,7 +14,10 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "docs/catalog.md", kind: "catalog-documentation" },
     { path: "openapi.json", kind: "api-contract" },
     { path: "policy-lock.json", kind: "policy-lock" },
-    { path: "policy-snapshot.json", kind: "policy-snapshot" }
+    { path: "policy-snapshot.json", kind: "policy-snapshot" },
+    { path: "schemas/conformance-comparison.schema.json", kind: "json-schema" },
+    { path: "schemas/conformance-report.schema.json", kind: "json-schema" },
+    { path: "schemas/field-mapping.schema.json", kind: "json-schema" }
   ];
 
   for (const entry of catalog) {

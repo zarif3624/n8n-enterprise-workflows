@@ -134,6 +134,7 @@ export async function buildRelease() {
     ...rootFiles,
     ...await filesUnder(".github"),
     ...await filesUnder("docs"),
+    ...await filesUnder("schemas"),
     ...await filesUnder("scripts"),
     ...await filesUnder("tests"),
     ...await filesUnder("workflows")

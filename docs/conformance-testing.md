@@ -3,6 +3,8 @@
 Use the local conformance analyzer after field mapping and before connecting a
 workflow to production systems. It evaluates a sanitized batch with the exact
 versioned policy in `policy-snapshot.json` and reports only aggregate evidence.
+JSON output conforms to
+[`conformance-report.schema.json`](../schemas/conformance-report.schema.json).
 
 ## Prepare input
 

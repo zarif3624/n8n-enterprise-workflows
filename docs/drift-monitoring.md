@@ -4,6 +4,8 @@ Compare two privacy-safe conformance reports to detect operational movement
 after a mapping, workflow, or upstream population is put into use. The comparer
 never needs source records; it consumes only the aggregate JSON emitted by
 `npm run conformance -- --json`.
+Machine-readable comparison output conforms to
+[`conformance-comparison.schema.json`](../schemas/conformance-comparison.schema.json).
 
 ## Capture an approved baseline
 

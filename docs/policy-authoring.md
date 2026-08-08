@@ -89,7 +89,7 @@ When one policy's behavior changes, update that definition's policy version and 
 
 CI also performs an executable behavior replay for every changed fingerprint. It builds a corpus from both branches' low-risk, high-risk, and invalid fixtures, adds one isolated witness for every old and new rule, removes duplicate payloads, and evaluates the corpus against both policy snapshots. The job summary lists observable changes in validation status, matched rules and reasons, score, priority band, decision, and recommended actions. A clean corpus is useful evidence, not proof of equivalence; combinations and organization-specific edge cases still require owner review.
 
-`artifact-manifest.json` hashes all 80 generated public artifacts: the catalog and contracts plus each workflow, companion README, and three fixtures. Validation recomputes every byte count and SHA-256 digest so generated files cannot drift independently of their recorded release identity.
+`artifact-manifest.json` hashes all 83 public generated and machine-contract artifacts: the catalog, API and policy contracts, three adoption JSON Schemas, plus each workflow, companion README, and three fixtures. Validation recomputes every byte count and SHA-256 digest so generated files cannot drift independently of their recorded release identity.
 
 The lock separately fingerprints `scripts/policy-engine.mjs`. Any engine source change requires increasing `policyEngineVersion`; because that shared version participates in every policy fingerprint, each affected policy must then receive an explicit version bump. This deliberately favors auditable change control over silent refactors in decision-critical code.
 

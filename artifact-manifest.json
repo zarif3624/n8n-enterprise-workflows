@@ -4,7 +4,7 @@
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.1",
   "policyEngineFingerprint": "sha256:7b0cfd1bacf3df283ec005312a575aeed4bbb790afaaf024859ae2370e8999d9",
-  "artifactCount": 80,
+  "artifactCount": 83,
   "departmentCount": 15,
   "workflowCount": 15,
   "artifacts": [
@@ -37,6 +37,24 @@
       "kind": "policy-snapshot",
       "bytes": 49101,
       "sha256": "sha256:83332dd29a320667f572e51831151393e7c1798cdd3632a7e663f895abbff435"
+    },
+    {
+      "path": "schemas/conformance-comparison.schema.json",
+      "kind": "json-schema",
+      "bytes": 6005,
+      "sha256": "sha256:adda69765dec0071c327eba292c8f3f4351afa120c9dd6f1883ab001e51878ab"
+    },
+    {
+      "path": "schemas/conformance-report.schema.json",
+      "kind": "json-schema",
+      "bytes": 6932,
+      "sha256": "sha256:f426cdbd9e92092fdae674ee6b5daf8ee5dc50addd91f49cb3f39d6ef2583664"
+    },
+    {
+      "path": "schemas/field-mapping.schema.json",
+      "kind": "json-schema",
+      "bytes": 1203,
+      "sha256": "sha256:f27579945547f28b9b6d03e57a0d3ffe50427f0d3df97dee1f851ee95a3a6d1a"
     },
     {
       "path": "workflows/corporate-communications/external-communication-approval/README.md",

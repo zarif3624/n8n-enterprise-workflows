@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/zarif3624/n8n-enterprise-workflows/main/schemas/conformance-comparison.schema.json",
+  "title": "n8n Enterprise Workflow Aggregate Conformance Comparison",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workflow", "privacy", "sample", "scores", "priorityBands", "decisions", "rules", "contractViolations", "mappingErrors", "gates", "passed", "interpretation"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "policyVersion", "policyFingerprint", "mappingFingerprint"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug" },
+        "policyVersion": { "$ref": "#/$defs/version" },
+        "policyFingerprint": { "$ref": "#/$defs/sha256" },
+        "mappingFingerprint": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/sha256" }] }
+      }
+    },
+    "privacy": { "$ref": "#/$defs/privacy" },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline", "current", "baselineInvalidRate", "currentInvalidRate", "invalidRateDelta"],
+      "properties": {
+        "baseline": { "$ref": "#/$defs/count" },
+        "current": { "$ref": "#/$defs/count" },
+        "baselineInvalidRate": { "$ref": "#/$defs/rate" },
+        "currentInvalidRate": { "$ref": "#/$defs/rate" },
+        "invalidRateDelta": { "$ref": "#/$defs/rateDelta" }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline", "current", "averageDelta", "p50Delta", "p95Delta"],
+      "properties": {
+        "baseline": { "$ref": "#/$defs/nullableScore" },
+        "current": { "$ref": "#/$defs/nullableScore" },
+        "averageDelta": { "$ref": "#/$defs/nullableScoreDelta" },
+        "p50Delta": { "$ref": "#/$defs/nullableScoreDelta" },
+        "p95Delta": { "$ref": "#/$defs/nullableScoreDelta" }
+      }
+    },
+    "priorityBands": { "type": "array", "items": { "$ref": "#/$defs/bandDelta" } },
+    "decisions": { "type": "array", "items": { "$ref": "#/$defs/decisionDelta" } },
+    "rules": { "type": "array", "items": { "$ref": "#/$defs/ruleDelta" } },
+    "contractViolations": { "type": "array", "items": { "$ref": "#/$defs/errorDelta" } },
+    "mappingErrors": { "type": "array", "items": { "$ref": "#/$defs/errorDelta" } },
+    "gates": { "type": "array", "items": { "$ref": "#/$defs/gate" } },
+    "passed": { "type": "boolean" },
+    "interpretation": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "count": { "type": "integer", "minimum": 0 },
+    "rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "rateDelta": { "type": "number", "minimum": -1, "maximum": 1 },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "rawPayloadsIncluded", "requestIdentifiersIncluded"],
+      "properties": {
+        "mode": { "const": "aggregate-only" },
+        "rawPayloadsIncluded": { "const": false },
+        "requestIdentifiersIncluded": { "const": false }
+      }
+    },
+    "score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "min", "max", "average", "p50", "p95"],
+      "properties": {
+        "count": { "$ref": "#/$defs/count" },
+        "min": { "type": "number", "minimum": 0, "maximum": 100 },
+        "max": { "type": "number", "minimum": 0, "maximum": 100 },
+        "average": { "type": "number", "minimum": 0, "maximum": 100 },
+        "p50": { "type": "number", "minimum": 0, "maximum": 100 },
+        "p95": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "nullableScore": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/score" }] },
+    "nullableScoreDelta": { "oneOf": [{ "type": "null" }, { "type": "number", "minimum": -100, "maximum": 100 }] },
+    "deltaBase": {
+      "type": "object",
+      "required": ["baselineRate", "currentRate", "delta", "absoluteDelta"],
+      "properties": {
+        "baselineRate": { "$ref": "#/$defs/rate" },
+        "currentRate": { "$ref": "#/$defs/rate" },
+        "delta": { "$ref": "#/$defs/rateDelta" },
+        "absoluteDelta": { "$ref": "#/$defs/rate" }
+      }
+    },
+    "bandDelta": {
+      "allOf": [
+        { "$ref": "#/$defs/deltaBase" },
+        { "type": "object", "required": ["band"], "properties": { "band": { "enum": ["low", "medium", "high"] } }, "unevaluatedProperties": false }
+      ]
+    },
+    "decisionDelta": {
+      "allOf": [
+        { "$ref": "#/$defs/deltaBase" },
+        { "type": "object", "required": ["decision"], "properties": { "decision": { "type": "string", "minLength": 1 } }, "unevaluatedProperties": false }
+      ]
+    },
+    "ruleDelta": {
+      "allOf": [
+        { "$ref": "#/$defs/deltaBase" },
+        { "type": "object", "required": ["ruleId", "field"], "properties": { "ruleId": { "type": "string", "minLength": 1 }, "field": { "type": "string", "minLength": 1 } }, "unevaluatedProperties": false }
+      ]
+    },
+    "errorDelta": {
+      "allOf": [
+        { "$ref": "#/$defs/deltaBase" },
+        { "type": "object", "required": ["key", "field", "code"], "properties": { "key": { "type": "string", "minLength": 1 }, "field": { "type": "string", "minLength": 1 }, "code": { "type": "string", "minLength": 1 } }, "unevaluatedProperties": false }
+      ]
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate", "expected", "actual", "passed"],
+      "properties": {
+        "gate": { "type": "string", "minLength": 1 },
+        "expected": true,
+        "actual": true,
+        "passed": { "type": "boolean" }
+      }
+    }
+  }
+}

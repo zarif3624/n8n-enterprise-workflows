@@ -62,6 +62,8 @@ This project makes those concerns part of each workflow package.
 
 Browse the machine-readable [catalog](catalog.json), the generated
 [OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
+Machine integrations can validate adoption-tool JSON against the published
+[Draft 2020-12 schemas](schemas/README.md).
 
 Find a starting point by business language or system, then generate a rollout worksheet:
 

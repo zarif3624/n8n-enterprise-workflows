@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/zarif3624/n8n-enterprise-workflows/main/schemas/conformance-report.schema.json",
+  "title": "n8n Enterprise Workflow Aggregate Conformance Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workflow", "privacy", "sample", "mapping", "outcomes", "scores", "rules", "violations", "gates", "passed"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "department", "owner", "policyVersion", "policyEngineVersion", "fingerprint"],
+      "properties": {
+        "slug": { "$ref": "#/$defs/slug" },
+        "department": { "$ref": "#/$defs/slug" },
+        "owner": { "type": "string", "minLength": 1 },
+        "policyVersion": { "$ref": "#/$defs/version" },
+        "policyEngineVersion": { "$ref": "#/$defs/version" },
+        "fingerprint": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "privacy": { "$ref": "#/$defs/privacy" },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "valid", "invalid", "contractInvalid", "mappingInvalid", "invalidRate"],
+      "properties": {
+        "total": { "$ref": "#/$defs/count" },
+        "valid": { "$ref": "#/$defs/count" },
+        "invalid": { "$ref": "#/$defs/count" },
+        "contractInvalid": { "$ref": "#/$defs/count" },
+        "mappingInvalid": { "$ref": "#/$defs/count" },
+        "invalidRate": { "$ref": "#/$defs/rate" }
+      }
+    },
+    "mapping": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled"],
+          "properties": { "enabled": { "const": false } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "mappingVersion", "fingerprint", "mappedFieldCount", "errors"],
+          "properties": {
+            "enabled": { "const": true },
+            "mappingVersion": { "const": 1 },
+            "fingerprint": { "$ref": "#/$defs/sha256" },
+            "mappedFieldCount": { "$ref": "#/$defs/count" },
+            "errors": { "$ref": "#/$defs/errorAggregate" }
+          }
+        }
+      ]
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["priorityBands", "decisions"],
+      "properties": {
+        "priorityBands": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["band", "count", "rate"],
+            "properties": {
+              "band": { "enum": ["low", "medium", "high"] },
+              "count": { "$ref": "#/$defs/count" },
+              "rate": { "$ref": "#/$defs/rate" }
+            }
+          }
+        },
+        "decisions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/decisionCount" }
+        }
+      }
+    },
+    "scores": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/scoreSummary" }
+      ]
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "observed", "coverageRate", "unobservedRuleIds", "counts"],
+      "properties": {
+        "total": { "$ref": "#/$defs/count" },
+        "observed": { "$ref": "#/$defs/count" },
+        "coverageRate": { "$ref": "#/$defs/rate" },
+        "unobservedRuleIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "counts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ruleId", "field", "count", "rate"],
+            "properties": {
+              "ruleId": { "type": "string", "minLength": 1 },
+              "field": { "type": "string", "minLength": 1 },
+              "count": { "$ref": "#/$defs/count" },
+              "rate": { "$ref": "#/$defs/rate" }
+            }
+          }
+        }
+      }
+    },
+    "violations": { "$ref": "#/$defs/errorAggregate" },
+    "gates": { "type": "array", "items": { "$ref": "#/$defs/gate" } },
+    "passed": { "type": "boolean" }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "count": { "type": "integer", "minimum": 0 },
+    "rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "rawPayloadsIncluded", "requestIdentifiersIncluded"],
+      "properties": {
+        "mode": { "const": "aggregate-only" },
+        "rawPayloadsIncluded": { "const": false },
+        "requestIdentifiersIncluded": { "const": false }
+      }
+    },
+    "decisionCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "count", "rate"],
+      "properties": {
+        "decision": { "type": "string", "minLength": 1 },
+        "count": { "$ref": "#/$defs/count" },
+        "rate": { "$ref": "#/$defs/rate" }
+      }
+    },
+    "errorAggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "counts"],
+      "properties": {
+        "total": { "$ref": "#/$defs/count" },
+        "counts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "code", "count", "rate"],
+            "properties": {
+              "field": { "type": "string", "minLength": 1 },
+              "code": { "type": "string", "minLength": 1 },
+              "count": { "$ref": "#/$defs/count" },
+              "rate": { "$ref": "#/$defs/rate" }
+            }
+          }
+        }
+      }
+    },
+    "scoreSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "min", "max", "average", "p50", "p95"],
+      "properties": {
+        "count": { "$ref": "#/$defs/count" },
+        "min": { "type": "number", "minimum": 0, "maximum": 100 },
+        "max": { "type": "number", "minimum": 0, "maximum": 100 },
+        "average": { "type": "number", "minimum": 0, "maximum": 100 },
+        "p50": { "type": "number", "minimum": 0, "maximum": 100 },
+        "p95": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["gate", "expected", "actual", "passed"],
+      "properties": {
+        "gate": { "type": "string", "minLength": 1 },
+        "expected": true,
+        "actual": true,
+        "passed": { "type": "boolean" }
+      }
+    }
+  }
+}

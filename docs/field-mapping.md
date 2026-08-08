@@ -4,6 +4,8 @@ The field-mapping layer lets adopters test records in their source-system shape
 without writing JavaScript or generating intermediate payload files. A mapping
 is bound to one workflow and exact policy fingerprint, uses standard JSON
 Pointers for extraction, and permits only a small set of explicit transforms.
+Its portable structure is published as
+[`field-mapping.schema.json`](../schemas/field-mapping.schema.json).
 
 ## Create a mapping
 

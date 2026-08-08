@@ -46,7 +46,7 @@ adopter-controlled trust boundary. Before adding one:
 - **Silent evaluator failure:** the evaluator's dedicated error output terminates in a sanitized, retryable HTTP 500 instead of an empty success response; stack traces and node details remain private.
 - **Unreviewed policy mutation:** canonical fingerprints and target-branch CI comparison require a newer policy version for executable behavior changes.
 - **Hidden policy impact:** pull-request CI replays both branches' fixtures and isolated rule witnesses, exposing changed validation, scoring, decisions, reasons, and actions for owner review.
-- **Generated-file substitution:** `artifact-manifest.json` records the byte size and SHA-256 identity of all 80 public generated artifacts and is recomputed during validation.
+- **Generated-file substitution:** `artifact-manifest.json` records the byte size and SHA-256 identity of all 83 public generated and contract artifacts and is recomputed during validation.
 - **Release tampering:** reproducible archives have outer checksums, per-file internal manifests, and GitHub Actions provenance attestations tied to the tagged build.
 
 ## Threats adopters must address
