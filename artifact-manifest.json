@@ -1,0 +1,642 @@
+{
+  "manifestVersion": 1,
+  "packageVersion": "0.2.0",
+  "policySchemaVersion": "1.0",
+  "policyEngineVersion": "1.0.1",
+  "policyEngineFingerprint": "sha256:7b0cfd1bacf3df283ec005312a575aeed4bbb790afaaf024859ae2370e8999d9",
+  "artifactCount": 80,
+  "departmentCount": 15,
+  "workflowCount": 15,
+  "artifacts": [
+    {
+      "path": "catalog.json",
+      "kind": "catalog",
+      "bytes": 36009,
+      "sha256": "sha256:bcb95880557823316e054d6c484cbb841b6da9f32803d4cbd268f6de5c5cac4a"
+    },
+    {
+      "path": "docs/catalog.md",
+      "kind": "catalog-documentation",
+      "bytes": 3727,
+      "sha256": "sha256:d0010157c9f4949058105b35fe244a1bc259c8ec12a8e9a13bc21112c8b0c15f"
+    },
+    {
+      "path": "openapi.json",
+      "kind": "api-contract",
+      "bytes": 210172,
+      "sha256": "sha256:3984ec663068560f436373a302270fb93832c210975f41d66491389959b0b195"
+    },
+    {
+      "path": "policy-lock.json",
+      "kind": "policy-lock",
+      "bytes": 3512,
+      "sha256": "sha256:c8f1686e8d72bd7978a8bce4b5a20893e36d42d788b7cb7dc0eca56999034832"
+    },
+    {
+      "path": "policy-snapshot.json",
+      "kind": "policy-snapshot",
+      "bytes": 49101,
+      "sha256": "sha256:83332dd29a320667f572e51831151393e7c1798cdd3632a7e663f895abbff435"
+    },
+    {
+      "path": "workflows/corporate-communications/external-communication-approval/README.md",
+      "kind": "workflow-documentation",
+      "department": "corporate-communications",
+      "workflow": "external-communication-approval",
+      "bytes": 5496,
+      "sha256": "sha256:63de53d71dd5693ebe7529e6f83fc5cbca201158b76ac47d2dc2863a5d8e6dd9"
+    },
+    {
+      "path": "workflows/corporate-communications/external-communication-approval/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "corporate-communications",
+      "workflow": "external-communication-approval",
+      "bytes": 302,
+      "sha256": "sha256:95ab53beeaca65aef79c52ef80b68bc81b56320f2fcad3609e51d4bfb1111ee5"
+    },
+    {
+      "path": "workflows/corporate-communications/external-communication-approval/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "corporate-communications",
+      "workflow": "external-communication-approval",
+      "bytes": 115,
+      "sha256": "sha256:3819f9d4f39bbf0adf033feadc95e708316a44fc0be7a3784ccf25fb7a31eff6"
+    },
+    {
+      "path": "workflows/corporate-communications/external-communication-approval/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "corporate-communications",
+      "workflow": "external-communication-approval",
+      "bytes": 303,
+      "sha256": "sha256:104c4d321c2f0406d1b47ffda5a5398edb2d8c47793ccc3aa8e835a394a077ce"
+    },
+    {
+      "path": "workflows/corporate-communications/external-communication-approval/workflow.json",
+      "kind": "workflow",
+      "department": "corporate-communications",
+      "workflow": "external-communication-approval",
+      "bytes": 15393,
+      "sha256": "sha256:c53a9800392b116b612ae014899ebbfe343c432b3cd97f19fe384c66eaf07dce"
+    },
+    {
+      "path": "workflows/customer-success/customer-risk-escalation/README.md",
+      "kind": "workflow-documentation",
+      "department": "customer-success",
+      "workflow": "customer-risk-escalation",
+      "bytes": 5395,
+      "sha256": "sha256:e558bc0fa5e64ee6ef18d261eb45fd9f4e9c43717770e947054b8435b9555d72"
+    },
+    {
+      "path": "workflows/customer-success/customer-risk-escalation/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "customer-success",
+      "workflow": "customer-risk-escalation",
+      "bytes": 237,
+      "sha256": "sha256:778bac4a71a6dec4946a508d98fcefae9b5fe1256ee8a6f9da981e2a9869b263"
+    },
+    {
+      "path": "workflows/customer-success/customer-risk-escalation/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "customer-success",
+      "workflow": "customer-risk-escalation",
+      "bytes": 56,
+      "sha256": "sha256:ab6fd472e0e51fcb78689b521b1f2515832a6ca269b55dcf5c269718d32d0db9"
+    },
+    {
+      "path": "workflows/customer-success/customer-risk-escalation/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "customer-success",
+      "workflow": "customer-risk-escalation",
+      "bytes": 240,
+      "sha256": "sha256:81b69c98af0e776c6520405195d46d960a8ef3583fbe55ae486180f61f6eff08"
+    },
+    {
+      "path": "workflows/customer-success/customer-risk-escalation/workflow.json",
+      "kind": "workflow",
+      "department": "customer-success",
+      "workflow": "customer-risk-escalation",
+      "bytes": 15292,
+      "sha256": "sha256:e530f67a476d28c20cbf89b21c1483782bfbb652250c4db97c3d3953902fa27b"
+    },
+    {
+      "path": "workflows/data-and-analytics/data-access-request-triage/README.md",
+      "kind": "workflow-documentation",
+      "department": "data-and-analytics",
+      "workflow": "data-access-request-triage",
+      "bytes": 5412,
+      "sha256": "sha256:4fb232fe8a9fe7ea582513269f875f6d1874f5f4f5c61d154d1661caf158b8cc"
+    },
+    {
+      "path": "workflows/data-and-analytics/data-access-request-triage/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "data-and-analytics",
+      "workflow": "data-access-request-triage",
+      "bytes": 263,
+      "sha256": "sha256:ac617b8037df842bfb3e2e7981124a175c1fcbdec3bde3d5d97a8368f4c348e6"
+    },
+    {
+      "path": "workflows/data-and-analytics/data-access-request-triage/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "data-and-analytics",
+      "workflow": "data-access-request-triage",
+      "bytes": 80,
+      "sha256": "sha256:03a60d25d3715e03ed3b019f783551961a30a46c646921bb2549550748a8565d"
+    },
+    {
+      "path": "workflows/data-and-analytics/data-access-request-triage/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "data-and-analytics",
+      "workflow": "data-access-request-triage",
+      "bytes": 265,
+      "sha256": "sha256:648cc256e91d915537d226625a9d63166b77eac094d97d0aae669ac9bbb20aaa"
+    },
+    {
+      "path": "workflows/data-and-analytics/data-access-request-triage/workflow.json",
+      "kind": "workflow",
+      "department": "data-and-analytics",
+      "workflow": "data-access-request-triage",
+      "bytes": 15230,
+      "sha256": "sha256:c5e840f95cbc76c2dfbfe80118068a51f8182090a35e02eca3fa23484dde966c"
+    },
+    {
+      "path": "workflows/engineering/production-change-risk-gate/README.md",
+      "kind": "workflow-documentation",
+      "department": "engineering",
+      "workflow": "production-change-risk-gate",
+      "bytes": 5398,
+      "sha256": "sha256:21e9bf2a7f5fb18a4425e646dad22d6116607fd2fba8c9ec5ef7bcaa06cd6f81"
+    },
+    {
+      "path": "workflows/engineering/production-change-risk-gate/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "engineering",
+      "workflow": "production-change-risk-gate",
+      "bytes": 271,
+      "sha256": "sha256:86d93ed20a22cf80e995aaa9ac71f77c487331b3b4c55f5bf174d03e96e7e71c"
+    },
+    {
+      "path": "workflows/engineering/production-change-risk-gate/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "engineering",
+      "workflow": "production-change-risk-gate",
+      "bytes": 93,
+      "sha256": "sha256:089eef2eff0ee244c96c2bff61bc8ef9809a117092b0138abc3ce635be959298"
+    },
+    {
+      "path": "workflows/engineering/production-change-risk-gate/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "engineering",
+      "workflow": "production-change-risk-gate",
+      "bytes": 274,
+      "sha256": "sha256:5b67b4406c7a12cb8a6f8be918d5680a0b54c3b3f07f402174f496dce78424e3"
+    },
+    {
+      "path": "workflows/engineering/production-change-risk-gate/workflow.json",
+      "kind": "workflow",
+      "department": "engineering",
+      "workflow": "production-change-risk-gate",
+      "bytes": 15201,
+      "sha256": "sha256:7bdecb0fe558cea5b6d1881e01cd79c5992abbe14a9120f3eafc4372f174dcfe"
+    },
+    {
+      "path": "workflows/facilities/workplace-incident-routing/README.md",
+      "kind": "workflow-documentation",
+      "department": "facilities",
+      "workflow": "workplace-incident-routing",
+      "bytes": 5421,
+      "sha256": "sha256:0e916ed422f69840448bcb9cd101387181404157f1492853c10b97db372e4fbf"
+    },
+    {
+      "path": "workflows/facilities/workplace-incident-routing/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "facilities",
+      "workflow": "workplace-incident-routing",
+      "bytes": 264,
+      "sha256": "sha256:58f3c3590101718e21a5fcc82044f0d194008cdf3d1eff3a482eeb1205006615"
+    },
+    {
+      "path": "workflows/facilities/workplace-incident-routing/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "facilities",
+      "workflow": "workplace-incident-routing",
+      "bytes": 83,
+      "sha256": "sha256:5b9954bc60dc91f9300665472f7cc6748a87b430fe6e27ca61b870c073464463"
+    },
+    {
+      "path": "workflows/facilities/workplace-incident-routing/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "facilities",
+      "workflow": "workplace-incident-routing",
+      "bytes": 268,
+      "sha256": "sha256:d1d61c42b2e9ef3054ccd47c4b33fdf274ec9ba0ae61ecdd6e62e6752ae28b91"
+    },
+    {
+      "path": "workflows/facilities/workplace-incident-routing/workflow.json",
+      "kind": "workflow",
+      "department": "facilities",
+      "workflow": "workplace-incident-routing",
+      "bytes": 15257,
+      "sha256": "sha256:e19ffeecc13b3ae465dbfcb455ef3d52501ad4e935826cd89b89e5d0f1f3da99"
+    },
+    {
+      "path": "workflows/finance/invoice-exception-triage/README.md",
+      "kind": "workflow-documentation",
+      "department": "finance",
+      "workflow": "invoice-exception-triage",
+      "bytes": 5458,
+      "sha256": "sha256:6b323217ddb8c7639952b86ec1906627707977336848f5dc8c16283d8539f3c0"
+    },
+    {
+      "path": "workflows/finance/invoice-exception-triage/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "finance",
+      "workflow": "invoice-exception-triage",
+      "bytes": 214,
+      "sha256": "sha256:e0a1adcf78e5e7bb1e3cd5f25ee0de405a6e19f24415cc934053980038126482"
+    },
+    {
+      "path": "workflows/finance/invoice-exception-triage/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "finance",
+      "workflow": "invoice-exception-triage",
+      "bytes": 57,
+      "sha256": "sha256:b63874c3798ca9747dbcc1c7eb555ced3502e53c2d5611aa7449f6897d3b60dd"
+    },
+    {
+      "path": "workflows/finance/invoice-exception-triage/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "finance",
+      "workflow": "invoice-exception-triage",
+      "bytes": 261,
+      "sha256": "sha256:f71e2f624e1f020908e50d130bca4c3795b47a3225df59a8d0a5b617fc9aaf9d"
+    },
+    {
+      "path": "workflows/finance/invoice-exception-triage/workflow.json",
+      "kind": "workflow",
+      "department": "finance",
+      "workflow": "invoice-exception-triage",
+      "bytes": 15307,
+      "sha256": "sha256:27f52bcc053ed719b5df35bcf53de86a4bb2e521dacb2ae375757501363fb83b"
+    },
+    {
+      "path": "workflows/human-resources/employee-access-request-triage/README.md",
+      "kind": "workflow-documentation",
+      "department": "human-resources",
+      "workflow": "employee-access-request-triage",
+      "bytes": 5296,
+      "sha256": "sha256:941836e488ef8ceebcfc11200c954c04359a361ece07c30ace261531ccbd1139"
+    },
+    {
+      "path": "workflows/human-resources/employee-access-request-triage/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "human-resources",
+      "workflow": "employee-access-request-triage",
+      "bytes": 237,
+      "sha256": "sha256:50716190020b9b69e11e6582e658667c7ac547f0172ae8332509a5bb0295d2fd"
+    },
+    {
+      "path": "workflows/human-resources/employee-access-request-triage/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "human-resources",
+      "workflow": "employee-access-request-triage",
+      "bytes": 85,
+      "sha256": "sha256:ae85678b463ee82f0b847b5f9e0a947912da15557d16ceefe9e09057ed8c2f21"
+    },
+    {
+      "path": "workflows/human-resources/employee-access-request-triage/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "human-resources",
+      "workflow": "employee-access-request-triage",
+      "bytes": 276,
+      "sha256": "sha256:07223545374efd2a9f61797104d9263c0802580ebe9cdee54a898765108fe752"
+    },
+    {
+      "path": "workflows/human-resources/employee-access-request-triage/workflow.json",
+      "kind": "workflow",
+      "department": "human-resources",
+      "workflow": "employee-access-request-triage",
+      "bytes": 15152,
+      "sha256": "sha256:fcd4c77f5e45ea33112de24d6465a344fba19c32e8ccbd2359bb4fd5aacef178"
+    },
+    {
+      "path": "workflows/information-technology/service-desk-priority-routing/README.md",
+      "kind": "workflow-documentation",
+      "department": "information-technology",
+      "workflow": "service-desk-priority-routing",
+      "bytes": 5381,
+      "sha256": "sha256:80d3d5a5a650c54483c507439591beba17b2bfb9b3df3fc6549d0b7ea5e4c5a6"
+    },
+    {
+      "path": "workflows/information-technology/service-desk-priority-routing/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "information-technology",
+      "workflow": "service-desk-priority-routing",
+      "bytes": 250,
+      "sha256": "sha256:2236d8bb91501e5133ce5728d2b892d0065450440d903a581142e89e6ef6dc32"
+    },
+    {
+      "path": "workflows/information-technology/service-desk-priority-routing/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "information-technology",
+      "workflow": "service-desk-priority-routing",
+      "bytes": 71,
+      "sha256": "sha256:74fe3376ce6d8cd0dfddd9ba40309ef20ac3a8779fa47919297ed794c8e32122"
+    },
+    {
+      "path": "workflows/information-technology/service-desk-priority-routing/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "information-technology",
+      "workflow": "service-desk-priority-routing",
+      "bytes": 253,
+      "sha256": "sha256:07c9fea76f4770e21ccee49287d066503c134946fd5dce4f3f257a57a834a6e1"
+    },
+    {
+      "path": "workflows/information-technology/service-desk-priority-routing/workflow.json",
+      "kind": "workflow",
+      "department": "information-technology",
+      "workflow": "service-desk-priority-routing",
+      "bytes": 15214,
+      "sha256": "sha256:0e3e9a1b216996ee1068f87cf3394485fe10a49ba46b80f861fcca6d67bfbf08"
+    },
+    {
+      "path": "workflows/legal/contract-intake-routing/README.md",
+      "kind": "workflow-documentation",
+      "department": "legal",
+      "workflow": "contract-intake-routing",
+      "bytes": 5400,
+      "sha256": "sha256:a2395c9bcaa3320c7f910de600223b343f1c07c4ff78b7ea2d513b7a031d755c"
+    },
+    {
+      "path": "workflows/legal/contract-intake-routing/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "legal",
+      "workflow": "contract-intake-routing",
+      "bytes": 269,
+      "sha256": "sha256:e5321dd5750f201a154dec2fa15cccc7ef9a0d946b63fe947bc39c8265343c8a"
+    },
+    {
+      "path": "workflows/legal/contract-intake-routing/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "legal",
+      "workflow": "contract-intake-routing",
+      "bytes": 85,
+      "sha256": "sha256:b578e50784f83aaca637d8370ad84f119175220e2b30208e9c264cf6da9a10ad"
+    },
+    {
+      "path": "workflows/legal/contract-intake-routing/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "legal",
+      "workflow": "contract-intake-routing",
+      "bytes": 274,
+      "sha256": "sha256:02f089d83e8f09833ca9330f5ff1d0dfe58edcd77150769db0d9707cbf5ab31a"
+    },
+    {
+      "path": "workflows/legal/contract-intake-routing/workflow.json",
+      "kind": "workflow",
+      "department": "legal",
+      "workflow": "contract-intake-routing",
+      "bytes": 15214,
+      "sha256": "sha256:12d5bcb36aa02876a051480868b4dffe13aa8bda75296306f0c19f0ba38f7044"
+    },
+    {
+      "path": "workflows/marketing/campaign-lead-compliance-gate/README.md",
+      "kind": "workflow-documentation",
+      "department": "marketing",
+      "workflow": "campaign-lead-compliance-gate",
+      "bytes": 5316,
+      "sha256": "sha256:0311d24ff7d70cc1f52eee42ca36b20408067c0d7ffb945283782c5b81b2090c"
+    },
+    {
+      "path": "workflows/marketing/campaign-lead-compliance-gate/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "marketing",
+      "workflow": "campaign-lead-compliance-gate",
+      "bytes": 243,
+      "sha256": "sha256:43ccd068be4e7945ec7ed309f7345a76962ea7f551e7617073a0c40b5b4078a2"
+    },
+    {
+      "path": "workflows/marketing/campaign-lead-compliance-gate/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "marketing",
+      "workflow": "campaign-lead-compliance-gate",
+      "bytes": 80,
+      "sha256": "sha256:41f51f64565369ebbb719ed84c7a3c2dd094825b252ae870d717b45bf55b1aea"
+    },
+    {
+      "path": "workflows/marketing/campaign-lead-compliance-gate/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "marketing",
+      "workflow": "campaign-lead-compliance-gate",
+      "bytes": 245,
+      "sha256": "sha256:255a7d0cd609af16ccc365ae45590f3c13db4188242126639bc118fbb652fafc"
+    },
+    {
+      "path": "workflows/marketing/campaign-lead-compliance-gate/workflow.json",
+      "kind": "workflow",
+      "department": "marketing",
+      "workflow": "campaign-lead-compliance-gate",
+      "bytes": 15209,
+      "sha256": "sha256:5b3467bc737f57f242720e5f26f4d9004d381eab05212a9014bdf550d889a9a6"
+    },
+    {
+      "path": "workflows/operations/major-incident-stakeholder-brief/README.md",
+      "kind": "workflow-documentation",
+      "department": "operations",
+      "workflow": "major-incident-stakeholder-brief",
+      "bytes": 5499,
+      "sha256": "sha256:98e89997c6908319fabf9e3e1bc4fd50f4960ea1807f3c6acc7b45c941251ee1"
+    },
+    {
+      "path": "workflows/operations/major-incident-stakeholder-brief/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "operations",
+      "workflow": "major-incident-stakeholder-brief",
+      "bytes": 279,
+      "sha256": "sha256:83035309c8e36f938c52db5072a1a1d72729a5f64d6d34ffca9dc67f51ecfd49"
+    },
+    {
+      "path": "workflows/operations/major-incident-stakeholder-brief/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "operations",
+      "workflow": "major-incident-stakeholder-brief",
+      "bytes": 87,
+      "sha256": "sha256:0ec02b485f7e48a50416fad2f3b46f9de98aa8bf1447fe7f3aa1bc8bc3928115"
+    },
+    {
+      "path": "workflows/operations/major-incident-stakeholder-brief/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "operations",
+      "workflow": "major-incident-stakeholder-brief",
+      "bytes": 280,
+      "sha256": "sha256:c7fcf4cf488a6eb3fec41a51ce480a1e00ba33097baf296c5bdb80504c86010f"
+    },
+    {
+      "path": "workflows/operations/major-incident-stakeholder-brief/workflow.json",
+      "kind": "workflow",
+      "department": "operations",
+      "workflow": "major-incident-stakeholder-brief",
+      "bytes": 15302,
+      "sha256": "sha256:68032aec964425979f9c5377d0765f0ab9eda296fcf3af3368b8143b33257c94"
+    },
+    {
+      "path": "workflows/privacy/data-subject-request-triage/README.md",
+      "kind": "workflow-documentation",
+      "department": "privacy",
+      "workflow": "data-subject-request-triage",
+      "bytes": 5406,
+      "sha256": "sha256:11615dfa7adf672bc74e51e90361aa439bdf25e2183f36d248924605c822c9ee"
+    },
+    {
+      "path": "workflows/privacy/data-subject-request-triage/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "privacy",
+      "workflow": "data-subject-request-triage",
+      "bytes": 277,
+      "sha256": "sha256:1438e0d488164d51dde0b8e397870baf76e43a14ea68e6cb775a59b076860443"
+    },
+    {
+      "path": "workflows/privacy/data-subject-request-triage/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "privacy",
+      "workflow": "data-subject-request-triage",
+      "bytes": 108,
+      "sha256": "sha256:340b80c5b1761e11b5bf50001ec1a7d0bf130180c16f4449f2dc8714f8700614"
+    },
+    {
+      "path": "workflows/privacy/data-subject-request-triage/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "privacy",
+      "workflow": "data-subject-request-triage",
+      "bytes": 279,
+      "sha256": "sha256:c56b99438084338cc58618f0189a83fe77967a9ec8ba18f0e13bc7d974da66c2"
+    },
+    {
+      "path": "workflows/privacy/data-subject-request-triage/workflow.json",
+      "kind": "workflow",
+      "department": "privacy",
+      "workflow": "data-subject-request-triage",
+      "bytes": 15229,
+      "sha256": "sha256:5324c174bf86f212f799ff3afb35d35f526e06d1642fce1a181fcecc06b86807"
+    },
+    {
+      "path": "workflows/procurement/vendor-risk-intake/README.md",
+      "kind": "workflow-documentation",
+      "department": "procurement",
+      "workflow": "vendor-risk-intake",
+      "bytes": 5427,
+      "sha256": "sha256:7c89d61838c949608969f1fb10d441f8663a55e185c61ee9a13c496fcf1fa64a"
+    },
+    {
+      "path": "workflows/procurement/vendor-risk-intake/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "procurement",
+      "workflow": "vendor-risk-intake",
+      "bytes": 274,
+      "sha256": "sha256:2ff3cb17c9d43192461b1d39a22c73f318da72791e2b3b0d70aca241af46a0ae"
+    },
+    {
+      "path": "workflows/procurement/vendor-risk-intake/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "procurement",
+      "workflow": "vendor-risk-intake",
+      "bytes": 83,
+      "sha256": "sha256:2cb125f67cefe05465ff02c48273217d3660112d817650102ed7d1de873c1f07"
+    },
+    {
+      "path": "workflows/procurement/vendor-risk-intake/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "procurement",
+      "workflow": "vendor-risk-intake",
+      "bytes": 276,
+      "sha256": "sha256:b867c6dcaa9942233177815d17f644bf67c0effb7ed4235808df6e22008e5451"
+    },
+    {
+      "path": "workflows/procurement/vendor-risk-intake/workflow.json",
+      "kind": "workflow",
+      "department": "procurement",
+      "workflow": "vendor-risk-intake",
+      "bytes": 15220,
+      "sha256": "sha256:7cdf3edb9c4ea616bb0b0811f3ba882f43bb86a3ad53a6833e8daa729d4d3ed2"
+    },
+    {
+      "path": "workflows/sales/enterprise-lead-routing/README.md",
+      "kind": "workflow-documentation",
+      "department": "sales",
+      "workflow": "enterprise-lead-routing",
+      "bytes": 5172,
+      "sha256": "sha256:1cb7ecf7cda49d798c2c9755171bc8366abed544f6e38fccea65e67078290b6c"
+    },
+    {
+      "path": "workflows/sales/enterprise-lead-routing/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "sales",
+      "workflow": "enterprise-lead-routing",
+      "bytes": 244,
+      "sha256": "sha256:b68a4bfae7cacdfa87496f102f1aae95deeae0a1eb88e39e1270fcaffba93026"
+    },
+    {
+      "path": "workflows/sales/enterprise-lead-routing/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "sales",
+      "workflow": "enterprise-lead-routing",
+      "bytes": 81,
+      "sha256": "sha256:fb4110951cf828fe687dbf464a89374f3d2d654ef10e38a972201cd09f03f820"
+    },
+    {
+      "path": "workflows/sales/enterprise-lead-routing/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "sales",
+      "workflow": "enterprise-lead-routing",
+      "bytes": 245,
+      "sha256": "sha256:4befa247ce88e95c0613f61b39b866c699400036106f78c6d6c791eb2560b317"
+    },
+    {
+      "path": "workflows/sales/enterprise-lead-routing/workflow.json",
+      "kind": "workflow",
+      "department": "sales",
+      "workflow": "enterprise-lead-routing",
+      "bytes": 15047,
+      "sha256": "sha256:7d9fdacafd2cb56941700a684778d8551b0e378efc06022db664176fdaa11231"
+    },
+    {
+      "path": "workflows/security/phishing-report-triage/README.md",
+      "kind": "workflow-documentation",
+      "department": "security",
+      "workflow": "phishing-report-triage",
+      "bytes": 5345,
+      "sha256": "sha256:240a5cadae045ef80aae9929c3d3f882716db8e66ac17edb90902b2dd3280492"
+    },
+    {
+      "path": "workflows/security/phishing-report-triage/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "security",
+      "workflow": "phishing-report-triage",
+      "bytes": 271,
+      "sha256": "sha256:da3199e2e6e00e63250a27e7a54ca0ef439e7cfa43dea9d2ac6ee21e1ab54d29"
+    },
+    {
+      "path": "workflows/security/phishing-report-triage/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "security",
+      "workflow": "phishing-report-triage",
+      "bytes": 77,
+      "sha256": "sha256:a5e52acfd8f77d79863f501f743efd772bbd551e33c205ae63431691259496fe"
+    },
+    {
+      "path": "workflows/security/phishing-report-triage/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "security",
+      "workflow": "phishing-report-triage",
+      "bytes": 276,
+      "sha256": "sha256:d436ce6a80dd109ea4d36e7f6d4ef8676f2d5326d9d2f1de3e41f5ed3861e5b8"
+    },
+    {
+      "path": "workflows/security/phishing-report-triage/workflow.json",
+      "kind": "workflow",
+      "department": "security",
+      "workflow": "phishing-report-triage",
+      "bytes": 15109,
+      "sha256": "sha256:495721c949e439fb6863b41b08187021e185a940e53c0fefeace76f2dd2bbb73"
+    }
+  ]
+}

@@ -21,6 +21,7 @@ scripts/generate-workflows.mjs
         ├── openapi.json
         ├── policy-lock.json
         ├── policy-snapshot.json
+        ├── artifact-manifest.json
         └── docs/catalog.md
         │
         ▼
@@ -85,6 +86,8 @@ When one policy's behavior changes, update that definition's policy version and 
 `policy-lock.json` stores a canonical SHA-256 fingerprint for every policy's executable behavior. Generation fails when a fingerprint changes without a newer `policyVersion`, and pull-request CI compares the committed lock with the target branch so manually replacing the lock cannot bypass the rule. Version regressions also fail.
 
 `policy-snapshot.json` records that same executable behavior in a stable, human-reviewable form. Pull-request CI compares the snapshot with the target branch and writes a Markdown summary of added, removed, and changed contracts, rules, thresholds, decisions, actions, owners, versions, and fingerprints to the job summary. Review this report with the named policy owner; the lock proves that behavior changed, while the snapshot explains what changed.
+
+`artifact-manifest.json` hashes all 80 generated public artifacts: the catalog and contracts plus each workflow, companion README, and three fixtures. Validation recomputes every byte count and SHA-256 digest so generated files cannot drift independently of their recorded release identity.
 
 The lock separately fingerprints `scripts/policy-engine.mjs`. Any engine source change requires increasing `policyEngineVersion`; because that shared version participates in every policy fingerprint, each affected policy must then receive an explicit version bump. This deliberately favors auditable change control over silent refactors in decision-critical code.
 

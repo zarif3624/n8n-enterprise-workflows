@@ -1,11 +1,13 @@
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { artifactManifestVersion, buildArtifactManifest } from "./artifact-integrity.mjs";
 import { evaluatePolicy, policyEngineVersion, policySchemaVersion } from "./policy-engine.mjs";
 import { buildPolicyLock, buildPolicySnapshot, policyLockVersion, policySnapshotVersion } from "./policy-governance.mjs";
 import { inputSchemaFor, policyFor, workflows as definitions } from "./workflow-definitions.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const artifactManifest = JSON.parse(await readFile(join(root, "artifact-manifest.json"), "utf8"));
 const catalog = JSON.parse(await readFile(join(root, "catalog.json"), "utf8"));
 const openApi = JSON.parse(await readFile(join(root, "openapi.json"), "utf8"));
 const policyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
@@ -63,6 +65,16 @@ const expectedPolicySnapshot = buildPolicySnapshot({
   engineVersion: policyEngineVersion,
   engineSource
 });
+const expectedArtifactManifest = await buildArtifactManifest({
+  root,
+  catalog,
+  packageVersion: packageManifest.version,
+  policySchemaVersion,
+  policyEngineVersion,
+  policyEngineFingerprint: policyLock.policyEngineFingerprint
+});
+if (artifactManifest.manifestVersion !== artifactManifestVersion) fail("artifact-manifest.json", "artifact manifest format version is unsupported");
+if (!sameJson(artifactManifest, expectedArtifactManifest)) fail("artifact-manifest.json", "artifact hashes or release metadata drifted from generated files");
 if (policyLock.lockVersion !== policyLockVersion) fail("policy-lock.json", "lock format version is unsupported");
 if (!sameJson(policyLock, expectedPolicyLock)) fail("policy-lock.json", "policy fingerprints drifted from source definitions or engine");
 if (policySnapshot.snapshotVersion !== policySnapshotVersion) fail("policy-snapshot.json", "snapshot format version is unsupported");
@@ -258,4 +270,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated ${catalog.length} workflows: contracts, fixtures, policy fingerprints, review snapshots, expression parity, graph reachability, safety, and documentation.`);
+console.log(`Validated ${catalog.length} workflows and ${artifactManifest.artifactCount} release artifacts: contracts, fixtures, fingerprints, snapshots, graph reachability, safety, and documentation.`);

@@ -45,6 +45,8 @@ adopter-controlled trust boundary. Before adding one:
 - **Generated-artifact drift:** validation executes the exported n8n expression and compares it with the source policy engine.
 - **Silent evaluator failure:** the evaluator's dedicated error output terminates in a sanitized, retryable HTTP 500 instead of an empty success response; stack traces and node details remain private.
 - **Unreviewed policy mutation:** canonical fingerprints and target-branch CI comparison require a newer policy version for executable behavior changes.
+- **Generated-file substitution:** `artifact-manifest.json` records the byte size and SHA-256 identity of all 80 public generated artifacts and is recomputed during validation.
+- **Release tampering:** reproducible archives have outer checksums, per-file internal manifests, and GitHub Actions provenance attestations tied to the tagged build.
 
 ## Threats adopters must address
 
@@ -62,3 +64,14 @@ the target n8n environment before activation.
 
 These templates are starting points, not a substitute for your organization's
 security review, privacy assessment, or change-management process.
+
+## Release verification
+
+Verify downloaded release files before import. `SHA256SUMS` detects altered or incomplete downloads, while GitHub's attestation verifier confirms that an archive was produced by this repository's release workflow:
+
+```bash
+sha256sum --check SHA256SUMS
+gh attestation verify <archive.tar.gz> -R zarif3624/n8n-enterprise-workflows
+```
+
+An attestation proves build origin and integrity; it does not replace review of the policy snapshot, workflow behavior, or organization-specific production controls.

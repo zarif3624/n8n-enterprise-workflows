@@ -24,7 +24,7 @@ Every workflow must:
 ## Source of truth
 
 Do not hand-edit generated `workflow.json`, package README, example fixture,
-`catalog.json`, `openapi.json`, `policy-lock.json`, `policy-snapshot.json`, or `docs/catalog.md` files. Define workflow behavior in
+`catalog.json`, `openapi.json`, `policy-lock.json`, `policy-snapshot.json`, `artifact-manifest.json`, or `docs/catalog.md` files. Define workflow behavior in
 `scripts/workflow-definitions.mjs`; the generator produces the importable and
 human-readable artifacts together.
 

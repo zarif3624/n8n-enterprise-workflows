@@ -20,6 +20,7 @@ Every workflow package includes:
 - Explainable scoring with stable rule IDs, policy versions, and hard risk floors.
 - Tamper-evident policy fingerprints with CI-enforced version bumps for behavior changes.
 - Human-readable policy snapshots and pull-request summaries for owner review.
+- A SHA-256 artifact manifest and reproducible full-catalog and per-department release archives.
 - Structured HTTP 200, 400, and sanitized retryable 500 responses with correlation IDs.
 - A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
 - Security, operations, human-approval, adapter, and ROI guidance.
@@ -56,7 +57,7 @@ This project makes those concerns part of each workflow package.
 | Privacy | [Data subject request triage](workflows/privacy/data-subject-request-triage) | Keep identity, deadline, and legal constraints visible |
 
 Browse the machine-readable [catalog](catalog.json), the generated
-[OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), or the [department index](docs/catalog.md).
+[OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
 
 ## Five-minute start
 
@@ -131,7 +132,22 @@ npm run report:policy-changes -- origin/main
 git diff --exit-code
 ```
 
-The second command should only be clean after generated changes have been reviewed and committed.
+The final command should only be clean after generated changes have been reviewed and committed.
+
+## Verify a release
+
+Each tagged release publishes one complete source/catalog archive and one self-contained archive per department. `SHA256SUMS` covers every archive and the release manifest; each archive's `BUNDLE.json` then covers every file inside it.
+
+```bash
+# Run from the directory containing the downloaded release files.
+sha256sum --check SHA256SUMS
+
+# Verify GitHub Actions build provenance for a chosen archive.
+gh attestation verify n8n-enterprise-workflows-finance-v0.2.0.tar.gz \
+  -R zarif3624/n8n-enterprise-workflows
+```
+
+On macOS, use `shasum -a 256 -c SHA256SUMS` for the checksum step. Maintainers can reproduce the exact archives locally with `npm run build:release`; the build omits timestamps, user IDs, file-system ordering, and platform-specific gzip metadata.
 
 ## Release rhythm
 

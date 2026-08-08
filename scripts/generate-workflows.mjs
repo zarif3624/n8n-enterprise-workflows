@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildArtifactManifest } from "./artifact-integrity.mjs";
 import { buildPolicyExpression, evaluatePolicy, policyEngineVersion, policySchemaVersion } from "./policy-engine.mjs";
 import { buildPolicyLock, buildPolicySnapshot, policyLockIssues } from "./policy-governance.mjs";
 import { adaptersFor, inputSchemaFor, policyFor, thresholds, workflows } from "./workflow-definitions.mjs";
@@ -603,4 +604,13 @@ await writeFile(join(root, "openapi.json"), `${JSON.stringify(buildOpenApi(), nu
 await writeFile(join(root, "policy-lock.json"), `${JSON.stringify(policyLock, null, 2)}\n`);
 await writeFile(join(root, "policy-snapshot.json"), `${JSON.stringify(policySnapshot, null, 2)}\n`);
 await writeFile(join(root, "docs", "catalog.md"), buildCatalogDoc());
-console.log(`Generated ${catalog.length} enterprise workflow packages, typed contracts, fixtures, policy fingerprints, and review snapshots.`);
+const artifactManifest = await buildArtifactManifest({
+  root,
+  catalog,
+  packageVersion: packageManifest.version,
+  policySchemaVersion,
+  policyEngineVersion,
+  policyEngineFingerprint: policyLock.policyEngineFingerprint
+});
+await writeFile(join(root, "artifact-manifest.json"), `${JSON.stringify(artifactManifest, null, 2)}\n`);
+console.log(`Generated ${catalog.length} enterprise workflow packages and ${artifactManifest.artifactCount} integrity-checked artifacts.`);
