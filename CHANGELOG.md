@@ -11,7 +11,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
 - A reusable HTTP runtime smoke tester and scheduled success, validation, and forced-error webhook checks across the supported n8n compatibility matrix.
 - Dedicated evaluator error outputs and sanitized retryable HTTP 500 responders across all 15 workflows.
-- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, privacy, and CI supply-chain coverage, increasing the suite from 58 to 172 tests.
+- Independent decision assertions for all 79 declared policy rules plus governance, integrity, impact, report, archive, CLI, mapping, conformance, drift, privacy, and CI supply-chain coverage, increasing the suite from 58 to 178 tests.
 - A canonical `policy-snapshot.json` and pull-request report that explains contract, rule, threshold, decision, action, owner, version, and fingerprint changes.
 - A generated SHA-256 manifest covering all 80 public artifacts.
 - Reproducible full-catalog and per-department release archives with internal file manifests, outer checksums, strict tag/version matching, and GitHub Actions build-provenance attestations.
@@ -20,6 +20,7 @@ All notable changes to this project are documented here. The project follows Sem
 - A no-dependency catalog CLI for discovery, machine-readable inspection, and workflow-specific adoption plans with field mapping, controls, fixture evidence, observability, rollback, and optional capacity-value scenarios.
 - A privacy-safe batch conformance CLI for JSON or JSONL samples with aggregate contract, outcome, score, rule-coverage, violation, and configurable rollout-gate evidence.
 - A fingerprint-bound declarative field-mapping CLI with safe JSON Pointer extraction, explicit transforms, drift rejection, and aggregate-only mapping failure evidence.
+- Aggregate conformance baseline comparison with strict policy/mapping identity, score and distribution deltas, configurable operational gates, and explicit statistical limitations.
 
 ### Changed
 

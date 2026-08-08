@@ -23,6 +23,7 @@ Every workflow package includes:
 - Before/after policy replay across both branches' fixtures and every declared rule witness.
 - A SHA-256 artifact manifest and reproducible full-catalog and per-department release archives.
 - Privacy-safe batch conformance analysis with contract, outcome, score, and rule-coverage gates.
+- Fingerprint-locked aggregate drift comparison for invalid-rate, score, outcome, rule, and mapping shifts.
 - Structured HTTP 200, 400, and sanitized retryable 500 responses with correlation IDs.
 - A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
 - Security, operations, human-approval, adapter, and ROI guidance.
@@ -116,6 +117,18 @@ The declarative mapper uses safe JSON Pointers and explicit transforms, is bound
 to the exact policy fingerprint, and never executes adopter code. The aggregate report records the exact policy fingerprint, outcome mix, score
 distribution, rule coverage, and field/code violation counts. Optional gates
 exit nonzero for CI or UAT. See [field mapping](docs/field-mapping.md) and [privacy-safe conformance testing](docs/conformance-testing.md).
+
+After approval, retain the aggregate baseline and compare a comparable current
+sample without reloading source records:
+
+```bash
+npm run conformance:compare -- baseline-conformance.json current-conformance.json \
+  --min-current-records 100 --max-invalid-rate-increase 0.02 \
+  --max-band-rate-delta 0.10 --max-rule-rate-delta 0.15
+```
+
+The comparison refuses policy or mapping identity changes and clearly labels
+rate movement as a monitoring signal, not causal proof. See [aggregate drift monitoring](docs/drift-monitoring.md).
 
 ### Option B: Attach a workflow to Codex through n8n MCP
 

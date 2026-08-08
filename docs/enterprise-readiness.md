@@ -41,6 +41,7 @@ Start with `npm run catalog -- plan <workflow-slug>` to generate a workflow-spec
 - Keep production protected from ad hoc edits.
 - Publish a specific reviewed version and retain rollback instructions.
 - Monitor execution failures, latency, throughput, and business outcomes.
+- Compare a current aggregate conformance report with the approved fingerprint-matched baseline and alert on owner-approved drift gates.
 - Record the policy and schema versions deployed in each environment.
 
 ## Value measurement

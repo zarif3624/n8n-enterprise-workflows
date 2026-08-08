@@ -189,6 +189,7 @@ export function buildAdoptionPlan(detail, { adapter, capacity, fixtureOutcomes =
       "Propagate X-Request-Id through every downstream record and alert.",
       "Track 2xx, 4xx, 5xx, latency, timeout, retry, and duplicate rates.",
       "Monitor decision-band distribution and unexpected rule-frequency shifts.",
+      "Compare fingerprint-matched aggregate conformance reports against the approved UAT baseline.",
       `Measure ${detail.metric} against a pre-launch baseline.`,
       "Review false positives, false negatives, and overrides with the policy owner."
     ],

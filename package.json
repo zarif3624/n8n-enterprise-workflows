@@ -10,6 +10,7 @@
     "catalog": "node scripts/catalog-cli.mjs",
     "mapping": "node scripts/field-mapping-cli.mjs",
     "conformance": "node scripts/conformance-cli.mjs",
+    "conformance:compare": "node scripts/conformance-compare-cli.mjs",
     "smoke:webhook": "node scripts/smoke-test-webhook.mjs",
     "validate": "node scripts/validate-workflows.mjs",
     "validate:links": "node scripts/validate-links.mjs",

@@ -85,3 +85,5 @@ configuration errors.
 Complete the [enterprise readiness checklist](enterprise-readiness.md) after
 conformance testing. The analyzer evaluates decision behavior, not n8n
 credentials, external nodes, retries, approvals, or production access controls.
+After approval, use the aggregate JSON as an operational
+[drift-monitoring baseline](drift-monitoring.md).
