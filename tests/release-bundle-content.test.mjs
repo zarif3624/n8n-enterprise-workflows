@@ -34,8 +34,9 @@ test("full and department release bundles carry lifecycle and compatibility cont
   const manifest = await buildRelease();
   assert.deepEqual(schemaContractIssues(manifest, releaseSchema, releaseSchema), []);
   const full = manifest.archives.find((entry) => entry.scope === "full");
-  const finance = manifest.archives.find((entry) => entry.department === "finance");
-  assert.ok(full && finance);
+  const departments = manifest.archives.filter((entry) => entry.scope === "department");
+  assert.ok(full);
+  assert.equal(departments.length, 15);
 
   const fullFiles = bundleFiles(await readFile(join(root, "dist", full.file)));
   assert.deepEqual(schemaContractIssues(JSON.parse(fullFiles.get("BUNDLE.json").toString("utf8")), bundleSchema, bundleSchema), []);
@@ -43,22 +44,30 @@ test("full and department release bundles carry lifecycle and compatibility cont
   assert.ok(fullFiles.has("runtime-compatibility.json"));
   assert.ok(fullFiles.has("schemas/policy-lifecycle.schema.json"));
 
-  const financeFiles = bundleFiles(await readFile(join(root, "dist", finance.file)));
-  assert.deepEqual(schemaContractIssues(JSON.parse(financeFiles.get("BUNDLE.json").toString("utf8")), bundleSchema, bundleSchema), []);
-  const lifecycle = JSON.parse(financeFiles.get("policy-lifecycle.json"));
-  assert.deepEqual(lifecycle.policies.map((entry) => entry.slug), ["invoice-exception-triage"]);
-  assert.equal(lifecycle.policies[0].status, "draft");
-  assert.ok(financeFiles.has("runtime-compatibility.json"));
-  assert.ok(financeFiles.has("schemas/runtime-compatibility.schema.json"));
-  assert.ok(financeFiles.has("docs/policy-lifecycle.md"));
-  assert.ok(financeFiles.has("docs/field-mapping.md"));
-  assert.ok(financeFiles.has("docs/conformance-testing.md"));
-  assert.ok(financeFiles.has("docs/drift-monitoring.md"));
-  const mapping = JSON.parse(financeFiles.get("mappings/invoice-exception-triage.json"));
-  const mappingSchema = JSON.parse(financeFiles.get("schemas/field-mapping.schema.json"));
-  assert.deepEqual(schemaContractIssues(mapping, mappingSchema, mappingSchema), []);
-  assert.equal(mapping.workflow, "invoice-exception-triage");
-  assert.equal(mapping.policyFingerprint, lifecycle.policies[0].fingerprint);
-  assert.ok(Object.keys(mapping.fields).length > 0);
-  assertInternalMarkdownLinks(financeFiles);
+  for (const archive of departments) {
+    const files = bundleFiles(await readFile(join(root, "dist", archive.file)));
+    assert.deepEqual(schemaContractIssues(JSON.parse(files.get("BUNDLE.json").toString("utf8")), bundleSchema, bundleSchema), []);
+    const lifecycle = JSON.parse(files.get("policy-lifecycle.json"));
+    const catalog = JSON.parse(files.get("catalog.json"));
+    assert.equal(catalog.length, archive.workflowCount);
+    assert.ok(catalog.every((entry) => entry.department === archive.department));
+    assert.deepEqual(lifecycle.policies.map((entry) => entry.slug).sort(), catalog.map((entry) => entry.slug).sort());
+    assert.ok(lifecycle.policies.every((entry) => entry.status === "draft"));
+    assert.ok(files.has("runtime-compatibility.json"));
+    assert.ok(files.has("schemas/runtime-compatibility.schema.json"));
+    assert.ok(files.has("docs/policy-lifecycle.md"));
+    assert.ok(files.has("docs/field-mapping.md"));
+    assert.ok(files.has("docs/conformance-testing.md"));
+    assert.ok(files.has("docs/drift-monitoring.md"));
+    const mappingSchema = JSON.parse(files.get("schemas/field-mapping.schema.json"));
+    for (const entry of catalog) {
+      const mapping = JSON.parse(files.get(`mappings/${entry.slug}.json`));
+      const lifecycleEntry = lifecycle.policies.find((policy) => policy.slug === entry.slug);
+      assert.deepEqual(schemaContractIssues(mapping, mappingSchema, mappingSchema), []);
+      assert.equal(mapping.workflow, entry.slug);
+      assert.equal(mapping.policyFingerprint, lifecycleEntry.fingerprint);
+      assert.ok(Object.keys(mapping.fields).length > 0);
+    }
+    assertInternalMarkdownLinks(files);
+  }
 });

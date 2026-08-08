@@ -11,6 +11,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Tagged release CI now clean-installs and runs the full validation suite from inside the packaged source archive before attestation and publication.
 - Department release bundles now include schema-valid, fingerprint-bound mapping templates and the field-mapping, conformance, and drift guidance required to use them safely.
 - Release tests now require every relative Markdown link in a department archive to resolve entirely within that archive.
+- Release coverage validates mapping schemas, lifecycle fingerprints, catalog scope, internal manifests, and documentation closure across all 15 department archives rather than one representative bundle.
 - A deterministic `policy-lock.json` with canonical SHA-256 fingerprints for all executable policy behavior.
 - Local generation and pull-request guards that reject silent policy changes, engine changes without an engine-version bump, and policy-version regressions.
 - Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
