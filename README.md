@@ -29,6 +29,7 @@ Every workflow package includes:
 - Security, operations, human-approval, adapter, and ROI guidance.
 
 The shared test suite checks these guarantees across the full catalog instead of relying on screenshots or manual import checks.
+It also runs a fixed-seed [adversarial corpus](docs/adversarial-testing.md) across every policy and mapping boundary to catch crashes, nondeterminism, unsafe bounds, prototype-shaped inputs, and payload echo.
 The scheduled compatibility matrix also boots supported n8n versions, exercises a representative webhook over HTTP, and forces an evaluator exception to prove the sanitized 500 path. This catches runtime behavior that import checks cannot see.
 Pull-request CI separately replays changed policies against target-branch and current fixtures plus isolated rule witnesses, then summarizes any score, band, decision, matched-rule, action, or validation delta for business-owner review.
 
@@ -163,7 +164,7 @@ The validator checks workflow shape, node identity, graph reachability,
 policy-expression parity, policy fingerprints, review-snapshot parity and version discipline, independent rule coverage, typed contracts, representative fixtures, unique
 webhook paths, inactive status, response behavior, credential leakage,
 companion documentation, and catalog coverage. The test suite then exercises
-every required field, declared type, rule boundary, and safety floor.
+every required field, declared type, rule boundary, safety floor, and deterministic adversarial-input invariant.
 
 ## Extend the catalog
 
