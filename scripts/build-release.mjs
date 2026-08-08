@@ -3,6 +3,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildArtifactManifest, sha256 } from "./artifact-integrity.mjs";
 import { createTarGzip, readTarGzip } from "./release-archive.mjs";
+import { verifyReleaseBundle } from "./verify-bundle.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outputDirectory = join(root, "dist");
@@ -151,6 +152,10 @@ export async function buildRelease() {
       sourceArtifactManifestSha256: sourceManifestSha256,
       workflows
     });
+    const verification = verifyReleaseBundle(archive);
+    if (verification.packageVersion !== version || verification.scope !== scope || verification.workflowCount !== workflows.length) {
+      throw new Error(`Consumer bundle verification failed for ${file}`);
+    }
     await writeFile(join(outputDirectory, file), archive);
     archives.push({
       file,

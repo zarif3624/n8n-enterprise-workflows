@@ -31,6 +31,8 @@ jobs:
       - name: Ensure generated files are committed
         run: git diff --exit-code
       - run: npm run build:release
+      - name: Verify every internal bundle manifest
+        run: for archive in dist/*.tar.gz; do npm run --silent verify:bundle -- "$archive"; done
       - name: Verify release checksums
         working-directory: dist
         run: sha256sum --check SHA256SUMS

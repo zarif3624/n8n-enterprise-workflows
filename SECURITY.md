@@ -47,6 +47,7 @@ adopter-controlled trust boundary. Before adding one:
 - **Unreviewed policy mutation:** canonical fingerprints and target-branch CI comparison require a newer policy version for executable behavior changes.
 - **Hidden policy impact:** pull-request CI replays both branches' fixtures and isolated rule witnesses, exposing changed validation, scoring, decisions, reasons, and actions for owner review.
 - **Generated-file substitution:** `artifact-manifest.json` records the byte size and SHA-256 identity of all 83 public generated and contract artifacts and is recomputed during validation.
+- **Malicious release archive:** consumer verification limits decompression, rejects unsafe paths and special tar entries, enforces one root and an exact file set, and checks every byte count and SHA-256 digest in `BUNDLE.json`; outer checksums and provenance remain the authenticity boundary.
 - **Release tampering:** reproducible archives have outer checksums, per-file internal manifests, and GitHub Actions provenance attestations tied to the tagged build.
 
 ## Threats adopters must address

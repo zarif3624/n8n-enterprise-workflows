@@ -26,7 +26,7 @@ fixes correctness, security, compatibility, observability, or adoption friction.
 5. Run the `n8n import compatibility` workflow for node-version or export-shape changes.
 6. Merge through a focused pull request so CI can compare policy versions with the target branch.
 7. Update `package.json` and tag that exact semantic version as `vMAJOR.MINOR.PATCH`.
-8. Let the tag workflow rerun validation, reproduce the archives, verify their checksums, create GitHub build-provenance attestations, and publish the release.
+8. Let the tag workflow rerun validation, reproduce the archives, verify every embedded bundle manifest and outer checksum, create GitHub build-provenance attestations, and publish the release.
 9. Verify one downloaded archive with both `SHA256SUMS` and `gh attestation verify`.
 10. Write release notes around the business outcome, not the node count.
 11. Publish a short example or implementation note for discovery.
@@ -48,6 +48,12 @@ Consumers can verify the downloaded files from their containing directory:
 ```bash
 sha256sum --check SHA256SUMS
 gh attestation verify <archive.tar.gz> -R zarif3624/n8n-enterprise-workflows
+npm run verify:bundle -- <archive.tar.gz>
 ```
 
-Use `shasum -a 256 -c SHA256SUMS` instead of `sha256sum` on macOS.
+Use `shasum -a 256 -c SHA256SUMS` instead of `sha256sum` on macOS. Run
+`verify:bundle` from a trusted checkout: it limits decompression, accepts only
+regular safe-path entries under one root, and requires the exact byte count and
+SHA-256 identity of every file declared by `BUNDLE.json`. The embedded manifest
+is not an authenticity mechanism by itself; verify the outer checksum and
+provenance first.

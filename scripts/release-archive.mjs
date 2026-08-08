@@ -80,9 +80,11 @@ function readNullTerminated(buffer, start, length) {
   return buffer.toString("utf8", start, end === -1 || end > start + length ? start + length : end);
 }
 
-export function readTarGzip(archive) {
-  const tar = gunzipSync(archive);
+export function readTarGzip(archive, { maxOutputBytes = 512 * 1024 * 1024 } = {}) {
+  if (!Number.isSafeInteger(maxOutputBytes) || maxOutputBytes < blockSize * 2) throw new Error("Invalid archive output limit");
+  const tar = gunzipSync(archive, { maxOutputLength: maxOutputBytes });
   const entries = [];
+  const paths = new Set();
   let offset = 0;
   while (offset + blockSize <= tar.length) {
     const header = tar.subarray(offset, offset + blockSize);
@@ -95,6 +97,11 @@ export function readTarGzip(archive) {
     const name = readNullTerminated(header, 0, 100);
     const prefix = readNullTerminated(header, 345, 155);
     const path = prefix ? `${prefix}/${name}` : name;
+    const type = header[156];
+    if (type !== 0 && type !== "0".charCodeAt(0)) throw new Error(`Unsupported tar entry type for ${path}`);
+    if (!path || path.startsWith("/") || path.includes("\\") || path.split("/").includes("..")) throw new Error(`Unsafe archive path: ${path}`);
+    if (paths.has(path)) throw new Error(`Duplicate archive path: ${path}`);
+    paths.add(path);
     const size = Number.parseInt(readNullTerminated(header, 124, 12).trim(), 8);
     const contentStart = offset + blockSize;
     const contentEnd = contentStart + size;
@@ -102,5 +109,6 @@ export function readTarGzip(archive) {
     entries.push({ path, content: Buffer.from(tar.subarray(contentStart, contentEnd)) });
     offset = contentStart + Math.ceil(size / blockSize) * blockSize;
   }
+  if (offset + blockSize > tar.length) throw new Error("Archive is missing an end-of-archive marker");
   return entries;
 }
