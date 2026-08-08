@@ -11,6 +11,7 @@ export function sha256(value) {
 export function generatedArtifactDescriptors(catalog) {
   const descriptors = [
     { path: "schemas/artifact-manifest.schema.json", kind: "json-schema" },
+    { path: "schemas/bundle-manifest.schema.json", kind: "json-schema" },
     { path: "catalog.json", kind: "catalog" },
     { path: "contract-registry.json", kind: "contract-registry" },
     { path: "docs/catalog.md", kind: "catalog-documentation" },
@@ -27,6 +28,7 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "schemas/policy-lifecycle.schema.json", kind: "json-schema" },
     { path: "schemas/policy-lock.schema.json", kind: "json-schema" },
     { path: "schemas/policy-snapshot.schema.json", kind: "json-schema" },
+    { path: "schemas/release-manifest.schema.json", kind: "json-schema" },
     { path: "schemas/runtime-compatibility.schema.json", kind: "json-schema" }
   ];
 

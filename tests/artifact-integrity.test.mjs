@@ -12,7 +12,7 @@ const policyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "ut
 
 test("artifact descriptors cover every generated public file exactly once", () => {
   const descriptors = generatedArtifactDescriptors(catalog);
-  assert.equal(descriptors.length, 18 + catalog.length * 5);
+  assert.equal(descriptors.length, 20 + catalog.length * 5);
   assert.equal(new Set(descriptors.map((entry) => entry.path)).size, descriptors.length);
   assert.deepEqual(descriptors.map((entry) => entry.path), [...descriptors.map((entry) => entry.path)].sort());
 });
@@ -29,7 +29,7 @@ test("artifact manifest deterministically hashes the complete generated catalog"
   const first = await buildArtifactManifest(options);
   const second = await buildArtifactManifest(options);
   assert.deepEqual(first, second);
-  assert.equal(first.artifactCount, 93);
+  assert.equal(first.artifactCount, 95);
   assert.equal(first.workflowCount, 15);
   assert.equal(first.departmentCount, 15);
   assert.ok(first.artifacts.every((entry) => entry.bytes > 0 && /^sha256:[a-f0-9]{64}$/.test(entry.sha256)));

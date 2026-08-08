@@ -10,8 +10,10 @@
     { "id": "runtime-compatibility", "path": "runtime-compatibility.json", "schema": "schemas/runtime-compatibility.schema.json" }
   ],
   "outputs": [
+    { "id": "bundle-manifest", "schema": "schemas/bundle-manifest.schema.json", "producer": "npm run build:release (BUNDLE.json inside each archive)" },
     { "id": "conformance-comparison", "schema": "schemas/conformance-comparison.schema.json", "producer": "npm run conformance:compare -- <baseline.json> <current.json> --json" },
     { "id": "conformance-report", "schema": "schemas/conformance-report.schema.json", "producer": "npm run conformance -- <workflow-slug> <records.jsonl> --json" },
-    { "id": "field-mapping", "schema": "schemas/field-mapping.schema.json", "producer": "npm run mapping -- init <workflow-slug>" }
+    { "id": "field-mapping", "schema": "schemas/field-mapping.schema.json", "producer": "npm run mapping -- init <workflow-slug>" },
+    { "id": "release-manifest", "schema": "schemas/release-manifest.schema.json", "producer": "npm run build:release (dist/release-manifest.json)" }
   ]
 }

@@ -4,7 +4,7 @@
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.3",
   "policyEngineFingerprint": "sha256:1b6744908ecfcc31494bab465e6123e70e16a425b982fdc12bdd63845f4e4596",
-  "artifactCount": 93,
+  "artifactCount": 95,
   "departmentCount": 15,
   "workflowCount": 15,
   "artifacts": [
@@ -17,8 +17,8 @@
     {
       "path": "contract-registry.json",
       "kind": "contract-registry",
-      "bytes": 1340,
-      "sha256": "sha256:05ea3278cbfcfb1efa9cd14b3a1ad1524c1445e703719a85a920a3f3e9a39170"
+      "bytes": 1643,
+      "sha256": "sha256:b76dbf4775f2d2896c5ea914eb8070e8575e0f02f8015a62caae6340303858ce"
     },
     {
       "path": "docs/catalog.md",
@@ -61,6 +61,12 @@
       "kind": "json-schema",
       "bytes": 2329,
       "sha256": "sha256:6d9fa6b2c3901c2d0793d7e21b74ee75789c910ac45a4a4450f9e7cc61c2c06e"
+    },
+    {
+      "path": "schemas/bundle-manifest.schema.json",
+      "kind": "json-schema",
+      "bytes": 2200,
+      "sha256": "sha256:e6f0b56b3d623f54b69fd85e85ac1557914c39e18845b5e65d280b0817a088b6"
     },
     {
       "path": "schemas/catalog.schema.json",
@@ -109,6 +115,12 @@
       "kind": "json-schema",
       "bytes": 5783,
       "sha256": "sha256:67cf01c6b3e1bb8054cb98713fec548f0620b0987d5cbe7d21cce6729a00bc4d"
+    },
+    {
+      "path": "schemas/release-manifest.schema.json",
+      "kind": "json-schema",
+      "bytes": 1623,
+      "sha256": "sha256:ef59ac6a2184704cd3210c4ae627cf33c7b396ce5835ef0f9c99929460600fd6"
     },
     {
       "path": "schemas/runtime-compatibility.schema.json",
