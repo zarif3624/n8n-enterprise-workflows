@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here. The project follows Semantic Versioning for repository releases; individual decision policies carry their own policy version in responses and catalog metadata.
 
+## Unreleased
+
+### Added
+
+- A deterministic `policy-lock.json` with canonical SHA-256 fingerprints for all executable policy behavior.
+- Local generation and pull-request guards that reject silent policy changes, engine changes without an engine-version bump, and policy-version regressions.
+- Governance tests for deterministic fingerprints, behavior-change detection, engine discipline, and semantic-version ordering.
+- A reusable HTTP runtime smoke tester and scheduled live-webhook checks across the supported n8n compatibility matrix.
+
+### Changed
+
+- Clarified that unknown request fields are accepted for compatibility but ignored and never echoed.
+- Pretty-serialized embedded policy JSON so n8n cannot misread nested `}}` as an early expression terminator; all policies and the shared engine move to patch version `1.0.1`.
+
+### Fixed
+
+- A runtime-only failure where importable workflows produced empty HTTP 200 responses because the Edit Fields raw-expression parser rejected compact nested policy JSON.
+
 ## 0.2.0
 
 ### Added

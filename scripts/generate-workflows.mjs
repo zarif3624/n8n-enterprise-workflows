@@ -2,11 +2,13 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildPolicyExpression, evaluatePolicy, policySchemaVersion } from "./policy-engine.mjs";
+import { buildPolicyExpression, evaluatePolicy, policyEngineVersion, policySchemaVersion } from "./policy-engine.mjs";
+import { buildPolicyLock, policyLockIssues } from "./policy-governance.mjs";
 import { adaptersFor, inputSchemaFor, policyFor, thresholds, workflows } from "./workflow-definitions.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+const engineSource = await readFile(join(root, "scripts", "policy-engine.mjs"), "utf8");
 
 function idFor(value) {
   const hex = createHash("sha256").update(value).digest("hex").slice(0, 32);
@@ -229,7 +231,7 @@ curl --fail-with-body --request POST "$N8N_TEST_WEBHOOK_URL" \\
 
 ## Input contract
 
-The request body must be a JSON object. Unknown fields are preserved as caller context but are not echoed in the response.
+The request body must be a JSON object. Unknown fields are accepted for caller compatibility but ignored by the policy and never echoed in the response.
 
 | Field | Required | Contract |
 | --- | --- | --- |
@@ -437,6 +439,24 @@ function buildOpenApi() {
   };
 }
 
+const policyLock = buildPolicyLock({
+  definitions: workflows,
+  policyFor,
+  schemaVersion: policySchemaVersion,
+  engineVersion: policyEngineVersion,
+  engineSource
+});
+
+try {
+  const previousPolicyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
+  const issues = policyLockIssues(previousPolicyLock, policyLock);
+  if (issues.length) {
+    throw new Error(`Policy version guard rejected generation:\n${issues.map((issue) => `- ${issue}`).join("\n")}`);
+  }
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
+
 const catalog = [];
 for (const definition of workflows) {
   const directory = join(root, "workflows", definition.department, definition.slug);
@@ -474,5 +494,6 @@ for (const definition of workflows) {
 
 await writeFile(join(root, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
 await writeFile(join(root, "openapi.json"), `${JSON.stringify(buildOpenApi(), null, 2)}\n`);
+await writeFile(join(root, "policy-lock.json"), `${JSON.stringify(policyLock, null, 2)}\n`);
 await writeFile(join(root, "docs", "catalog.md"), buildCatalogDoc());
-console.log(`Generated ${catalog.length} enterprise workflow packages with typed contracts and test fixtures.`);
+console.log(`Generated ${catalog.length} enterprise workflow packages, typed contracts, fixtures, and policy fingerprints.`);

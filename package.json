@@ -7,8 +7,10 @@
   "scripts": {
     "generate": "node scripts/generate-workflows.mjs",
     "evaluate": "node scripts/evaluate-policy.mjs",
+    "smoke:webhook": "node scripts/smoke-test-webhook.mjs",
     "validate": "node scripts/validate-workflows.mjs",
     "validate:links": "node scripts/validate-links.mjs",
+    "validate:policy-versions": "node scripts/verify-policy-versions.mjs",
     "test": "node --test tests/*.test.mjs",
     "check": "npm run generate && npm run validate && npm run validate:links && npm test"
   },

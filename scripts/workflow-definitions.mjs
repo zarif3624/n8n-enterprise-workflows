@@ -2,7 +2,7 @@ export const workflows = [
   {
     department: "finance",
     slug: "invoice-exception-triage",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Triage enterprise invoice exceptions",
     summary: "Scores invoice exceptions and routes clean invoices, finance reviews, and payment holds through a consistent policy.",
     problem: "Accounts payable teams lose time manually interpreting missing purchase orders, duplicate invoices, amount mismatches, and risky vendors.",
@@ -25,7 +25,7 @@ export const workflows = [
   {
     department: "human-resources",
     slug: "employee-access-request-triage",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Triage employee access requests",
     summary: "Classifies employee access requests using role, privilege, environment, and approval signals before provisioning begins.",
     problem: "Access requests often arrive through inconsistent channels and reach IT without enough context or the required approvals.",
@@ -48,7 +48,7 @@ export const workflows = [
   {
     department: "information-technology",
     slug: "service-desk-priority-routing",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Route enterprise service desk incidents",
     summary: "Assigns incident priority from impact, urgency, affected users, outage state, and executive visibility.",
     problem: "Inconsistent ticket priority creates noisy queues while genuinely disruptive incidents wait too long for the right team.",
@@ -72,7 +72,7 @@ export const workflows = [
   {
     department: "security",
     slug: "phishing-report-triage",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Triage employee phishing reports",
     summary: "Scores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.",
     problem: "Security teams receive large volumes of suspicious-email reports with uneven context and limited prioritization.",
@@ -95,7 +95,7 @@ export const workflows = [
   {
     department: "sales",
     slug: "enterprise-lead-routing",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Route enterprise sales leads",
     summary: "Scores enterprise leads using account fit, buying intent, geography, engagement, and consent before assignment.",
     problem: "High-value leads are often delayed or misrouted because qualification logic differs across forms, regions, and teams.",
@@ -118,7 +118,7 @@ export const workflows = [
   {
     department: "marketing",
     slug: "campaign-lead-compliance-gate",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Gate campaign leads for compliant follow-up",
     summary: "Checks consent, suppression, geography, engagement, and target-account status before campaign follow-up.",
     problem: "Campaign handoffs can create compliance risk and wasted spend when suppression and consent checks happen too late.",
@@ -141,7 +141,7 @@ export const workflows = [
   {
     department: "customer-success",
     slug: "customer-risk-escalation",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Escalate at-risk enterprise customers",
     summary: "Combines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response.",
     problem: "Customer risk signals are distributed across systems and often become visible only after renewal conversations deteriorate.",
@@ -165,7 +165,7 @@ export const workflows = [
   {
     department: "legal",
     slug: "contract-intake-routing",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Route enterprise contract requests",
     summary: "Routes contract intake using document type, value, jurisdiction, data access, and non-standard terms.",
     problem: "Legal requests arrive without enough commercial or risk context, creating avoidable back-and-forth and slow review cycles.",
@@ -189,7 +189,7 @@ export const workflows = [
   {
     department: "procurement",
     slug: "vendor-risk-intake",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Triage enterprise vendor risk",
     summary: "Scores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence.",
     problem: "Procurement, security, privacy, and legal reviews often start late because vendor risk is not classified at intake.",
@@ -213,7 +213,7 @@ export const workflows = [
   {
     department: "operations",
     slug: "major-incident-stakeholder-brief",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Prepare major incident stakeholder briefs",
     summary: "Turns operational incident facts into a severity decision and a consistent stakeholder communication plan.",
     problem: "During incidents, teams lose time reconciling impact facts and deciding who needs which update cadence.",
@@ -236,7 +236,7 @@ export const workflows = [
   {
     department: "data-and-analytics",
     slug: "data-access-request-triage",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Triage enterprise data access requests",
     summary: "Classifies data access requests by sensitivity, environment, sharing intent, retention, and owner approval before access is granted.",
     problem: "Data teams receive incomplete access requests that obscure privacy risk, production scope, retention needs, and accountable ownership.",
@@ -259,7 +259,7 @@ export const workflows = [
   {
     department: "engineering",
     slug: "production-change-risk-gate",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Gate production changes by operational risk",
     summary: "Scores planned production changes using customer, database, rollback, peak-period, and security signals before deployment.",
     problem: "Change approvals become inconsistent when risk context is scattered across pull requests, tickets, and release conversations.",
@@ -282,7 +282,7 @@ export const workflows = [
   {
     department: "facilities",
     slug: "workplace-incident-routing",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Route workplace incidents safely",
     summary: "Prioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals.",
     problem: "Facilities incidents arrive through inconsistent channels, delaying the right safety, security, or operations response.",
@@ -305,7 +305,7 @@ export const workflows = [
   {
     department: "corporate-communications",
     slug: "external-communication-approval",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Approve external enterprise communications",
     summary: "Routes proposed external communications using financial, customer, security, legal, and executive-approval signals.",
     problem: "External statements move quickly across teams while material, legal, security, and customer implications remain unclear.",
@@ -328,7 +328,7 @@ export const workflows = [
   {
     department: "privacy",
     slug: "data-subject-request-triage",
-    policyVersion: "1.0.0",
+    policyVersion: "1.0.1",
     name: "Triage data subject requests",
     summary: "Prioritizes privacy requests using identity, deadline, sensitivity, third-party, and legal-hold signals.",
     problem: "Privacy requests have strict deadlines and often require coordination across identity, legal, security, and data-owning teams.",

@@ -1,4 +1,5 @@
 export const policySchemaVersion = "1.0";
+export const policyEngineVersion = "1.0.1";
 
 function hasValue(value) {
   return value !== undefined && value !== null && !(typeof value === "string" && value.trim() === "");
@@ -143,6 +144,11 @@ export function buildPolicyExpression(policy, triggerName) {
   const hasValueSource = hasValue.toString();
   const requestIdSource = normalizeRequestId.toString();
   const validatorSource = validateValue.toString();
+  const serializedPolicy = JSON.stringify(policy, null, 2);
+
+  if (serializedPolicy.includes("}}")) {
+    throw new Error("Policy JSON contains an unescaped n8n expression terminator");
+  }
 
   return `={{ (() => {
     const hasValue = ${hasValueSource};
@@ -151,7 +157,7 @@ export function buildPolicyExpression(policy, triggerName) {
     const matchesRule = ${matcherSource};
     const evaluatePolicy = ${evaluatorSource};
     return evaluatePolicy({
-      policy: ${JSON.stringify(policy)},
+      policy: ${serializedPolicy},
       envelope: $('${triggerName}').first().json,
       executionId: $execution.id,
       evaluatedAt: $now.toUTC().toISO()

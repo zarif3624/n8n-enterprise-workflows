@@ -18,11 +18,13 @@ Every workflow package includes:
 - A typed, machine-readable JSON input contract with field-level validation.
 - Low-risk, high-risk, and invalid fixtures that can be sent to the test webhook.
 - Explainable scoring with stable rule IDs, policy versions, and hard risk floors.
+- Tamper-evident policy fingerprints with CI-enforced version bumps for behavior changes.
 - Structured HTTP 200 and 400 responses with correlation IDs.
 - A credential-free, inactive workflow that uses native n8n expressions instead of a Code node.
 - Security, operations, human-approval, adapter, and ROI guidance.
 
 The shared test suite checks these guarantees across the full catalog instead of relying on screenshots or manual import checks.
+The scheduled compatibility matrix also boots supported n8n versions and exercises a representative webhook over HTTP, catching runtime parser failures that import checks cannot see.
 
 ## Why this project exists
 
@@ -113,7 +115,7 @@ npm run check
 ```
 
 The validator checks workflow shape, node identity, graph reachability,
-policy-expression parity, typed contracts, representative fixtures, unique
+policy-expression parity, policy fingerprints and version discipline, typed contracts, representative fixtures, unique
 webhook paths, inactive status, response behavior, credential leakage,
 companion documentation, and catalog coverage. The test suite then exercises
 every required field, declared type, rule boundary, and safety floor.

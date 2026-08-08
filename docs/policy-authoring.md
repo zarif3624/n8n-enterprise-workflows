@@ -19,6 +19,7 @@ scripts/generate-workflows.mjs
         ├── examples/*.json
         ├── catalog.json
         ├── openapi.json
+        ├── policy-lock.json
         └── docs/catalog.md
         │
         ▼
@@ -80,9 +81,13 @@ The response carries `policyVersion`; catalog entries carry both `policyVersion`
 
 When one policy's behavior changes, update that definition's policy version and include before/after fixture evidence. Policies are versioned independently; the current definitions begin at `1.0.0`, while the shared response schema is version `1.0`.
 
+`policy-lock.json` stores a canonical SHA-256 fingerprint for every policy's executable behavior. Generation fails when a fingerprint changes without a newer `policyVersion`, and pull-request CI compares the committed lock with the target branch so manually replacing the lock cannot bypass the rule. Version regressions also fail.
+
+The lock separately fingerprints `scripts/policy-engine.mjs`. Any engine source change requires increasing `policyEngineVersion`; because that shared version participates in every policy fingerprint, each affected policy must then receive an explicit version bump. This deliberately favors auditable change control over silent refactors in decision-critical code.
+
 ## Required tests
 
-`npm run check` regenerates artifacts, validates every graph and package, and runs the policy suite. The suite must prove:
+`npm run check` regenerates artifacts, validates every graph, package, and policy fingerprint, and runs the policy suite. The suite must prove:
 
 - Low-risk, high-risk, and invalid fixtures behave as named.
 - Every required field fails closed when absent.
@@ -90,6 +95,9 @@ When one policy's behavior changes, update that definition's policy version and 
 - Rule operator boundaries behave consistently.
 - Hard gates cannot be canceled by negative scoring.
 - Generated n8n expressions produce the same result as the source engine.
+- Generated expressions contain no internal `}}` delimiter that n8n would interpret as an early expression terminator.
+
+The weekly compatibility workflow imports the complete catalog into isolated n8n versions, publishes one credential-free representative workflow, and sends low-risk, high-risk, and invalid requests through the real production webhook path. This catches parser and runtime behavior that JSON import validation cannot.
 
 After the check, inspect the generated diff. A green test cannot decide whether a policy is appropriate for a particular organization; it only proves the implementation matches the declared policy.
 

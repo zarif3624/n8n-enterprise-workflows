@@ -1,13 +1,16 @@
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { evaluatePolicy, policySchemaVersion } from "./policy-engine.mjs";
+import { evaluatePolicy, policyEngineVersion, policySchemaVersion } from "./policy-engine.mjs";
+import { buildPolicyLock, policyLockVersion } from "./policy-governance.mjs";
 import { inputSchemaFor, policyFor, workflows as definitions } from "./workflow-definitions.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "catalog.json"), "utf8"));
 const openApi = JSON.parse(await readFile(join(root, "openapi.json"), "utf8"));
+const policyLock = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
 const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+const engineSource = await readFile(join(root, "scripts", "policy-engine.mjs"), "utf8");
 const errors = [];
 const webhookPaths = new Set();
 const definitionsBySlug = new Map(definitions.map((definition) => [definition.slug, definition]));
@@ -45,6 +48,15 @@ function evaluateExpression(expression, envelope) {
 
 if (!Array.isArray(catalog)) fail("catalog.json", "catalog root must be an array");
 if (catalog.length !== definitions.length) fail("catalog.json", "catalog and workflow definitions must contain the same number of entries");
+const expectedPolicyLock = buildPolicyLock({
+  definitions,
+  policyFor,
+  schemaVersion: policySchemaVersion,
+  engineVersion: policyEngineVersion,
+  engineSource
+});
+if (policyLock.lockVersion !== policyLockVersion) fail("policy-lock.json", "lock format version is unsupported");
+if (!sameJson(policyLock, expectedPolicyLock)) fail("policy-lock.json", "policy fingerprints drifted from source definitions or engine");
 if (new Set(definitions.map((definition) => definition.slug)).size !== definitions.length) fail("workflow-definitions.mjs", "workflow slugs must be unique");
 for (const definition of definitions) {
   const path = `workflow-definitions.mjs:${definition.slug}`;
@@ -126,6 +138,9 @@ for (const entry of catalog) {
   if (evaluator?.type !== "n8n-nodes-base.set" || evaluator?.typeVersion !== 3.4) fail(entry.path, "policy evaluator must use Edit Fields (Set) v3.4");
   if (evaluator?.parameters?.mode !== "raw" || evaluator?.parameters?.includeOtherFields !== false) fail(entry.path, "policy evaluator must return a clean raw object");
   if (!evaluator?.parameters?.jsonOutput?.startsWith("={{")) fail(entry.path, "policy evaluator expression is missing");
+  if (!evaluator?.parameters?.jsonOutput?.endsWith("}}") || evaluator?.parameters?.jsonOutput?.slice(3, -2).includes("}}")) {
+    fail(entry.path, "policy evaluator contains an internal n8n expression terminator");
+  }
 
   const responder = workflow.nodes.find((node) => node.type === "n8n-nodes-base.respondToWebhook");
   if (!responder) fail(entry.path, "Respond to Webhook node is required");
@@ -209,4 +224,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated ${catalog.length} workflows: contracts, fixtures, policy parity, graph reachability, safety, and documentation.`);
+console.log(`Validated ${catalog.length} workflows: contracts, fixtures, policy fingerprints, expression parity, graph reachability, safety, and documentation.`);

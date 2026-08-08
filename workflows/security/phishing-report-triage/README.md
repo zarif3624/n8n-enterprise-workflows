@@ -12,7 +12,7 @@ A rapid containment recommendation without automatically taking destructive secu
 
 - **Primary owner:** Security Operations
 - **Primary metric:** Minutes from report to analyst triage
-- **Policy version:** `1.0.0`
+- **Policy version:** `1.0.1`
 - **ROI starting point:** `reports per month x minutes saved in initial triage x analyst hourly cost / 60`
 
 ## Five-minute adoption
@@ -33,7 +33,7 @@ curl --fail-with-body --request POST "$N8N_TEST_WEBHOOK_URL" \
 
 ## Input contract
 
-The request body must be a JSON object. Unknown fields are preserved as caller context but are not echoed in the response.
+The request body must be a JSON object. Unknown fields are accepted for caller compatibility but ignored by the policy and never echoed in the response.
 
 | Field | Required | Contract |
 | --- | --- | --- |
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "phishing-report-triage",
-  "policyVersion": "1.0.0",
+  "policyVersion": "1.0.1",
   "decision": "queue_analyst_review",
   "priorityBand": "low",
   "score": 0,

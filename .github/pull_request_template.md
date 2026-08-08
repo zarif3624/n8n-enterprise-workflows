@@ -21,6 +21,7 @@ Describe validation and representative input used.
 ## Policy compatibility
 
 - Policy version change: none / patch / minor / major
+- Policy lock reviewed and target-branch version guard passed: yes / not applicable
 - Decision behavior before and after:
 - Hard safety floors added or changed:
 - Generated fixtures reviewed: low / high / invalid

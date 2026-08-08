@@ -12,7 +12,7 @@ A transparent routing recommendation with matched reasons and a clear next actio
 
 - **Primary owner:** Revenue Operations
 - **Primary metric:** Speed to lead for qualified accounts
-- **Policy version:** `1.0.0`
+- **Policy version:** `1.0.1`
 - **ROI starting point:** `qualified leads x conversion lift x average contract value`
 
 ## Five-minute adoption
@@ -33,7 +33,7 @@ curl --fail-with-body --request POST "$N8N_TEST_WEBHOOK_URL" \
 
 ## Input contract
 
-The request body must be a JSON object. Unknown fields are preserved as caller context but are not echoed in the response.
+The request body must be a JSON object. Unknown fields are accepted for caller compatibility but ignored by the policy and never echoed in the response.
 
 | Field | Required | Contract |
 | --- | --- | --- |
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "enterprise-lead-routing",
-  "policyVersion": "1.0.0",
+  "policyVersion": "1.0.1",
   "decision": "route_to_nurture_or_review",
   "priorityBand": "low",
   "score": 0,

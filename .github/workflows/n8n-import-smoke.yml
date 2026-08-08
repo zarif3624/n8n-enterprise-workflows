@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   import:
-    name: Import on n8n ${{ matrix.n8n-version }}
+    name: Import and execute on n8n ${{ matrix.n8n-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -29,8 +29,48 @@ jobs:
       - name: Import every generated workflow
         shell: bash
         run: |
-          export N8N_USER_FOLDER="$(mktemp -d)"
+          export N8N_USER_FOLDER="${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}"
+          mkdir -p "${N8N_USER_FOLDER}"
           while IFS= read -r workflow; do
             echo "Importing ${workflow}"
             ./node_modules/.bin/n8n import:workflow --input="${workflow}"
           done < <(find workflows -mindepth 3 -maxdepth 3 -name workflow.json -print | sort)
+      - name: Execute representative webhook contract
+        shell: bash
+        env:
+          N8N_USER_FOLDER: ${{ runner.temp }}/n8n-${{ matrix.n8n-version }}
+          N8N_PORT: "5691"
+          N8N_LISTEN_ADDRESS: 127.0.0.1
+          N8N_HOST: 127.0.0.1
+          N8N_PROTOCOL: http
+          N8N_SECURE_COOKIE: "false"
+          N8N_DIAGNOSTICS_ENABLED: "false"
+          N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+          N8N_TEMPLATES_ENABLED: "false"
+          N8N_PERSONALIZATION_ENABLED: "false"
+          N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
+        run: |
+          workflow_id="$(./node_modules/.bin/n8n list:workflow | awk -F'|' '$2 == "Triage enterprise invoice exceptions" { print $1; exit }')"
+          test -n "${workflow_id}"
+          ./node_modules/.bin/n8n publish:workflow --id="${workflow_id}"
+          ./node_modules/.bin/n8n start > "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log" 2>&1 &
+          n8n_pid=$!
+          trap 'kill "${n8n_pid}" 2>/dev/null || true; wait "${n8n_pid}" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:5691/healthz >/dev/null; then
+              break
+            fi
+            if ! kill -0 "${n8n_pid}" 2>/dev/null; then
+              cat "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
+              exit 1
+            fi
+            sleep 1
+          done
+          if ! curl --fail --silent http://127.0.0.1:5691/healthz >/dev/null; then
+            cat "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
+            exit 1
+          fi
+          if ! npm run smoke:webhook -- http://127.0.0.1:5691 invoice-exception-triage; then
+            cat "${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
+            exit 1
+          fi

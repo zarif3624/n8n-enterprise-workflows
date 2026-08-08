@@ -1,7 +1,7 @@
 [
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "finance",
     "slug": "invoice-exception-triage",
     "name": "Triage enterprise invoice exceptions",
@@ -83,7 +83,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "human-resources",
     "slug": "employee-access-request-triage",
     "name": "Triage employee access requests",
@@ -163,7 +163,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "information-technology",
     "slug": "service-desk-priority-routing",
     "name": "Route enterprise service desk incidents",
@@ -238,7 +238,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "security",
     "slug": "phishing-report-triage",
     "name": "Triage employee phishing reports",
@@ -315,7 +315,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "sales",
     "slug": "enterprise-lead-routing",
     "name": "Route enterprise sales leads",
@@ -393,7 +393,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "marketing",
     "slug": "campaign-lead-compliance-gate",
     "name": "Gate campaign leads for compliant follow-up",
@@ -472,7 +472,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "customer-success",
     "slug": "customer-risk-escalation",
     "name": "Escalate at-risk enterprise customers",
@@ -549,7 +549,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "legal",
     "slug": "contract-intake-routing",
     "name": "Route enterprise contract requests",
@@ -625,7 +625,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "procurement",
     "slug": "vendor-risk-intake",
     "name": "Triage enterprise vendor risk",
@@ -700,7 +700,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "operations",
     "slug": "major-incident-stakeholder-brief",
     "name": "Prepare major incident stakeholder briefs",
@@ -779,7 +779,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "data-and-analytics",
     "slug": "data-access-request-triage",
     "name": "Triage enterprise data access requests",
@@ -858,7 +858,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "engineering",
     "slug": "production-change-risk-gate",
     "name": "Gate production changes by operational risk",
@@ -937,7 +937,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "facilities",
     "slug": "workplace-incident-routing",
     "name": "Route workplace incidents safely",
@@ -1015,7 +1015,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "corporate-communications",
     "slug": "external-communication-approval",
     "name": "Approve external enterprise communications",
@@ -1098,7 +1098,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.0.1",
     "department": "privacy",
     "slug": "data-subject-request-triage",
     "name": "Triage data subject requests",

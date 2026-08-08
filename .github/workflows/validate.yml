@@ -14,11 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run check
+      - name: Enforce policy version bumps
+        if: github.event_name == 'pull_request'
+        run: npm run validate:policy-versions -- "origin/${{ github.base_ref }}"
       - name: Ensure generated files are committed
         run: git diff --exit-code

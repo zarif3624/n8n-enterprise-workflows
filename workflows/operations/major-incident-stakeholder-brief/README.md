@@ -12,7 +12,7 @@ A severity tier, communication cadence, stakeholder list, and next update deadli
 
 - **Primary owner:** Business Operations and Incident Command
 - **Primary metric:** Minutes from incident declaration to first stakeholder brief
-- **Policy version:** `1.0.0`
+- **Policy version:** `1.0.1`
 - **ROI starting point:** `major incidents x minutes faster communication x affected staff loaded cost per minute`
 
 ## Five-minute adoption
@@ -33,7 +33,7 @@ curl --fail-with-body --request POST "$N8N_TEST_WEBHOOK_URL" \
 
 ## Input contract
 
-The request body must be a JSON object. Unknown fields are preserved as caller context but are not echoed in the response.
+The request body must be a JSON object. Unknown fields are accepted for caller compatibility but ignored by the policy and never echoed in the response.
 
 | Field | Required | Contract |
 | --- | --- | --- |
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "major-incident-stakeholder-brief",
-  "policyVersion": "1.0.0",
+  "policyVersion": "1.0.1",
   "decision": "standard_operations_update",
   "priorityBand": "low",
   "score": 0,

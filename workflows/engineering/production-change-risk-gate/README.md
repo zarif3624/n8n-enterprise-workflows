@@ -12,7 +12,7 @@ An explainable release route that preserves human authority for elevated and sec
 
 - **Primary owner:** Engineering Operations
 - **Primary metric:** Change lead time without increasing failure rate
-- **Policy version:** `1.0.0`
+- **Policy version:** `1.0.1`
 - **ROI starting point:** `monthly changes x approval minutes saved x engineering hourly cost / 60`
 
 ## Five-minute adoption
@@ -33,7 +33,7 @@ curl --fail-with-body --request POST "$N8N_TEST_WEBHOOK_URL" \
 
 ## Input contract
 
-The request body must be a JSON object. Unknown fields are preserved as caller context but are not echoed in the response.
+The request body must be a JSON object. Unknown fields are accepted for caller compatibility but ignored by the policy and never echoed in the response.
 
 | Field | Required | Contract |
 | --- | --- | --- |
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "production-change-risk-gate",
-  "policyVersion": "1.0.0",
+  "policyVersion": "1.0.1",
   "decision": "continue_standard_change_process",
   "priorityBand": "low",
   "score": 0,
