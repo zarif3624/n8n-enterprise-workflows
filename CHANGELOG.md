@@ -56,6 +56,7 @@ All notable changes to this project are documented here. The project follows Sem
 - Static workflow validation and the live forced-error probe now require explicit JSON response media types on both normal and internal-error paths.
 - Lifecycle reporting now rejects unknown, duplicated, missing-value, and command-incompatible options instead of silently ignoring ambiguous governance input.
 - Machine-output documentation now uses silent npm invocation, preventing npm banners from corrupting redirected JSON mapping, conformance, lifecycle, readiness, catalog, and contract artifacts.
+- Runtime-compatibility and contract-registry commands now reject extra, repeated, unknown, and command-incompatible arguments instead of emitting ambiguous governance evidence.
 - Policy lifecycle entries are now bound to the exact policy version and behavior fingerprint, preventing prior approval metadata from silently carrying forward after executable behavior changes.
 
 ## 0.2.0
