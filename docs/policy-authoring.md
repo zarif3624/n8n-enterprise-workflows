@@ -95,7 +95,7 @@ sanitized internal-error object is checked against the 500 schema. Negative
 tests prove the contracts reject undocumented decisions, leaked response
 fields, and implementation detail on the error path.
 
-`artifact-manifest.json` hashes all 96 public generated and machine-contract artifacts: the catalog, contract registry, API and policy contracts, the policy lifecycle and runtime compatibility plans, thirteen JSON Schemas, plus each workflow, companion README, and three fixtures. Validation recomputes every byte count and SHA-256 digest so generated files cannot drift independently of their recorded release identity.
+`artifact-manifest.json` hashes all 101 public generated and machine-contract artifacts: the catalog, contract registry, API and policy contracts, the policy lifecycle and runtime compatibility plans, thirteen JSON Schemas, plus each workflow, companion README, and three fixtures. Validation recomputes every byte count and SHA-256 digest so generated files cannot drift independently of their recorded release identity.
 
 Policy versioning governs executable behavior; review lifecycle governs whether unchanged behavior is still approved. Update [`policy-lifecycle.json`](../policy-lifecycle.json) after an owner review and follow the [lifecycle and deprecation process](policy-lifecycle.md). `npm run check` fails once a review is overdue.
 

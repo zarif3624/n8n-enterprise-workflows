@@ -62,6 +62,7 @@ This project makes those concerns part of each workflow package.
 | Facilities | [Workplace incident routing](workflows/facilities/workplace-incident-routing) | Escalate safety and security events quickly |
 | Corporate Communications | [External communication approval](workflows/corporate-communications/external-communication-approval) | Prevent high-risk messages from bypassing reviewers |
 | Privacy | [Data subject request triage](workflows/privacy/data-subject-request-triage) | Keep identity, deadline, and legal constraints visible |
+| Risk and Compliance | [AI use-case risk intake](workflows/risk-and-compliance/ai-use-case-risk-intake) | Accelerate controlled AI pilots without bypassing accountable review |
 
 Browse the machine-readable [catalog](catalog.json), the generated
 [OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [policy lifecycle contract](policy-lifecycle.json), the [runtime compatibility plan](runtime-compatibility.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
@@ -206,11 +207,11 @@ Each tagged release publishes one complete source/catalog archive and one self-c
 sha256sum --check SHA256SUMS
 
 # Verify GitHub Actions build provenance for a chosen archive.
-gh attestation verify n8n-enterprise-workflows-finance-v0.2.0.tar.gz \
+gh attestation verify n8n-enterprise-workflows-finance-v0.2.1.tar.gz \
   -R zarif3624/n8n-enterprise-workflows
 
 # From a trusted checkout, verify the archive's embedded file manifest.
-npm run verify:bundle -- /path/to/n8n-enterprise-workflows-finance-v0.2.0.tar.gz
+npm run verify:bundle -- /path/to/n8n-enterprise-workflows-finance-v0.2.1.tar.gz
 ```
 
 On macOS, use `shasum -a 256 -c SHA256SUMS` for the checksum step. Outer checksums and GitHub provenance establish the downloaded archive's identity; the bundle verifier then rejects unsafe tar structure and checks the exact internal file set against `BUNDLE.json`. Maintainers can reproduce the exact archives locally with `npm run build:release`; the build omits timestamps, user IDs, file-system ordering, and platform-specific gzip metadata.

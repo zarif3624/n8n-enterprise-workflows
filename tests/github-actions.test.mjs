@@ -28,6 +28,14 @@ test("the n8n compatibility workflow consumes the versioned runtime plan", async
   assert.doesNotMatch(source, /n8n-version:\s*\[[^\]]+\]/);
 });
 
+test("the n8n compatibility workflow waits for published webhook registration", async () => {
+  const source = await readFile(join(root, ".github", "workflows", "n8n-import-smoke.yml"), "utf8");
+  assert.match(source, /wait_for_webhook\(\)/);
+  assert.equal([...source.matchAll(/^\s+wait_for_webhook$/gm)].length, 2);
+  assert.match(source, /\/webhook\/enterprise\/finance\/invoice-exception-triage/);
+  assert.match(source, /400\|application\/json/);
+});
+
 test("validation CI publishes the honest readiness report without changing its exit semantics", async () => {
   const source = await readFile(join(root, ".github", "workflows", "validate.yml"), "utf8");
   assert.match(source, /npm run --silent readiness >> "\$GITHUB_STEP_SUMMARY"/);

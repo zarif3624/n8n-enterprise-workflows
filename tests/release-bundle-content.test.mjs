@@ -36,7 +36,7 @@ test("full and department release bundles carry lifecycle and compatibility cont
   const full = manifest.archives.find((entry) => entry.scope === "full");
   const departments = manifest.archives.filter((entry) => entry.scope === "department");
   assert.ok(full);
-  assert.equal(departments.length, 15);
+  assert.equal(departments.length, 16);
 
   const fullFiles = bundleFiles(await readFile(join(root, "dist", full.file)));
   assert.deepEqual(schemaContractIssues(JSON.parse(fullFiles.get("BUNDLE.json").toString("utf8")), bundleSchema, bundleSchema), []);

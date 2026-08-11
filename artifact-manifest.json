@@ -1,18 +1,18 @@
 {
   "manifestVersion": 1,
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.2.1",
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.4",
   "policyEngineFingerprint": "sha256:fc01eed19014b378a76413c5e93d3c4d2af37e92cbcae2602a75f55b353bc91b",
-  "artifactCount": 96,
-  "departmentCount": 15,
-  "workflowCount": 15,
+  "artifactCount": 101,
+  "departmentCount": 16,
+  "workflowCount": 16,
   "artifacts": [
     {
       "path": "catalog.json",
       "kind": "catalog",
-      "bytes": 37412,
-      "sha256": "sha256:17fda316dfc1e90764e077af0352e63ff229d6ea480237ad96b9f570bbea3d99"
+      "bytes": 40148,
+      "sha256": "sha256:d8e12123412007b05b6afb85e9daf7a12fa1782ada0df6defc9cfe690054d6f5"
     },
     {
       "path": "contract-registry.json",
@@ -23,32 +23,32 @@
     {
       "path": "docs/catalog.md",
       "kind": "catalog-documentation",
-      "bytes": 3727,
-      "sha256": "sha256:d0010157c9f4949058105b35fe244a1bc259c8ec12a8e9a13bc21112c8b0c15f"
+      "bytes": 3938,
+      "sha256": "sha256:b5fa0a972b0eddb554a96f39969a90e946a49e2e1ba03e9d4e1329a5670c1e9a"
     },
     {
       "path": "openapi.json",
       "kind": "api-contract",
-      "bytes": 243816,
-      "sha256": "sha256:bee89ebdd38a80ef5e796ca34c53b96aa503786c64fc0e26424c4f72ba3784d0"
+      "bytes": 260469,
+      "sha256": "sha256:60d32cc2ec317f9df9cb6e2b8da25e5986e77fe48eec0b72f5d0fd62465cd14f"
     },
     {
       "path": "policy-lifecycle.json",
       "kind": "policy-lifecycle",
-      "bytes": 4952,
-      "sha256": "sha256:ab5df175b2f7a07c04b74b550b8e918f2e2f81527a5ab613c0ae12114bad85c0"
+      "bytes": 5281,
+      "sha256": "sha256:23dd160ac9014262fa078fda1edd9865465f43c489da65d68680fab79f61a6ea"
     },
     {
       "path": "policy-lock.json",
       "kind": "policy-lock",
-      "bytes": 3512,
-      "sha256": "sha256:c8ac5c048585152e3f1cf74c2e972e7395b687895b510f0e5c87eb0d285fcbef"
+      "bytes": 3736,
+      "sha256": "sha256:a68192bc2289a3b1c962d88a2ac5e7621c7e4d7861d53cd12b35137390156300"
     },
     {
       "path": "policy-snapshot.json",
       "kind": "policy-snapshot",
-      "bytes": 49101,
-      "sha256": "sha256:aea8b9b71e0ec5612471d976e0bc8408171c333c5b10284b2ea1fd0cc0035430"
+      "bytes": 52728,
+      "sha256": "sha256:c5f12e55b2300dddb71103c61cca4f8f088dc13ae07ac03150cb7bf352b96a0b"
     },
     {
       "path": "runtime-compatibility.json",
@@ -653,6 +653,46 @@
       "workflow": "vendor-risk-intake",
       "bytes": 15987,
       "sha256": "sha256:cb2564920bb72293d68d8a07c7a1141ad4d1af22b77386b553b5e217daf9b12c"
+    },
+    {
+      "path": "workflows/risk-and-compliance/ai-use-case-risk-intake/README.md",
+      "kind": "workflow-documentation",
+      "department": "risk-and-compliance",
+      "workflow": "ai-use-case-risk-intake",
+      "bytes": 5882,
+      "sha256": "sha256:caf6c0de7a4e6e03d0860557cdca035a3942f0ded54e205a6d2de4925645565c"
+    },
+    {
+      "path": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/high-risk.json",
+      "kind": "fixture-high-risk",
+      "department": "risk-and-compliance",
+      "workflow": "ai-use-case-risk-intake",
+      "bytes": 334,
+      "sha256": "sha256:f4321163ad9bf3bb419bd4a257885d4e0acd749381987f801bfd5f6b73855c2d"
+    },
+    {
+      "path": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/invalid.json",
+      "kind": "fixture-invalid",
+      "department": "risk-and-compliance",
+      "workflow": "ai-use-case-risk-intake",
+      "bytes": 108,
+      "sha256": "sha256:e231e1b400715fe0e5ce3dafd69c90724dc6fd6b96f940671ca1f5a6dfcb7c69"
+    },
+    {
+      "path": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/low-risk.json",
+      "kind": "fixture-low-risk",
+      "department": "risk-and-compliance",
+      "workflow": "ai-use-case-risk-intake",
+      "bytes": 336,
+      "sha256": "sha256:5b6fc9c518670bdbcec57f2d0cc6532de982bceb586c24205532ca3f7783adfc"
+    },
+    {
+      "path": "workflows/risk-and-compliance/ai-use-case-risk-intake/workflow.json",
+      "kind": "workflow",
+      "department": "risk-and-compliance",
+      "workflow": "ai-use-case-risk-intake",
+      "bytes": 16389,
+      "sha256": "sha256:b69a16be25e42bbdca2738cccb10efbf208d6e111a419225f30bb529f70d0c21"
     },
     {
       "path": "workflows/sales/enterprise-lead-routing/README.md",

@@ -89,6 +89,26 @@ jobs:
             return 1
           }
 
+          wait_for_webhook() {
+            for attempt in $(seq 1 60); do
+              result="$(curl --silent --output /dev/null --write-out '%{http_code}|%{content_type}' \
+                --request POST \
+                http://127.0.0.1:5691/webhook/enterprise/finance/invoice-exception-triage \
+                --header 'Content-Type: application/json' \
+                --data '{}' || true)"
+              case "${result}" in
+                "400|application/json"*) return 0 ;;
+              esac
+              if ! kill -0 "${n8n_pid}" 2>/dev/null; then
+                cat "${n8n_log}"
+                return 1
+              fi
+              sleep 1
+            done
+            cat "${n8n_log}"
+            return 1
+          }
+
           stop_n8n() {
             kill "${n8n_pid}" 2>/dev/null || true
             wait "${n8n_pid}" 2>/dev/null || true
@@ -99,6 +119,7 @@ jobs:
           n8n_log="${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}.log"
           start_n8n
           wait_for_n8n
+          wait_for_webhook
           if ! npm run smoke:webhook -- http://127.0.0.1:5691 invoice-exception-triage; then
             cat "${n8n_log}"
             exit 1
@@ -114,6 +135,7 @@ jobs:
           n8n_log="${RUNNER_TEMP}/n8n-${{ matrix.n8n-version }}-error.log"
           start_n8n
           wait_for_n8n
+          wait_for_webhook
           if ! npm run smoke:webhook -- http://127.0.0.1:5691 invoice-exception-triage --expect-internal-error; then
             cat "${n8n_log}"
             exit 1

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "n8n Enterprise Workflow Decision APIs",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Production contracts for the inactive n8n workflow templates in this repository. Authentication must be configured during adoption.",
     "license": {
       "name": "MIT",
@@ -6499,6 +6499,449 @@
                   "httpStatus": 500,
                   "requestId": "example-request-001",
                   "workflow": "data-subject-request-triage",
+                  "policyVersion": "1.0.4",
+                  "error": "internal_error",
+                  "message": "The policy could not be evaluated",
+                  "retryable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/enterprise/risk-and-compliance/ai-use-case-risk-intake": {
+      "post": {
+        "operationId": "evaluateAiUseCaseRiskIntake",
+        "tags": [
+          "risk-and-compliance"
+        ],
+        "summary": "Triage enterprise AI use cases",
+        "description": "Classifies proposed AI use cases by data sensitivity, customer exposure, decision impact, regulatory scope, provider approval, and human oversight. Configure the imported n8n webhook's authentication before using this production contract.",
+        "security": [
+          {
+            "webhookHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "required": false,
+            "description": "Caller-provided correlation ID. The workflow generates one when omitted.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "useCaseName",
+                  "businessOwner",
+                  "businessPurpose"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "useCaseName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "businessOwner": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "businessPurpose": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "handlesSensitiveData": {
+                    "type": "boolean"
+                  },
+                  "customerFacing": {
+                    "type": "boolean"
+                  },
+                  "consequentialDecision": {
+                    "type": "boolean"
+                  },
+                  "regulatedProcess": {
+                    "type": "boolean"
+                  },
+                  "approvedProvider": {
+                    "type": "boolean"
+                  },
+                  "humanReviewPlanned": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "examples": {
+                "lowRisk": {
+                  "summary": "Expected low-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "useCaseName": "useCaseName-001",
+                    "businessOwner": "businessOwner-001",
+                    "businessPurpose": "businessPurpose-001",
+                    "handlesSensitiveData": false,
+                    "customerFacing": false,
+                    "consequentialDecision": false,
+                    "regulatedProcess": false,
+                    "approvedProvider": true,
+                    "humanReviewPlanned": true
+                  }
+                },
+                "highRisk": {
+                  "summary": "Expected high-band decision",
+                  "value": {
+                    "requestId": "requestId-001",
+                    "useCaseName": "useCaseName-001",
+                    "businessOwner": "businessOwner-001",
+                    "businessPurpose": "businessPurpose-001",
+                    "handlesSensitiveData": true,
+                    "customerFacing": true,
+                    "consequentialDecision": true,
+                    "regulatedProcess": true,
+                    "approvedProvider": false,
+                    "humanReviewPlanned": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy decision",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DecisionResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "workflow": {
+                          "const": "ai-use-case-risk-intake"
+                        },
+                        "policyVersion": {
+                          "const": "1.0.4"
+                        },
+                        "decision": {
+                          "enum": [
+                            "approve_controlled_pilot",
+                            "require_cross_functional_review",
+                            "hold_for_ai_governance_approval"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "lowRisk": {
+                    "summary": "Low-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "ai-use-case-risk-intake",
+                      "policyVersion": "1.0.4",
+                      "decision": "approve_controlled_pilot",
+                      "priorityBand": "low",
+                      "score": 0,
+                      "matchedRules": [],
+                      "recommendedActions": [
+                        "Create an entry in the AI use-case inventory",
+                        "Assign security, privacy, legal, and risk reviewers from matched policy reasons",
+                        "Require a named approver before production or customer-facing use"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  },
+                  "highRisk": {
+                    "summary": "High-band decision",
+                    "value": {
+                      "ok": true,
+                      "httpStatus": 200,
+                      "requestId": "example-request-001",
+                      "workflow": "ai-use-case-risk-intake",
+                      "policyVersion": "1.0.4",
+                      "decision": "hold_for_ai_governance_approval",
+                      "priorityBand": "high",
+                      "score": 100,
+                      "matchedRules": [
+                        {
+                          "ruleId": "handlesSensitiveData_truthy_1",
+                          "field": "handlesSensitiveData",
+                          "points": 35,
+                          "reason": "Use case handles sensitive data"
+                        },
+                        {
+                          "ruleId": "customerFacing_truthy_2",
+                          "field": "customerFacing",
+                          "points": 25,
+                          "reason": "AI output is customer-facing"
+                        },
+                        {
+                          "ruleId": "consequentialDecision_truthy_3",
+                          "field": "consequentialDecision",
+                          "points": 70,
+                          "reason": "AI contributes to a consequential decision",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "regulatedProcess_truthy_4",
+                          "field": "regulatedProcess",
+                          "points": 50,
+                          "reason": "Use case operates within a regulated process",
+                          "minimumBand": "high"
+                        },
+                        {
+                          "ruleId": "approvedProvider_falsy_5",
+                          "field": "approvedProvider",
+                          "points": 45,
+                          "reason": "Model or service provider is not approved"
+                        },
+                        {
+                          "ruleId": "humanReviewPlanned_falsy_6",
+                          "field": "humanReviewPlanned",
+                          "points": 35,
+                          "reason": "Human review is not part of the operating design"
+                        }
+                      ],
+                      "recommendedActions": [
+                        "Create an entry in the AI use-case inventory",
+                        "Assign security, privacy, legal, and risk reviewers from matched policy reasons",
+                        "Require a named approver before production or customer-facing use"
+                      ],
+                      "evaluatedAt": "2026-08-07T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input contract violation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 400,
+                  "requestId": "example-request-001",
+                  "error": "validation_error",
+                  "message": "Request does not match the workflow input contract",
+                  "details": {
+                    "violations": [
+                      {
+                        "field": "requestId",
+                        "code": "required",
+                        "message": "requestId is required",
+                        "expected": "string"
+                      },
+                      {
+                        "field": "useCaseName",
+                        "code": "invalid_type",
+                        "message": "useCaseName must be a string",
+                        "expected": "string"
+                      }
+                    ],
+                    "missingFields": [
+                      "requestId"
+                    ]
+                  },
+                  "requestSchema": {
+                    "type": "object",
+                    "required": [
+                      "requestId",
+                      "useCaseName",
+                      "businessOwner",
+                      "businessPurpose"
+                    ],
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "useCaseName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "businessOwner": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "businessPurpose": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "handlesSensitiveData": {
+                        "type": "boolean"
+                      },
+                      "customerFacing": {
+                        "type": "boolean"
+                      },
+                      "consequentialDecision": {
+                        "type": "boolean"
+                      },
+                      "regulatedProcess": {
+                        "type": "boolean"
+                      },
+                      "approvedProvider": {
+                        "type": "boolean"
+                      },
+                      "humanReviewPlanned": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported request media type",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnsupportedMediaTypeResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 415,
+                  "requestId": "example-request-001",
+                  "error": "unsupported_media_type",
+                  "message": "Request Content-Type must be application/json",
+                  "expectedContentType": "application/json"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Sanitized internal policy-evaluation failure",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation ID returned in the body",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "Decision responses are not cacheable",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "X-Content-Type-Options": {
+                "description": "Prevents MIME-type sniffing of JSON responses",
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "httpStatus": 500,
+                  "requestId": "example-request-001",
+                  "workflow": "ai-use-case-risk-intake",
                   "policyVersion": "1.0.4",
                   "error": "internal_error",
                   "message": "The policy could not be evaluated",

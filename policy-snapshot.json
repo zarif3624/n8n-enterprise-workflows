@@ -5,6 +5,124 @@
   "policyEngineFingerprint": "sha256:fc01eed19014b378a76413c5e93d3c4d2af37e92cbcae2602a75f55b353bc91b",
   "policies": [
     {
+      "department": "risk-and-compliance",
+      "slug": "ai-use-case-risk-intake",
+      "name": "Triage enterprise AI use cases",
+      "owner": "Enterprise Risk and AI Governance",
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:4b6c8e0fc469ee6b2b2d89815e97b63a7c7555545a14f57646dabc65c0c46356",
+      "behavior": {
+        "actions": [
+          "Create an entry in the AI use-case inventory",
+          "Assign security, privacy, legal, and risk reviewers from matched policy reasons",
+          "Require a named approver before production or customer-facing use"
+        ],
+        "decisions": {
+          "high": "hold_for_ai_governance_approval",
+          "low": "approve_controlled_pilot",
+          "medium": "require_cross_functional_review"
+        },
+        "department": "risk-and-compliance",
+        "inputSchema": {
+          "additionalProperties": true,
+          "properties": {
+            "approvedProvider": {
+              "type": "boolean"
+            },
+            "businessOwner": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            "businessPurpose": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            "consequentialDecision": {
+              "type": "boolean"
+            },
+            "customerFacing": {
+              "type": "boolean"
+            },
+            "handlesSensitiveData": {
+              "type": "boolean"
+            },
+            "humanReviewPlanned": {
+              "type": "boolean"
+            },
+            "regulatedProcess": {
+              "type": "boolean"
+            },
+            "requestId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            "useCaseName": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "requestId",
+            "useCaseName",
+            "businessOwner",
+            "businessPurpose"
+          ],
+          "type": "object"
+        },
+        "policyEngineVersion": "1.0.4",
+        "policySchemaVersion": "1.0",
+        "rules": [
+          {
+            "field": "handlesSensitiveData",
+            "operator": "truthy",
+            "points": 35,
+            "reason": "Use case handles sensitive data"
+          },
+          {
+            "field": "customerFacing",
+            "operator": "truthy",
+            "points": 25,
+            "reason": "AI output is customer-facing"
+          },
+          {
+            "field": "consequentialDecision",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "AI contributes to a consequential decision"
+          },
+          {
+            "field": "regulatedProcess",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 50,
+            "reason": "Use case operates within a regulated process"
+          },
+          {
+            "field": "approvedProvider",
+            "operator": "falsy",
+            "points": 45,
+            "reason": "Model or service provider is not approved"
+          },
+          {
+            "field": "humanReviewPlanned",
+            "operator": "falsy",
+            "points": 35,
+            "reason": "Human review is not part of the operating design"
+          }
+        ],
+        "slug": "ai-use-case-risk-intake",
+        "thresholds": {
+          "high": 70,
+          "medium": 30
+        }
+      }
+    },
+    {
       "department": "marketing",
       "slug": "campaign-lead-compliance-gate",
       "name": "Gate campaign leads for compliant follow-up",

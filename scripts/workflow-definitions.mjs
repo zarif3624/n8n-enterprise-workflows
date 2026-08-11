@@ -347,6 +347,30 @@ export const workflows = [
     decisions: { low: "continue_standard_privacy_queue", medium: "assign_privacy_specialist_review", high: "hold_for_identity_or_legal_review" },
     actions: ["Create the privacy case", "Record the governing deadline", "Require privacy or legal approval before disclosure or deletion"],
     roiExample: "annual privacy requests x handling hours saved x privacy operations hourly cost"
+  },
+  {
+    department: "risk-and-compliance",
+    slug: "ai-use-case-risk-intake",
+    policyVersion: "1.0.4",
+    name: "Triage enterprise AI use cases",
+    summary: "Classifies proposed AI use cases by data sensitivity, customer exposure, decision impact, regulatory scope, provider approval, and human oversight.",
+    problem: "AI initiatives move from experiment to production faster than security, privacy, legal, and risk teams can establish a shared review path.",
+    outcome: "A transparent intake decision that accelerates controlled pilots while holding consequential or regulated uses for accountable approval.",
+    owner: "Enterprise Risk and AI Governance",
+    primaryMetric: "Time from AI use-case submission to accountable decision",
+    required: ["requestId", "useCaseName", "businessOwner", "businessPurpose"],
+    optional: ["handlesSensitiveData", "customerFacing", "consequentialDecision", "regulatedProcess", "approvedProvider", "humanReviewPlanned"],
+    rules: [
+      { field: "handlesSensitiveData", operator: "truthy", points: 35, reason: "Use case handles sensitive data" },
+      { field: "customerFacing", operator: "truthy", points: 25, reason: "AI output is customer-facing" },
+      { field: "consequentialDecision", operator: "truthy", points: 70, minimumBand: "high", reason: "AI contributes to a consequential decision" },
+      { field: "regulatedProcess", operator: "truthy", points: 50, minimumBand: "high", reason: "Use case operates within a regulated process" },
+      { field: "approvedProvider", operator: "falsy", points: 45, reason: "Model or service provider is not approved" },
+      { field: "humanReviewPlanned", operator: "falsy", points: 35, reason: "Human review is not part of the operating design" }
+    ],
+    decisions: { low: "approve_controlled_pilot", medium: "require_cross_functional_review", high: "hold_for_ai_governance_approval" },
+    actions: ["Create an entry in the AI use-case inventory", "Assign security, privacy, legal, and risk reviewers from matched policy reasons", "Require a named approver before production or customer-facing use"],
+    roiExample: "annual AI use cases x review coordination hours saved x loaded reviewer hourly cost"
   }
 ];
 
@@ -387,7 +411,8 @@ const booleanFields = new Set([
   "ownerApproved", "customerImpact", "databaseMigration", "rollbackTested", "duringPeakHours",
   "securityRelevant", "injuryReported", "immediateDanger", "accessControlImpact", "operationsDisrupted",
   "materialFinancialInfo", "securityIncident", "legalReviewed", "executiveApproved", "identityVerified",
-  "sensitiveData", "thirdPartyData", "legalHold"
+  "sensitiveData", "thirdPartyData", "legalHold", "handlesSensitiveData", "customerFacing",
+  "consequentialDecision", "regulatedProcess", "approvedProvider", "humanReviewPlanned"
 ]);
 
 const adaptersByDepartment = {
@@ -405,7 +430,8 @@ const adaptersByDepartment = {
   engineering: ["GitHub", "GitLab", "Jira", "change management", "incident management"],
   facilities: ["facilities management", "physical security", "Slack", "Microsoft Teams"],
   "corporate-communications": ["content management", "Slack", "Microsoft Teams", "approval tools"],
-  privacy: ["privacy management", "CRM", "data catalog", "ticketing", "document storage"]
+  privacy: ["privacy management", "CRM", "data catalog", "ticketing", "document storage"],
+  "risk-and-compliance": ["GRC", "AI inventory", "model registry", "data catalog", "ServiceNow", "Jira"]
 };
 
 function contractFor(field) {

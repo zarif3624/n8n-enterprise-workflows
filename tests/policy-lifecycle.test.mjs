@@ -12,14 +12,15 @@ const [document, catalog, policyLock] = await Promise.all([readJson("policy-life
 test("every catalog policy has an honest draft, owner, and approval deadline", () => {
   assert.deepEqual(policyLifecycleIssues(document, { catalog, policyLock }), []);
   const report = buildPolicyLifecycleReport(document, { asOf: "2026-08-08" });
-  assert.deepEqual(report.summary, { policyCount: 15, draft: 15, active: 0, deprecated: 0, current: 0, dueSoon: 15, overdue: 0 });
-  assert.ok(report.policies.every((entry) => entry.daysUntilReview === 30));
+  assert.deepEqual(report.summary, { policyCount: 16, draft: 16, active: 0, deprecated: 0, current: 1, dueSoon: 15, overdue: 0 });
+  assert.equal(report.policies.filter((entry) => entry.daysUntilReview === 30).length, 15);
+  assert.equal(report.policies.filter((entry) => entry.daysUntilReview === 32).length, 1);
   assert.ok(report.policies.every((entry) => entry.lastReviewedOn === undefined));
 });
 
 test("review reports distinguish due-soon and overdue policies deterministically", () => {
   const dueSoon = buildPolicyLifecycleReport(document, { asOf: "2026-08-20" });
-  assert.equal(dueSoon.summary.dueSoon, 15);
+  assert.equal(dueSoon.summary.dueSoon, 16);
   const overdue = buildPolicyLifecycleReport(document, { asOf: "2026-09-08" });
   assert.equal(overdue.summary.overdue, 15);
   assert.match(renderPolicyLifecycleReport(overdue), /15 overdue/);

@@ -4,6 +4,15 @@
   "defaultDraftApprovalDays": 30,
   "policies": [
     {
+      "slug": "ai-use-case-risk-intake",
+      "owner": "Enterprise Risk and AI Governance",
+      "status": "draft",
+      "introducedOn": "2026-08-10",
+      "reviewDueOn": "2026-09-09",
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:4b6c8e0fc469ee6b2b2d89815e97b63a7c7555545a14f57646dabc65c0c46356"
+    },
+    {
       "slug": "campaign-lead-compliance-gate",
       "owner": "Marketing Operations",
       "status": "draft",

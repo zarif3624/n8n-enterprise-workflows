@@ -19,10 +19,10 @@ The catalog is organized by the team that owns the business outcome, not by the 
 | Facilities | [Route workplace incidents safely](../workflows/facilities/workplace-incident-routing) | Minutes from report to accountable responder | facilities management, physical security, Slack, Microsoft Teams |
 | Corporate Communications | [Approve external enterprise communications](../workflows/corporate-communications/external-communication-approval) | Time from draft to approved external communication | content management, Slack, Microsoft Teams, approval tools |
 | Privacy | [Triage data subject requests](../workflows/privacy/data-subject-request-triage) | Data subject requests completed within policy deadline | privacy management, CRM, data catalog, ticketing, document storage |
+| Risk And Compliance | [Triage enterprise AI use cases](../workflows/risk-and-compliance/ai-use-case-risk-intake) | Time from AI use-case submission to accountable decision | GRC, AI inventory, model registry, data catalog, ServiceNow, Jira |
 
 ## Planned departments and packs
 
 - Product operations
 - Quality and audit
-- Enterprise risk and compliance
 - Industry-specific controls and approval patterns

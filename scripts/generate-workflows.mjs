@@ -345,7 +345,6 @@ ${rows}
 
 - Product operations
 - Quality and audit
-- Enterprise risk and compliance
 - Industry-specific controls and approval patterns
 `;
 }

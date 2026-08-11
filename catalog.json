@@ -1190,5 +1190,88 @@
       "highRisk": "workflows/privacy/data-subject-request-triage/examples/high-risk.json",
       "invalid": "workflows/privacy/data-subject-request-triage/examples/invalid.json"
     }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.4",
+    "department": "risk-and-compliance",
+    "slug": "ai-use-case-risk-intake",
+    "name": "Triage enterprise AI use cases",
+    "summary": "Classifies proposed AI use cases by data sensitivity, customer exposure, decision impact, regulatory scope, provider approval, and human oversight.",
+    "outcome": "A transparent intake decision that accelerates controlled pilots while holding consequential or regulated uses for accountable approval.",
+    "owner": "Enterprise Risk and AI Governance",
+    "metric": "Time from AI use-case submission to accountable decision",
+    "roiModel": "annual AI use cases x review coordination hours saved x loaded reviewer hourly cost",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "useCaseName",
+        "businessOwner",
+        "businessPurpose"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "useCaseName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "businessOwner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "businessPurpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "handlesSensitiveData": {
+          "type": "boolean"
+        },
+        "customerFacing": {
+          "type": "boolean"
+        },
+        "consequentialDecision": {
+          "type": "boolean"
+        },
+        "regulatedProcess": {
+          "type": "boolean"
+        },
+        "approvedProvider": {
+          "type": "boolean"
+        },
+        "humanReviewPlanned": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "approve_controlled_pilot",
+      "medium": "require_cross_functional_review",
+      "high": "hold_for_ai_governance_approval"
+    },
+    "adapters": [
+      "GRC",
+      "AI inventory",
+      "model registry",
+      "data catalog",
+      "ServiceNow",
+      "Jira"
+    ],
+    "path": "workflows/risk-and-compliance/ai-use-case-risk-intake",
+    "endpoint": "/webhook/enterprise/risk-and-compliance/ai-use-case-risk-intake",
+    "workflow": "workflows/risk-and-compliance/ai-use-case-risk-intake/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/low-risk.json",
+      "highRisk": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/high-risk.json",
+      "invalid": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/invalid.json"
+    }
   }
 ]

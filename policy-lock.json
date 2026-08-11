@@ -5,6 +5,12 @@
   "policyEngineFingerprint": "sha256:fc01eed19014b378a76413c5e93d3c4d2af37e92cbcae2602a75f55b353bc91b",
   "policies": [
     {
+      "department": "risk-and-compliance",
+      "slug": "ai-use-case-risk-intake",
+      "policyVersion": "1.0.4",
+      "fingerprint": "sha256:4b6c8e0fc469ee6b2b2d89815e97b63a7c7555545a14f57646dabc65c0c46356"
+    },
+    {
       "department": "marketing",
       "slug": "campaign-lead-compliance-gate",
       "policyVersion": "1.0.4",

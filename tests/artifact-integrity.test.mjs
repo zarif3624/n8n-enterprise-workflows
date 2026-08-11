@@ -29,9 +29,9 @@ test("artifact manifest deterministically hashes the complete generated catalog"
   const first = await buildArtifactManifest(options);
   const second = await buildArtifactManifest(options);
   assert.deepEqual(first, second);
-  assert.equal(first.artifactCount, 96);
-  assert.equal(first.workflowCount, 15);
-  assert.equal(first.departmentCount, 15);
+  assert.equal(first.artifactCount, 101);
+  assert.equal(first.workflowCount, 16);
+  assert.equal(first.departmentCount, 16);
   assert.ok(first.artifacts.every((entry) => entry.bytes > 0 && /^sha256:[a-f0-9]{64}$/.test(entry.sha256)));
 });
 
