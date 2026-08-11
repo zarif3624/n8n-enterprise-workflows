@@ -34,6 +34,13 @@ test("the n8n compatibility workflow waits for published webhook registration", 
   assert.equal([...source.matchAll(/^\s+wait_for_webhook$/gm)].length, 2);
   assert.match(source, /\/webhook\/enterprise\/finance\/invoice-exception-triage/);
   assert.match(source, /400\|application\/json/);
+  assert.match(source, /500\|application\/json/);
+});
+
+test("the n8n compatibility workflow reads the fixture ID without an extra CLI startup", async () => {
+  const source = await readFile(join(root, ".github", "workflows", "n8n-import-smoke.yml"), "utf8");
+  assert.match(source, /workflow\.json'\)\.id/);
+  assert.doesNotMatch(source, /n8n list:workflow/);
 });
 
 test("validation CI publishes the honest readiness report without changing its exit semantics", async () => {

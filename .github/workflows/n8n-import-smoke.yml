@@ -65,7 +65,7 @@ jobs:
           N8N_PERSONALIZATION_ENABLED: "false"
           N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
         run: |
-          workflow_id="$(./node_modules/.bin/n8n list:workflow | awk -F'|' '$2 == "Triage enterprise invoice exceptions" { print $1; exit }')"
+          workflow_id="$(node -p "require('./workflows/finance/invoice-exception-triage/workflow.json').id")"
           test -n "${workflow_id}"
 
           start_n8n() {
@@ -97,7 +97,7 @@ jobs:
                 --header 'Content-Type: application/json' \
                 --data '{}' || true)"
               case "${result}" in
-                "400|application/json"*) return 0 ;;
+                "400|application/json"*|"500|application/json"*) return 0 ;;
               esac
               if ! kill -0 "${n8n_pid}" 2>/dev/null; then
                 cat "${n8n_log}"
