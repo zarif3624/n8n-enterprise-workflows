@@ -5,7 +5,7 @@
   "minimumSupportedN8nVersion": "2.13.0",
   "scheduledN8nVersions": [
     "2.13.0",
-    "2.33.7"
+    "2.34.5"
   ],
   "scope": {
     "import": "all-workflows",

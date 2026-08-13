@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "packageVersion": "0.4.0",
+  "packageVersion": "0.4.1",
   "policySchemaVersion": "1.0",
   "policyEngineVersion": "1.0.7",
   "policyEngineFingerprint": "sha256:f22d8491449cd331fb543f238772ddc92095b60b22a9b05b9713a091ce284605",
@@ -30,7 +30,7 @@
       "path": "openapi.json",
       "kind": "api-contract",
       "bytes": 277939,
-      "sha256": "sha256:fbe3a652a818cf0c64e26bc80643df54e810c93909b47daf958956d19be1feb5"
+      "sha256": "sha256:ab38216d64809350efc1d29dd9c37465bca22131a036e7f27882cfdda7aeed4a"
     },
     {
       "path": "policy-lifecycle.json",
@@ -60,7 +60,7 @@
       "path": "runtime-compatibility.json",
       "kind": "runtime-compatibility",
       "bytes": 547,
-      "sha256": "sha256:a14fc2942e8b17816da2f131785083e99aa626d7ee5e4b6d8a91efbd6517eadd"
+      "sha256": "sha256:d4e0cac84bb2161bdd6134ae492db8333bcfec96ba9a71be618cbe3ac83d6dd9"
     },
     {
       "path": "schemas/artifact-manifest.schema.json",

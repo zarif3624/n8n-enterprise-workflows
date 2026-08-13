@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The project follows Sem
 
 No changes yet.
 
+## 0.4.1 - 2026-08-13
+
+### Changed
+
+- Updated the current-stable compatibility target from n8n `2.33.7` to `2.34.5` while retaining `2.13.0` as the minimum supported release.
+- Added a regression test that pins both scheduled runtime targets so compatibility coverage cannot silently drift to an outdated stable release.
+
+### Validation
+
+- Imported all 16 inactive workflows with n8n `2.34.5` and passed the representative low-risk, high-risk, invalid-fixture, null-body, unsupported-content-type, and forced-internal-error webhook probes.
+
 ## 0.4.0 - 2026-08-12
 
 ### Added

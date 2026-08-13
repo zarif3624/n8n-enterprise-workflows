@@ -101,6 +101,10 @@ test("published runtime compatibility plan drives a pinned, complete CI matrix",
   assert.ok(runtimeCompatibilityIssues(drifted, { catalog, policyEngineVersion }).some((issue) => issue.includes("policyEngineVersion")));
 });
 
+test("runtime compatibility plan pins the minimum and current stable n8n releases", () => {
+  assert.deepEqual(compatibility.scheduledN8nVersions, ["2.13.0", "2.34.5"]);
+});
+
 test("published policy lifecycle contract accepts the governed catalog", () => {
   assertMatches(lifecycle, lifecycleSchema);
   const unsafe = structuredClone(lifecycle);

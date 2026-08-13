@@ -216,11 +216,11 @@ Each tagged release publishes one complete source/catalog archive and one self-c
 sha256sum --check SHA256SUMS
 
 # Verify GitHub Actions build provenance for a chosen archive.
-gh attestation verify n8n-enterprise-workflows-finance-v0.4.0.tar.gz \
+gh attestation verify n8n-enterprise-workflows-finance-v0.4.1.tar.gz \
   -R zarif3624/n8n-enterprise-workflows
 
 # From a trusted checkout, verify the archive's embedded file manifest.
-npm run verify:bundle -- /path/to/n8n-enterprise-workflows-finance-v0.4.0.tar.gz
+npm run verify:bundle -- /path/to/n8n-enterprise-workflows-finance-v0.4.1.tar.gz
 ```
 
 On macOS, use `shasum -a 256 -c SHA256SUMS` for the checksum step. Outer checksums and GitHub provenance establish the downloaded archive's identity; the bundle verifier then rejects unsafe tar structure and checks the exact internal file set against `BUNDLE.json`. Maintainers can reproduce the exact archives locally with `npm run build:release`; the build omits timestamps, user IDs, file-system ordering, and platform-specific gzip metadata.
