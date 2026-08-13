@@ -20,7 +20,7 @@ const snapshot = JSON.parse(await readFile(join(root, "policy-snapshot.json"), "
 test("catalog search ranks business terms and filters departments and adapters", () => {
   assert.equal(searchCatalog(catalog, "phishing security")[0].slug, "phishing-report-triage");
   assert.deepEqual(searchCatalog(catalog, "", { department: "finance" }).map((entry) => entry.slug), ["invoice-exception-triage"]);
-  assert.ok(searchCatalog(catalog, "", { adapter: "Slack" }).length >= 4);
+  assert.deepEqual(searchCatalog(catalog, "", { adapter: "Slack" }).map((entry) => entry.slug), ["invoice-exception-triage"]);
   assert.deepEqual(searchCatalog(catalog, "term-that-does-not-exist"), []);
 });
 

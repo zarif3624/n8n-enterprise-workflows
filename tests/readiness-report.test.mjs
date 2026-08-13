@@ -18,10 +18,11 @@ test("readiness JSON separates repository validity from deployment authorization
   assert.equal(report.repositoryStatus, "ready");
   assert.equal(report.deploymentStatus, "blocked");
   assert.equal(report.inventory.workflows, 16);
-  assert.equal(report.inventory.artifacts, 101);
+  assert.equal(report.inventory.departments, 15);
+  assert.equal(report.inventory.artifacts, 103);
   assert.equal(report.policyGovernance.draft, 16);
   assert.equal(report.policyGovernance.active, 0);
-  assert.equal(report.contractCoverage.schemas, 13);
+  assert.equal(report.contractCoverage.schemas, 14);
   assert.ok(report.requiredDeploymentControls.some((control) => /body size and rate limits/i.test(control)));
   assert.deepEqual(report.privacy, { rawPayloadsIncluded: false, perRecordResultsIncluded: false });
 });
@@ -45,8 +46,8 @@ test("workflow-scoped readiness reports only the selected policy's deployment ga
     owner: "Accounts Payable Operations",
     lifecycleStatus: "draft",
     reviewDueOn: "2026-09-07",
-    policyVersion: "1.0.4",
-    policyFingerprint: "sha256:bf44281b1046fc732589a0d936e04ff1023ae938d68edfe2ffaca42faa4af5c2"
+    policyVersion: "1.0.7",
+    policyFingerprint: "sha256:c95b79f0c52df43dc91bbdc873fd5f6b5146e6b0b552c7a3f10a99913eb26924"
   });
   assert.equal(report.policyGovernance.draft, 1);
   assert.equal(report.policyGovernance.dueSoon, 1);
@@ -86,12 +87,12 @@ test("workflow-scoped readiness rejects unknown slugs and malformed options", ()
 });
 
 test("overdue reviews become explicit deployment blockers without falsifying repository evidence", () => {
-  const result = run("--json", "--as-of", "2026-09-08");
+  const result = run("--json", "--as-of", "2026-09-12");
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout);
   assert.equal(report.repositoryStatus, "ready");
-  assert.equal(report.policyGovernance.overdue, 15);
-  assert.ok(report.deploymentBlockers.some((entry) => entry.code === "policy_review_overdue" && entry.count === 15));
+  assert.equal(report.policyGovernance.overdue, 16);
+  assert.ok(report.deploymentBlockers.some((entry) => entry.code === "policy_review_overdue" && entry.count === 16));
 });
 
 test("readiness CLI rejects impossible evidence dates without a stack trace", () => {

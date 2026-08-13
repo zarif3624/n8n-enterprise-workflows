@@ -1,0 +1,11 @@
+{
+  "reconciliationId": "reconciliationId-001",
+  "sourceRecordCount": 1,
+  "targetRecordCount": 1,
+  "varianceRatePercent": 2,
+  "duplicateCount": 1,
+  "missingRecordCount": 1,
+  "materialVariance": true,
+  "ambiguousCorrection": true,
+  "certificationEvidenceComplete": false
+}

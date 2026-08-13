@@ -1,10 +1,20 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+function resolveTrustedBaseFromCli(env) {
+  const result = spawnSync(process.execPath, ["scripts/resolve-trusted-portfolio-base.mjs"], {
+    cwd: root,
+    encoding: "utf8",
+    env: { PATH: process.env.PATH, ...env }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  return result.stdout.trim();
+}
 
 test("all external GitHub Actions are pinned to immutable commit SHAs", async () => {
   const workflowDirectory = join(root, ".github", "workflows");
@@ -77,4 +87,25 @@ test("validation CI cancels stale runs without weakening release completion", as
   assert.match(validation, /group: validate-\$\{\{ github\.workflow \}\}-\$\{\{ github\.ref \}\}/);
   assert.match(validation, /cancel-in-progress: true/);
   assert.match(release, /cancel-in-progress: false/);
+});
+
+test("validation CI checks portfolio continuity against a materialized trusted base", async () => {
+  const source = await readFile(join(root, ".github", "workflows", "validate.yml"), "utf8");
+
+  assert.match(source, /Materialize trusted portfolio base/);
+  assert.match(source, /git show "\$trusted_base:portfolio\.json" > "\$RUNNER_TEMP\/trusted-portfolio\.json"/);
+  assert.match(source, /npm run portfolio:continuity -- --base "\$RUNNER_TEMP\/trusted-portfolio\.json" --candidate portfolio\.json/);
+  assert.doesNotMatch(source, /portfolio\.json.*approvedRemovals/);
+});
+
+test("manual validation resolves a feature branch against the protected default branch", async () => {
+  const source = await readFile(join(root, ".github", "workflows", "validate.yml"), "utf8");
+
+  assert.equal(resolveTrustedBaseFromCli({ GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF_NAME: "feature/two-commits", GITHUB_DEFAULT_BRANCH: "main" }), "origin/main");
+  assert.equal(resolveTrustedBaseFromCli({ GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF_NAME: "main", GITHUB_DEFAULT_BRANCH: "main" }), "HEAD^");
+  assert.equal(resolveTrustedBaseFromCli({ GITHUB_EVENT_NAME: "pull_request", GITHUB_BASE_REF: "release" }), "origin/release");
+  assert.equal(resolveTrustedBaseFromCli({ GITHUB_EVENT_NAME: "push", GITHUB_EVENT_BEFORE: "0123456789abcdef0123456789abcdef01234567" }), "0123456789abcdef0123456789abcdef01234567");
+  assert.equal(resolveTrustedBaseFromCli({ GITHUB_EVENT_NAME: "push", GITHUB_EVENT_BEFORE: "0000000000000000000000000000000000000000" }), "HEAD^");
+  assert.match(source, /GITHUB_EVENT_BEFORE:\s*\$\{\{ github\.event\.before \}\}/);
+  assert.match(source, /node scripts\/resolve-trusted-portfolio-base\.mjs/);
 });

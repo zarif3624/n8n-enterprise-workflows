@@ -26,6 +26,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: Materialize trusted portfolio base
+        env:
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+        run: |
+          trusted_base="$(node scripts/resolve-trusted-portfolio-base.mjs)"
+          git show "$trusted_base:portfolio.json" > "$RUNNER_TEMP/trusted-portfolio.json"
+          npm run portfolio:continuity -- --base "$RUNNER_TEMP/trusted-portfolio.json" --candidate portfolio.json
       - run: npm run check
       - name: Enforce production-script coverage floors
         run: npm run test:coverage

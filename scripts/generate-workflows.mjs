@@ -31,7 +31,8 @@ function nonMatchingValue(rule, contract) {
     case "missing": return sampleValue(rule.field, contract);
     case "truthy": return false;
     case "falsy": return true;
-    case "equals": return typeof rule.value === "string" ? `${rule.value}-other` : null;
+    case "equals": return contract.enum?.find((candidate) => candidate !== rule.value)
+      ?? (typeof rule.value === "string" ? `${rule.value}-other` : null);
     case "includes": return [];
     case "gt": return rule.value;
     case "gte": return Number(rule.value) - 1;
@@ -225,6 +226,7 @@ function buildWorkflow(definition) {
 function contractDetails(contract) {
   const details = [contract.type];
   if (contract.format) details.push(contract.format);
+  if (contract.enum) details.push(`one of ${contract.enum.join(", ")}`);
   if (contract.pattern) details.push(`pattern ${contract.pattern}`);
   if (contract.minimum !== undefined) details.push(`min ${contract.minimum}`);
   if (contract.maximum !== undefined) details.push(`max ${contract.maximum}`);
@@ -341,11 +343,13 @@ The catalog is organized by the team that owns the business outcome, not by the 
 | --- | --- | --- | --- |
 ${rows}
 
-## Planned departments and packs
+## Community roadmap
 
-- Product operations
-- Quality and audit
-- Industry-specific controls and approval patterns
+- Deeper vendor-neutral mappings and adoption guides for the sixteen public workflows
+- Reusable safety, privacy, validation, and error-handling patterns
+- Stronger conformance, governance, compatibility, and release evidence
+
+The public catalog is intentionally focused. Read the [open-core model](open-core-model.md) before proposing another workflow family.
 `;
 }
 

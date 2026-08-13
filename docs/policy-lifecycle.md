@@ -66,3 +66,7 @@ catalog `replacementSlug`. Active policies cannot carry deprecation metadata,
 and deprecated policies cannot omit the notice window. This complements the
 policy-lock removal guard: consumers get an explicit migration period before a
 workflow contract disappears.
+
+Release `0.3.0` was a one-time boundary transition: it removed 12 policies that were still never-approved drafts and explicitly recorded them in `portfolio.json`. Those records remain historical evidence and preserve the previously published rights and history; they are not reusable authorization for another removal.
+
+Starting with the expanded `0.4.0` collection, repository validation also checks public continuity against a separately trusted base revision. A candidate change cannot authorize its own deletion merely by changing `portfolio.json` or a candidate-local allowlist. If a previously public workflow is absent, the continuity command fails unless maintainers supply a distinct, externally reviewed removal approval. Normal removals still require deprecation metadata, a migration window, release notes, and the versioned process above.

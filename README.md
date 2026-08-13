@@ -1,8 +1,9 @@
 # n8n Enterprise Workflows
 
-Production-minded, open-source n8n workflow templates for enterprise teams.
-Each package combines an importable workflow, implementation instructions,
-sample data, policy logic, security gates, business value, and an ROI model.
+A focused, production-minded collection of sixteen open-source n8n workflow
+starters across fifteen departments. Each package combines an importable workflow,
+implementation instructions, sample data, policy logic, security gates,
+business value, and an ROI model.
 
 [![Validate workflows](https://github.com/zarif3624/n8n-enterprise-workflows/actions/workflows/validate.yml/badge.svg)](https://github.com/zarif3624/n8n-enterprise-workflows/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-111827.svg)](LICENSE)
@@ -43,31 +44,39 @@ controls, measurable outcomes, and a path from development to production.
 
 This project makes those concerns part of each workflow package.
 
+## Open-core boundary
+
+The evaluated portfolio contains 64 normalized, sellable workflow families: **16 (25%) are open source** and **48 (75%) are reserved for commercial product development**. The denominator combines 31 evidence-derived category slots with 33 newer named concepts; repeated source evidence supports prevalence and maturity analysis without being miscounted as separate products. Public lineage consists of four evidence-derived families and twelve newer concepts, while private lineage consists of the remaining 27 evidence-derived and 21 newer families.
+
+The public repository contains all sixteen complete, inactive, credential-free starter workflows and remains self-contained: it does not call private services or require private files to build, test, import, or operate these policies. The public contract describes allocation and capability boundaries without publishing the reserved family backlog or its implementation plan.
+
+[`portfolio.json`](portfolio.json) records the exact allocation, selection criteria, public identities, and historical boundary. Read the [open-core model](docs/open-core-model.md) for the contribution gate, product differentiation, and the rights that remain attached to versions published before `0.3.0`.
+
 ## Workflow catalog
 
 | Department | Workflow | Business outcome |
 | --- | --- | --- |
-| Finance | [Invoice exception triage](workflows/finance/invoice-exception-triage) | Route clean invoices, reviews, and payment holds consistently |
-| Human Resources | [Employee access request triage](workflows/human-resources/employee-access-request-triage) | Separate standard access from privileged review |
-| Information Technology | [Service desk priority routing](workflows/information-technology/service-desk-priority-routing) | Reduce incident assignment time |
-| Security | [Phishing report triage](workflows/security/phishing-report-triage) | Prioritize containment review without destructive automation |
-| Sales | [Enterprise lead routing](workflows/sales/enterprise-lead-routing) | Improve speed to lead for qualified accounts |
-| Marketing | [Campaign lead compliance gate](workflows/marketing/campaign-lead-compliance-gate) | Keep consent and suppression decisions visible |
-| Customer Success | [Customer risk escalation](workflows/customer-success/customer-risk-escalation) | Engage at-risk accounts before renewal |
-| Legal | [Contract intake routing](workflows/legal/contract-intake-routing) | Send contracts to the correct review path sooner |
-| Procurement | [Vendor risk intake](workflows/procurement/vendor-risk-intake) | Start security, privacy, and legal diligence earlier |
-| Operations | [Major incident stakeholder brief](workflows/operations/major-incident-stakeholder-brief) | Accelerate consistent incident communications |
-| Data and Analytics | [Data access request triage](workflows/data-and-analytics/data-access-request-triage) | Govern sensitive and externally shared data access |
+| Artificial Intelligence | [Agent evaluation release gate](workflows/artificial-intelligence/agent-evaluation-release-gate) | Review agent evidence before release |
+| Artificial Intelligence | [Multi-model routing fallback](workflows/artificial-intelligence/multi-model-routing-fallback) | Recommend model-routing and fallback choices with human oversight |
+| Customer Success | [Customer health action review](workflows/customer-success/customer-health-action-review) | Review customer-health actions before outreach |
+| Customer Support | [Support escalation command center](workflows/customer-support/support-escalation-command-center) | Mobilize explainable high-severity escalation review |
+| Data Operations | [Enterprise data reconciliation control](workflows/data-operations/enterprise-data-reconciliation-control) | Route reconciliation exceptions with reviewable evidence |
 | Engineering | [Production change risk gate](workflows/engineering/production-change-risk-gate) | Preserve accountable review for risky releases |
-| Facilities | [Workplace incident routing](workflows/facilities/workplace-incident-routing) | Escalate safety and security events quickly |
-| Corporate Communications | [External communication approval](workflows/corporate-communications/external-communication-approval) | Prevent high-risk messages from bypassing reviewers |
-| Privacy | [Data subject request triage](workflows/privacy/data-subject-request-triage) | Keep identity, deadline, and legal constraints visible |
-| Risk and Compliance | [AI use-case risk intake](workflows/risk-and-compliance/ai-use-case-risk-intake) | Accelerate controlled AI pilots without bypassing accountable review |
+| Field Operations | [Field service completion review](workflows/field-operations/field-service-completion-review) | Check completion evidence before field-service closure |
+| Finance | [Invoice exception triage](workflows/finance/invoice-exception-triage) | Route clean invoices, reviews, and payment holds consistently |
+| Incident Management | [Incident RCA evidence review](workflows/incident-management/incident-rca-evidence-review) | Review evidence before closing root-cause analysis |
+| Information Technology | [Service desk priority routing](workflows/information-technology/service-desk-priority-routing) | Reduce incident assignment time |
+| Operations | [Meeting to action review](workflows/operations/meeting-to-action-review) | Review extracted actions before operational commitment |
+| People Operations | [People operations case routing](workflows/people-operations/people-operations-case-routing) | Route employee cases with privacy and human authority intact |
+| Proposal Management | [RFP response evidence review](workflows/proposal-management/rfp-response-evidence-review) | Validate evidence behind proposal claims |
+| Revenue Operations | [Closed-won launch readiness](workflows/revenue-operations/closed-won-launch-readiness) | Review cross-functional launch handoffs |
+| Sales | [Research to CRM review](workflows/sales/research-to-crm-review) | Verify research before CRM updates |
+| Security | [Phishing report triage](workflows/security/phishing-report-triage) | Prioritize containment review without destructive automation |
 
 Browse the machine-readable [catalog](catalog.json), the generated
 [OpenAPI 3.1 contract](openapi.json), the [reviewable policy snapshot](policy-snapshot.json), the [policy lifecycle contract](policy-lifecycle.json), the [runtime compatibility plan](runtime-compatibility.json), the [artifact manifest](artifact-manifest.json), or the [department index](docs/catalog.md).
 Machine integrations can validate adoption-tool JSON against the published
-[Draft 2020-12 schemas](schemas/README.md), including the complete catalog contract.
+[Draft 2020-12 schemas](schemas/README.md), including the complete catalog and portfolio contracts.
 Use `npm run --silent contracts -- list --json` to discover every repository document and generated CLI output with its schema; `npm run contracts -- validate` checks the registry, every document, and complete schema coverage.
 
 Get an honest deployment-facing summary without exposing payloads:
@@ -200,34 +209,31 @@ The final command should only be clean after generated changes have been reviewe
 
 ## Verify a release
 
-Each tagged release publishes one complete source/catalog archive and one self-contained archive per department. Department archives include fingerprint-bound mapping templates plus conformance and drift guidance, so adoption can begin without generating missing artifacts from the source repository. `SHA256SUMS` covers every archive and the release manifest; each archive's `BUNDLE.json` then covers every file inside it.
+Each tagged release publishes one complete source/catalog archive and one self-contained archive for each of the fifteen represented public departments: sixteen archives in total. Department archives include fingerprint-bound mapping templates plus conformance and drift guidance, so adoption can begin without generating missing artifacts from the source repository. `SHA256SUMS` covers every archive and the release manifest; each archive's `BUNDLE.json` then covers every file inside it.
 
 ```bash
 # Run from the directory containing the downloaded release files.
 sha256sum --check SHA256SUMS
 
 # Verify GitHub Actions build provenance for a chosen archive.
-gh attestation verify n8n-enterprise-workflows-finance-v0.2.1.tar.gz \
+gh attestation verify n8n-enterprise-workflows-finance-v0.4.0.tar.gz \
   -R zarif3624/n8n-enterprise-workflows
 
 # From a trusted checkout, verify the archive's embedded file manifest.
-npm run verify:bundle -- /path/to/n8n-enterprise-workflows-finance-v0.2.1.tar.gz
+npm run verify:bundle -- /path/to/n8n-enterprise-workflows-finance-v0.4.0.tar.gz
 ```
 
 On macOS, use `shasum -a 256 -c SHA256SUMS` for the checksum step. Outer checksums and GitHub provenance establish the downloaded archive's identity; the bundle verifier then rejects unsafe tar structure and checks the exact internal file set against `BUNDLE.json`. Maintainers can reproduce the exact archives locally with `npm run build:release`; the build omits timestamps, user IDs, file-system ordering, and platform-specific gzip metadata.
 
-## Release rhythm
+## Release philosophy
 
-The project targets two useful releases each week. A release should normally add
-one enterprise workflow package. Improvements to an existing workflow are
-appropriate when they fix a real adoption, correctness, security, or operability
-problem. See the [release process](docs/release-process.md).
+Releases are quality-driven, not quota-driven. They deepen the sixteen public starters or improve shared adoption, correctness, security, compatibility, governance, and operability. Expanding the public portfolio requires the explicit selection and boundary process in the [open-core model](docs/open-core-model.md). See the [release process](docs/release-process.md).
 
 ## Roadmap
 
-- Native adapters for Salesforce, ServiceNow, Slack, Microsoft Teams, SAP, Workday, and common data warehouses
-- Human-approval sub-workflows and reusable error handlers
-- Industry packs for financial services, healthcare, software, and professional services
+- Deeper vendor-neutral guidance and mappings for the sixteen community workflows
+- Reusable safety, validation, privacy, and error-handling patterns
+- Stronger conformance, policy-review, and release-verification evidence
 - Broaden the scheduled import compatibility matrix as supported n8n releases evolve
 - Outcome benchmarks and community-submitted deployment notes
 

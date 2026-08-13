@@ -1,6 +1,6 @@
 {
   "name": "n8n-enterprise-workflows",
-  "version": "0.2.1",
+  "version": "0.4.0",
   "private": true,
   "description": "Production-minded n8n workflow templates for enterprise teams.",
   "type": "module",
@@ -15,10 +15,13 @@
     "smoke:webhook": "node scripts/smoke-test-webhook.mjs",
     "compatibility": "node scripts/runtime-compatibility-cli.mjs",
     "lifecycle": "node scripts/policy-lifecycle-cli.mjs",
+    "portfolio:validate": "node scripts/validate-portfolio.mjs",
+    "portfolio:continuity": "node scripts/verify-portfolio-continuity.mjs",
     "readiness": "node scripts/readiness-report-cli.mjs",
     "validate": "node scripts/validate-workflows.mjs",
     "validate:links": "node scripts/validate-links.mjs",
     "scan:sensitive": "node scripts/scan-sensitive-data.mjs",
+    "scan:boundary": "node scripts/scan-public-boundary.mjs",
     "validate:policy-versions": "node scripts/verify-policy-versions.mjs",
     "report:policy-changes": "node scripts/report-policy-changes.mjs",
     "report:policy-impact": "node scripts/report-policy-impact.mjs",
@@ -28,7 +31,7 @@
     "test": "node --test tests/*.test.mjs",
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='scripts/*.mjs' --test-coverage-lines=90 --test-coverage-branches=70 --test-coverage-functions=90 tests/*.test.mjs",
     "test:adversarial": "node --test tests/adversarial-inputs.test.mjs",
-    "check": "npm run generate && npm run validate && npm run contracts -- validate && npm run compatibility -- validate && npm run lifecycle -- validate && npm run validate:links && npm run scan:sensitive && npm test"
+    "check": "npm run generate && npm run portfolio:validate && npm run validate && npm run contracts -- validate && npm run compatibility -- validate && npm run lifecycle -- validate && npm run validate:links && npm run scan:sensitive && npm run scan:boundary && npm test"
   },
   "engines": {
     "node": ">=20"

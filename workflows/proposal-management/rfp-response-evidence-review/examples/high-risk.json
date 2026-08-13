@@ -1,0 +1,12 @@
+{
+  "questionnaireId": "questionnaireId-001",
+  "questionCount": 1,
+  "evidenceCoveragePercent": 89,
+  "citedAnswerCount": 1,
+  "unsupportedAnswerCount": 1,
+  "sensitiveAnswerCount": 1,
+  "domainExpertAssigned": false,
+  "exportProposed": true,
+  "evidenceApproved": false,
+  "confidenceScore": 79
+}

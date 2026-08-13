@@ -117,6 +117,49 @@ test("non-JSON roots and prototype-shaped inputs fail safely without polluting o
   assert.equal({}.polluted, undefined);
 });
 
+test("definition-level contracts fail closed for malformed capability fields", () => {
+  const definition = {
+    department: "synthetic",
+    slug: "contract-capability-probe",
+    policyVersion: "1.0.4",
+    required: ["quantity", "approved", "tier", "tags", "scheduledAt", "title"],
+    optional: [],
+    fieldContracts: {
+      quantity: { type: "number", minimum: 1, maximum: 25 },
+      approved: { type: "boolean" },
+      tier: { type: "string", enum: ["standard", "expedited"], minLength: 1, maxLength: 20 },
+      tags: { type: "array", minItems: 1, maxItems: 3, items: { type: "string", minLength: 2, maxLength: 12 } },
+      scheduledAt: { type: "string", format: "date-time", minLength: 1, maxLength: 64 },
+      title: { type: "string", minLength: 3, maxLength: 80 }
+    },
+    rules: [],
+    decisions: { low: "continue", medium: "review", high: "hold" },
+    actions: []
+  };
+  const valid = {
+    quantity: 4,
+    approved: true,
+    tier: "standard",
+    tags: ["ops"],
+    scheduledAt: "2026-08-12T00:00:00.000Z",
+    title: "Review"
+  };
+  const cases = [
+    ["quantity", 26, "above_maximum"],
+    ["approved", "true", "invalid_type"],
+    ["tier", "unsupported", "invalid_value"],
+    ["tags", "ops", "invalid_type"],
+    ["scheduledAt", "not-a-date", "invalid_format"],
+    ["title", "no", "too_short"]
+  ];
+
+  for (const [field, value, code] of cases) {
+    const result = evaluate(definition, { ...valid, [field]: value });
+    assert.equal(result.ok, false, field);
+    assert.ok(result.details.violations.some((violation) => violation.field === field && violation.code === code), field);
+  }
+});
+
 test("mapping and aggregate conformance remain private over adversarial source records", async () => {
   for (const definition of workflows) {
     const snapshotPolicy = snapshot.policies.find((policy) => policy.slug === definition.slug);

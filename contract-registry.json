@@ -7,6 +7,7 @@
     { "id": "policy-lifecycle", "path": "policy-lifecycle.json", "schema": "schemas/policy-lifecycle.schema.json" },
     { "id": "policy-lock", "path": "policy-lock.json", "schema": "schemas/policy-lock.schema.json" },
     { "id": "policy-snapshot", "path": "policy-snapshot.json", "schema": "schemas/policy-snapshot.schema.json" },
+    { "id": "portfolio", "path": "portfolio.json", "schema": "schemas/portfolio.schema.json" },
     { "id": "runtime-compatibility", "path": "runtime-compatibility.json", "schema": "schemas/runtime-compatibility.schema.json" }
   ],
   "outputs": [

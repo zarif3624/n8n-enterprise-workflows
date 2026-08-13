@@ -1,0 +1,12 @@
+{
+  "accountId": "accountId-001",
+  "lifecycleStage": "lifecycleStage-001",
+  "signalCount": 1,
+  "healthEvidenceComplete": false,
+  "highImpactOutreachProposed": true,
+  "commercialActionProposed": true,
+  "billingRisk": true,
+  "supportEscalationOpen": true,
+  "ownerAssigned": false,
+  "outcomeTrackingConfigured": false
+}

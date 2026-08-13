@@ -271,8 +271,6 @@ for (const department of await readdir(join(root, "workflows"), { withFileTypes:
 const catalogPaths = new Set(catalog.map((entry) => entry.path));
 for (const path of discovered) if (!catalogPaths.has(path)) fail(path, "workflow is missing from catalog.json");
 for (const path of catalogPaths) if (!discovered.includes(path)) fail(path, "catalog entry points to a missing workflow package");
-if (catalog.length < 10) fail("catalog.json", "the catalog must include at least 10 workflows");
-
 if (errors.length) {
   console.error(`Validation failed with ${errors.length} issue(s):`);
   for (const error of errors) console.error(`- ${error}`);

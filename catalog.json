@@ -1,7 +1,7 @@
 [
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
+    "policyVersion": "1.0.7",
     "department": "finance",
     "slug": "invoice-exception-triage",
     "name": "Triage enterprise invoice exceptions",
@@ -22,12 +22,14 @@
         "invoiceId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "vendorId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "amount": {
           "type": "number",
@@ -37,7 +39,12 @@
           "type": "string",
           "pattern": "^[A-Z]{3}$",
           "minLength": 3,
-          "maxLength": 3
+          "maxLength": 3,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
         },
         "purchaseOrderId": {
           "type": "string",
@@ -84,88 +91,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "human-resources",
-    "slug": "employee-access-request-triage",
-    "name": "Triage employee access requests",
-    "summary": "Classifies employee access requests using role, privilege, environment, and approval signals before provisioning begins.",
-    "outcome": "A normalized access decision that separates standard fulfillment, security review, and blocked requests.",
-    "owner": "People Operations and Identity Management",
-    "metric": "Access-request cycle time",
-    "roiModel": "monthly access requests x minutes saved x loaded hourly cost / 60",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "requestId",
-        "employeeId",
-        "system",
-        "accessLevel"
-      ],
-      "properties": {
-        "requestId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "employeeId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "system": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "accessLevel": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "managerApproved": {
-          "type": "boolean"
-        },
-        "privilegedAccess": {
-          "type": "boolean"
-        },
-        "productionAccess": {
-          "type": "boolean"
-        },
-        "contractor": {
-          "type": "boolean"
-        },
-        "endDate": {
-          "type": "string",
-          "format": "date-time",
-          "minLength": 1,
-          "maxLength": 64
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "queue_standard_fulfillment",
-      "medium": "require_security_review",
-      "high": "block_until_approved"
-    },
-    "adapters": [
-      "Workday",
-      "Okta",
-      "Microsoft Entra ID",
-      "ServiceNow"
-    ],
-    "path": "workflows/human-resources/employee-access-request-triage",
-    "endpoint": "/webhook/enterprise/human-resources/employee-access-request-triage",
-    "workflow": "workflows/human-resources/employee-access-request-triage/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/human-resources/employee-access-request-triage/examples/low-risk.json",
-      "highRisk": "workflows/human-resources/employee-access-request-triage/examples/high-risk.json",
-      "invalid": "workflows/human-resources/employee-access-request-triage/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
+    "policyVersion": "1.0.7",
     "department": "information-technology",
     "slug": "service-desk-priority-routing",
     "name": "Route enterprise service desk incidents",
@@ -186,17 +112,20 @@
         "ticketId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "category": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "summary": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 5000
+          "maxLength": 5000,
+          "pattern": "\\S"
         },
         "affectedUsers": {
           "type": "number",
@@ -241,7 +170,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
+    "policyVersion": "1.0.7",
     "department": "security",
     "slug": "phishing-report-triage",
     "name": "Triage employee phishing reports",
@@ -262,22 +191,26 @@
         "reportId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "reporterId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "sender": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "subject": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "credentialRequested": {
           "type": "boolean"
@@ -319,557 +252,7 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "sales",
-    "slug": "enterprise-lead-routing",
-    "name": "Route enterprise sales leads",
-    "summary": "Scores enterprise leads using account fit, buying intent, geography, engagement, and consent before assignment.",
-    "outcome": "A transparent routing recommendation with matched reasons and a clear next action for RevOps.",
-    "owner": "Revenue Operations",
-    "metric": "Speed to lead for qualified accounts",
-    "roiModel": "qualified leads x conversion lift x average contract value",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "leadId",
-        "company",
-        "email",
-        "region"
-      ],
-      "properties": {
-        "leadId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "company": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "email": {
-          "type": "string",
-          "format": "email",
-          "minLength": 3,
-          "maxLength": 320
-        },
-        "region": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "employeeCount": {
-          "type": "number",
-          "minimum": 0
-        },
-        "targetAccount": {
-          "type": "boolean"
-        },
-        "highIntent": {
-          "type": "boolean"
-        },
-        "requestedDemo": {
-          "type": "boolean"
-        },
-        "marketingConsent": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "route_to_nurture_or_review",
-      "medium": "assign_sdr_queue",
-      "high": "assign_enterprise_owner"
-    },
-    "adapters": [
-      "Salesforce",
-      "HubSpot",
-      "enrichment and routing tools"
-    ],
-    "path": "workflows/sales/enterprise-lead-routing",
-    "endpoint": "/webhook/enterprise/sales/enterprise-lead-routing",
-    "workflow": "workflows/sales/enterprise-lead-routing/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/sales/enterprise-lead-routing/examples/low-risk.json",
-      "highRisk": "workflows/sales/enterprise-lead-routing/examples/high-risk.json",
-      "invalid": "workflows/sales/enterprise-lead-routing/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "marketing",
-    "slug": "campaign-lead-compliance-gate",
-    "name": "Gate campaign leads for compliant follow-up",
-    "summary": "Checks consent, suppression, geography, engagement, and target-account status before campaign follow-up.",
-    "outcome": "A follow-up decision that keeps compliance facts visible and routes ambiguous records for review.",
-    "owner": "Marketing Operations",
-    "metric": "Compliant leads processed per campaign",
-    "roiModel": "campaign leads x minutes saved in list review x marketing operations hourly cost / 60",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "leadId",
-        "email",
-        "campaignId",
-        "country"
-      ],
-      "properties": {
-        "leadId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "email": {
-          "type": "string",
-          "format": "email",
-          "minLength": 3,
-          "maxLength": 320
-        },
-        "campaignId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "country": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "consent": {
-          "type": "boolean"
-        },
-        "suppressed": {
-          "type": "boolean"
-        },
-        "targetAccount": {
-          "type": "boolean"
-        },
-        "engagementScore": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100
-        },
-        "existingCustomer": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "allow_campaign_follow_up",
-      "medium": "route_to_compliance_review",
-      "high": "suppress_automated_outreach"
-    },
-    "adapters": [
-      "marketing automation",
-      "CRM",
-      "consent platform"
-    ],
-    "path": "workflows/marketing/campaign-lead-compliance-gate",
-    "endpoint": "/webhook/enterprise/marketing/campaign-lead-compliance-gate",
-    "workflow": "workflows/marketing/campaign-lead-compliance-gate/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/marketing/campaign-lead-compliance-gate/examples/low-risk.json",
-      "highRisk": "workflows/marketing/campaign-lead-compliance-gate/examples/high-risk.json",
-      "invalid": "workflows/marketing/campaign-lead-compliance-gate/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "customer-success",
-    "slug": "customer-risk-escalation",
-    "name": "Escalate at-risk enterprise customers",
-    "summary": "Combines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response.",
-    "outcome": "An explainable intervention priority and recommended customer-success action plan.",
-    "owner": "Customer Success Operations",
-    "metric": "At-risk accounts engaged before renewal",
-    "roiModel": "at-risk ARR x reduction in preventable churn rate",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "accountId",
-        "accountName",
-        "arr",
-        "renewalDays"
-      ],
-      "properties": {
-        "accountId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "accountName": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "arr": {
-          "type": "number",
-          "minimum": 0
-        },
-        "renewalDays": {
-          "type": "number",
-          "minimum": 0
-        },
-        "usageDropPercent": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100
-        },
-        "criticalTickets": {
-          "type": "number",
-          "minimum": 0
-        },
-        "negativeSentiment": {
-          "type": "boolean"
-        },
-        "championLeft": {
-          "type": "boolean"
-        },
-        "execSponsorMissing": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "continue_success_plan",
-      "medium": "open_risk_workstream",
-      "high": "launch_executive_save_plan"
-    },
-    "adapters": [
-      "customer success platform",
-      "CRM",
-      "support desk"
-    ],
-    "path": "workflows/customer-success/customer-risk-escalation",
-    "endpoint": "/webhook/enterprise/customer-success/customer-risk-escalation",
-    "workflow": "workflows/customer-success/customer-risk-escalation/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/customer-success/customer-risk-escalation/examples/low-risk.json",
-      "highRisk": "workflows/customer-success/customer-risk-escalation/examples/high-risk.json",
-      "invalid": "workflows/customer-success/customer-risk-escalation/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "legal",
-    "slug": "contract-intake-routing",
-    "name": "Route enterprise contract requests",
-    "summary": "Routes contract intake using document type, value, jurisdiction, data access, and non-standard terms.",
-    "outcome": "A normalized legal intake route with risk reasons and required reviewers.",
-    "owner": "Legal Operations",
-    "metric": "Contract request time to first review",
-    "roiModel": "monthly contracts x reduction in intake rework minutes x legal hourly cost / 60",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "requestId",
-        "contractType",
-        "counterparty",
-        "contractValue"
-      ],
-      "properties": {
-        "requestId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "contractType": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "counterparty": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "contractValue": {
-          "type": "number",
-          "minimum": 0
-        },
-        "nonStandardTerms": {
-          "type": "boolean"
-        },
-        "personalData": {
-          "type": "boolean"
-        },
-        "crossBorderData": {
-          "type": "boolean"
-        },
-        "autoRenewal": {
-          "type": "boolean"
-        },
-        "regulatedIndustry": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "use_standard_legal_queue",
-      "medium": "assign_specialist_review",
-      "high": "open_cross_functional_review"
-    },
-    "adapters": [
-      "CLM",
-      "e-signature",
-      "ticketing",
-      "document storage"
-    ],
-    "path": "workflows/legal/contract-intake-routing",
-    "endpoint": "/webhook/enterprise/legal/contract-intake-routing",
-    "workflow": "workflows/legal/contract-intake-routing/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/legal/contract-intake-routing/examples/low-risk.json",
-      "highRisk": "workflows/legal/contract-intake-routing/examples/high-risk.json",
-      "invalid": "workflows/legal/contract-intake-routing/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "procurement",
-    "slug": "vendor-risk-intake",
-    "name": "Triage enterprise vendor risk",
-    "summary": "Scores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence.",
-    "outcome": "A coordinated due-diligence route with the reasons each review is required.",
-    "owner": "Procurement Operations",
-    "metric": "Vendor request time to correct review path",
-    "roiModel": "vendor requests x days removed from routing delay x internal cost per delay day",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "requestId",
-        "vendorName",
-        "annualSpend",
-        "businessOwner"
-      ],
-      "properties": {
-        "requestId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "vendorName": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "annualSpend": {
-          "type": "number",
-          "minimum": 0
-        },
-        "businessOwner": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "handlesPersonalData": {
-          "type": "boolean"
-        },
-        "businessCritical": {
-          "type": "boolean"
-        },
-        "foreignDataHosting": {
-          "type": "boolean"
-        },
-        "subprocessors": {
-          "type": "boolean"
-        },
-        "soc2Available": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "start_standard_procurement",
-      "medium": "add_security_or_privacy_review",
-      "high": "open_full_vendor_due_diligence"
-    },
-    "adapters": [
-      "procurement suite",
-      "GRC",
-      "security questionnaires"
-    ],
-    "path": "workflows/procurement/vendor-risk-intake",
-    "endpoint": "/webhook/enterprise/procurement/vendor-risk-intake",
-    "workflow": "workflows/procurement/vendor-risk-intake/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/procurement/vendor-risk-intake/examples/low-risk.json",
-      "highRisk": "workflows/procurement/vendor-risk-intake/examples/high-risk.json",
-      "invalid": "workflows/procurement/vendor-risk-intake/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "operations",
-    "slug": "major-incident-stakeholder-brief",
-    "name": "Prepare major incident stakeholder briefs",
-    "summary": "Turns operational incident facts into a severity decision and a consistent stakeholder communication plan.",
-    "outcome": "A severity tier, communication cadence, stakeholder list, and next update deadline.",
-    "owner": "Business Operations and Incident Command",
-    "metric": "Minutes from incident declaration to first stakeholder brief",
-    "roiModel": "major incidents x minutes faster communication x affected staff loaded cost per minute",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "incidentId",
-        "service",
-        "startedAt",
-        "summary"
-      ],
-      "properties": {
-        "incidentId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "service": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "startedAt": {
-          "type": "string",
-          "format": "date-time",
-          "minLength": 1,
-          "maxLength": 64
-        },
-        "summary": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 5000
-        },
-        "customersAffected": {
-          "type": "number",
-          "minimum": 0
-        },
-        "revenueImpact": {
-          "type": "boolean"
-        },
-        "dataRisk": {
-          "type": "boolean"
-        },
-        "workaroundAvailable": {
-          "type": "boolean"
-        },
-        "regulatoryNotificationPossible": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "standard_operations_update",
-      "medium": "activate_incident_command",
-      "high": "activate_executive_and_legal_response"
-    },
-    "adapters": [
-      "incident management",
-      "Slack",
-      "Microsoft Teams",
-      "status page"
-    ],
-    "path": "workflows/operations/major-incident-stakeholder-brief",
-    "endpoint": "/webhook/enterprise/operations/major-incident-stakeholder-brief",
-    "workflow": "workflows/operations/major-incident-stakeholder-brief/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/operations/major-incident-stakeholder-brief/examples/low-risk.json",
-      "highRisk": "workflows/operations/major-incident-stakeholder-brief/examples/high-risk.json",
-      "invalid": "workflows/operations/major-incident-stakeholder-brief/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "data-and-analytics",
-    "slug": "data-access-request-triage",
-    "name": "Triage enterprise data access requests",
-    "summary": "Classifies data access requests by sensitivity, environment, sharing intent, retention, and owner approval before access is granted.",
-    "outcome": "A transparent governance route that separates standard access from data-owner, privacy, and security review.",
-    "owner": "Data Governance",
-    "metric": "Time from request to governed data access",
-    "roiModel": "monthly data requests x review minutes saved x governance hourly cost / 60",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "requestId",
-        "requesterId",
-        "dataset",
-        "purpose"
-      ],
-      "properties": {
-        "requestId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "requesterId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "dataset": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "purpose": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "containsSensitiveData": {
-          "type": "boolean"
-        },
-        "productionData": {
-          "type": "boolean"
-        },
-        "externalSharing": {
-          "type": "boolean"
-        },
-        "retentionDays": {
-          "type": "number",
-          "minimum": 0
-        },
-        "ownerApproved": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "approve_standard_data_access",
-      "medium": "require_owner_and_privacy_review",
-      "high": "block_until_governance_approval"
-    },
-    "adapters": [
-      "Snowflake",
-      "Databricks",
-      "BigQuery",
-      "data catalog",
-      "ticketing"
-    ],
-    "path": "workflows/data-and-analytics/data-access-request-triage",
-    "endpoint": "/webhook/enterprise/data-and-analytics/data-access-request-triage",
-    "workflow": "workflows/data-and-analytics/data-access-request-triage/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/data-and-analytics/data-access-request-triage/examples/low-risk.json",
-      "highRisk": "workflows/data-and-analytics/data-access-request-triage/examples/high-risk.json",
-      "invalid": "workflows/data-and-analytics/data-access-request-triage/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
+    "policyVersion": "1.0.7",
     "department": "engineering",
     "slug": "production-change-risk-gate",
     "name": "Gate production changes by operational risk",
@@ -890,23 +273,27 @@
         "changeId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "service": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "changeType": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
         "plannedAt": {
           "type": "string",
           "format": "date-time",
           "minLength": 1,
-          "maxLength": 64
+          "maxLength": 64,
+          "pattern": "\\S"
         },
         "customerImpact": {
           "type": "boolean"
@@ -949,329 +336,1001 @@
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "facilities",
-    "slug": "workplace-incident-routing",
-    "name": "Route workplace incidents safely",
-    "summary": "Prioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals.",
-    "outcome": "A defensible urgency tier with clear escalation reasons and a named human response path.",
-    "owner": "Workplace Operations",
-    "metric": "Minutes from report to accountable responder",
-    "roiModel": "workplace incidents x minutes faster routing x disruption cost per minute",
+    "policyVersion": "1.0.7",
+    "department": "artificial-intelligence",
+    "slug": "agent-evaluation-release-gate",
+    "name": "Gate agent releases with evaluation evidence",
+    "summary": "Reviews quality, safety, latency, cost, and evaluation coverage signals before an agent change is considered for release.",
+    "outcome": "An explainable release recommendation and evidence route that leaves release approval and deployment with the accountable owner.",
+    "owner": "AI Platform & SRE",
+    "metric": "Regression escape rate",
+    "roiModel": "agent releases per month x evaluation review minutes saved x engineering hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "evaluationRunId",
+        "changeType",
+        "evaluationCoveragePercent",
+        "qualityScore"
+      ],
+      "properties": {
+        "evaluationRunId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "changeType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "evaluationCoveragePercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "qualityScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "safetyRegression": {
+          "type": "boolean"
+        },
+        "latencyRegressionPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "costRegressionPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "baselineAvailable": {
+          "type": "boolean"
+        },
+        "exceptionRequested": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_release_candidate_for_owner_approval",
+      "medium": "route_release_evidence_to_owner_review",
+      "high": "hold_release_for_owner_exception_review"
+    },
+    "adapters": [
+      "Evaluation service",
+      "Model providers",
+      "Source control",
+      "Ticketing",
+      "Observability"
+    ],
+    "path": "workflows/artificial-intelligence/agent-evaluation-release-gate",
+    "endpoint": "/webhook/enterprise/artificial-intelligence/agent-evaluation-release-gate",
+    "workflow": "workflows/artificial-intelligence/agent-evaluation-release-gate/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/artificial-intelligence/agent-evaluation-release-gate/examples/low-risk.json",
+      "highRisk": "workflows/artificial-intelligence/agent-evaluation-release-gate/examples/high-risk.json",
+      "invalid": "workflows/artificial-intelligence/agent-evaluation-release-gate/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "artificial-intelligence",
+    "slug": "multi-model-routing-fallback",
+    "name": "Review multi-model routing and fallback",
+    "summary": "Evaluates task, policy, provider health, quality, cost, latency, and fallback evidence before recommending an approved model route.",
+    "outcome": "A vendor-neutral routing recommendation with matched reasons, while policy exceptions and execution remain human-controlled.",
+    "owner": "AI Platform Engineering",
+    "metric": "Fallback rate",
+    "roiModel": "monthly model tasks x routing review minutes saved x platform hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "routingRequestId",
+        "taskType",
+        "approvedModelAvailable",
+        "expectedQualityScore"
+      ],
+      "properties": {
+        "routingRequestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "taskType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "approvedModelAvailable": {
+          "type": "boolean"
+        },
+        "expectedQualityScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "policyException": {
+          "type": "boolean"
+        },
+        "primaryProviderHealthy": {
+          "type": "boolean"
+        },
+        "costBudgetExceeded": {
+          "type": "boolean"
+        },
+        "latencyBudgetExceeded": {
+          "type": "boolean"
+        },
+        "fallbackValidated": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_approved_primary_model",
+      "medium": "recommend_approved_fallback_for_review",
+      "high": "hold_route_for_policy_exception_review"
+    },
+    "adapters": [
+      "Approved model providers",
+      "Policy store",
+      "Observability",
+      "Cost telemetry"
+    ],
+    "path": "workflows/artificial-intelligence/multi-model-routing-fallback",
+    "endpoint": "/webhook/enterprise/artificial-intelligence/multi-model-routing-fallback",
+    "workflow": "workflows/artificial-intelligence/multi-model-routing-fallback/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/artificial-intelligence/multi-model-routing-fallback/examples/low-risk.json",
+      "highRisk": "workflows/artificial-intelligence/multi-model-routing-fallback/examples/high-risk.json",
+      "invalid": "workflows/artificial-intelligence/multi-model-routing-fallback/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "data-operations",
+    "slug": "enterprise-data-reconciliation-control",
+    "name": "Control enterprise data reconciliation exceptions",
+    "summary": "Classifies cross-system variances, duplicates, missing records, ambiguous corrections, and certification evidence for review.",
+    "outcome": "A reconciliation recommendation and exception record that reserves material or ambiguous corrections for human review.",
+    "owner": "Data & Analytics",
+    "metric": "Variance rate",
+    "roiModel": "reconciliations per month x certification minutes saved x data operations hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "reconciliationId",
+        "sourceRecordCount",
+        "targetRecordCount",
+        "varianceRatePercent"
+      ],
+      "properties": {
+        "reconciliationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "sourceRecordCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "targetRecordCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "varianceRatePercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "duplicateCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "missingRecordCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "materialVariance": {
+          "type": "boolean"
+        },
+        "ambiguousCorrection": {
+          "type": "boolean"
+        },
+        "certificationEvidenceComplete": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_reconciliation_for_certification",
+      "medium": "route_variances_to_data_steward_review",
+      "high": "hold_corrections_for_material_exception_review"
+    },
+    "adapters": [
+      "Databases",
+      "Data warehouses",
+      "Spreadsheets",
+      "Case store",
+      "Data quality tools"
+    ],
+    "path": "workflows/data-operations/enterprise-data-reconciliation-control",
+    "endpoint": "/webhook/enterprise/data-operations/enterprise-data-reconciliation-control",
+    "workflow": "workflows/data-operations/enterprise-data-reconciliation-control/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/data-operations/enterprise-data-reconciliation-control/examples/low-risk.json",
+      "highRisk": "workflows/data-operations/enterprise-data-reconciliation-control/examples/high-risk.json",
+      "invalid": "workflows/data-operations/enterprise-data-reconciliation-control/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "operations",
+    "slug": "meeting-to-action-review",
+    "name": "Review meeting decisions and actions",
+    "summary": "Checks extracted decisions, owners, due dates, approved context, and proposed follow-ups before any task, message, or system update.",
+    "outcome": "A reviewed action package recommendation that keeps external communication and system writes behind human approval.",
+    "owner": "Sales & Operations",
+    "metric": "Follow-through rate",
+    "roiModel": "meetings per month x action-review minutes saved x operations hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "meetingId",
+        "meetingEndedAt",
+        "actionCount",
+        "decisionCount"
+      ],
+      "properties": {
+        "meetingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "meetingEndedAt": {
+          "type": "string",
+          "format": "date-time",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "\\S"
+        },
+        "actionCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "decisionCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "externalFollowUpDrafted": {
+          "type": "boolean"
+        },
+        "crmUpdateProposed": {
+          "type": "boolean"
+        },
+        "ownerMissing": {
+          "type": "boolean"
+        },
+        "dueDateMissing": {
+          "type": "boolean"
+        },
+        "sensitiveContent": {
+          "type": "boolean"
+        },
+        "sourceContextApproved": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_action_package_for_review",
+      "medium": "route_draft_actions_to_owner_review",
+      "high": "hold_follow_up_for_human_approval"
+    },
+    "adapters": [
+      "Calendar",
+      "Meeting system",
+      "Document store",
+      "CRM",
+      "Ticketing"
+    ],
+    "path": "workflows/operations/meeting-to-action-review",
+    "endpoint": "/webhook/enterprise/operations/meeting-to-action-review",
+    "workflow": "workflows/operations/meeting-to-action-review/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/operations/meeting-to-action-review/examples/low-risk.json",
+      "highRisk": "workflows/operations/meeting-to-action-review/examples/high-risk.json",
+      "invalid": "workflows/operations/meeting-to-action-review/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "sales",
+    "slug": "research-to-crm-review",
+    "name": "Review source-backed research for CRM action",
+    "summary": "Evaluates entity resolution, citations, source freshness, unsupported claims, and proposed CRM or outreach actions.",
+    "outcome": "A cited research brief recommendation with unsupported claims and consequential actions routed to human review.",
+    "owner": "Revenue & Strategy",
+    "metric": "Signal-to-action conversion",
+    "roiModel": "research requests per month x research minutes saved x analyst hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "researchId",
+        "accountId",
+        "sourceCount",
+        "citationCoveragePercent"
+      ],
+      "properties": {
+        "researchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "sourceCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "citationCoveragePercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "unsupportedClaimCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "entityMatchConfirmed": {
+          "type": "boolean"
+        },
+        "sensitiveSignal": {
+          "type": "boolean"
+        },
+        "crmWriteProposed": {
+          "type": "boolean"
+        },
+        "outreachProposed": {
+          "type": "boolean"
+        },
+        "sourceFreshnessDays": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_cited_brief_for_review",
+      "medium": "route_research_gaps_to_analyst_review",
+      "high": "hold_crm_or_outreach_action_for_approval"
+    },
+    "adapters": [
+      "Research providers",
+      "CRM",
+      "Document store",
+      "Collaboration",
+      "Data enrichment"
+    ],
+    "path": "workflows/sales/research-to-crm-review",
+    "endpoint": "/webhook/enterprise/sales/research-to-crm-review",
+    "workflow": "workflows/sales/research-to-crm-review/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/sales/research-to-crm-review/examples/low-risk.json",
+      "highRisk": "workflows/sales/research-to-crm-review/examples/high-risk.json",
+      "invalid": "workflows/sales/research-to-crm-review/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "revenue-operations",
+    "slug": "closed-won-launch-readiness",
+    "name": "Review closed-won launch readiness",
+    "summary": "Checks order, scope, prerequisites, ownership, and provisioning exceptions before implementation launch activities are recommended.",
+    "outcome": "An explainable launch-readiness recommendation that keeps provisioning, entitlement changes, and scheduling human-controlled.",
+    "owner": "Revenue Operations",
+    "metric": "Time to kickoff",
+    "roiModel": "closed-won launches per month x handoff minutes saved x revenue operations hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "opportunityId",
+        "accountId",
+        "scopeConfirmed",
+        "prerequisiteCompletionPercent"
+      ],
+      "properties": {
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "scopeConfirmed": {
+          "type": "boolean"
+        },
+        "prerequisiteCompletionPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "orderValidated": {
+          "type": "boolean"
+        },
+        "complexScope": {
+          "type": "boolean"
+        },
+        "provisioningException": {
+          "type": "boolean"
+        },
+        "entitlementChangeProposed": {
+          "type": "boolean"
+        },
+        "kickoffScheduled": {
+          "type": "boolean"
+        },
+        "launchOwnerAssigned": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_launch_checklist_for_owner_review",
+      "medium": "route_launch_gaps_to_revenue_operations",
+      "high": "hold_provisioning_for_exception_approval"
+    },
+    "adapters": [
+      "CRM",
+      "Project system",
+      "Product APIs",
+      "Calendar",
+      "Document tools"
+    ],
+    "path": "workflows/revenue-operations/closed-won-launch-readiness",
+    "endpoint": "/webhook/enterprise/revenue-operations/closed-won-launch-readiness",
+    "workflow": "workflows/revenue-operations/closed-won-launch-readiness/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/revenue-operations/closed-won-launch-readiness/examples/low-risk.json",
+      "highRisk": "workflows/revenue-operations/closed-won-launch-readiness/examples/high-risk.json",
+      "invalid": "workflows/revenue-operations/closed-won-launch-readiness/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "incident-management",
+    "slug": "incident-rca-evidence-review",
+    "name": "Review incident RCA evidence",
+    "summary": "Checks incident artifacts, timeline coverage, redaction, root-cause support, remediation ownership, and publication readiness.",
+    "outcome": "A structured RCA evidence recommendation that reserves publication and closure for the incident or release owner.",
+    "owner": "Engineering & SRE",
+    "metric": "Evidence completeness",
+    "roiModel": "incidents per month x RCA drafting minutes saved x SRE hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
         "incidentId",
-        "site",
-        "category",
-        "description"
+        "incidentClosedAt",
+        "evidenceArtifactCount",
+        "timelineCoveragePercent"
       ],
       "properties": {
         "incidentId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
-        "site": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "category": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "description": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "injuryReported": {
-          "type": "boolean"
-        },
-        "immediateDanger": {
-          "type": "boolean"
-        },
-        "accessControlImpact": {
-          "type": "boolean"
-        },
-        "operationsDisrupted": {
-          "type": "boolean"
-        },
-        "peopleAffected": {
-          "type": "number",
-          "minimum": 0
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "route_standard_facilities_queue",
-      "medium": "dispatch_urgent_workplace_response",
-      "high": "activate_safety_and_security_response"
-    },
-    "adapters": [
-      "facilities management",
-      "physical security",
-      "Slack",
-      "Microsoft Teams"
-    ],
-    "path": "workflows/facilities/workplace-incident-routing",
-    "endpoint": "/webhook/enterprise/facilities/workplace-incident-routing",
-    "workflow": "workflows/facilities/workplace-incident-routing/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/facilities/workplace-incident-routing/examples/low-risk.json",
-      "highRisk": "workflows/facilities/workplace-incident-routing/examples/high-risk.json",
-      "invalid": "workflows/facilities/workplace-incident-routing/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "corporate-communications",
-    "slug": "external-communication-approval",
-    "name": "Approve external enterprise communications",
-    "summary": "Routes proposed external communications using financial, customer, security, legal, and executive-approval signals.",
-    "outcome": "A visible approval route that prevents high-risk messages from bypassing accountable reviewers.",
-    "owner": "Corporate Communications",
-    "metric": "Time from draft to approved external communication",
-    "roiModel": "external messages x coordination minutes saved x reviewer hourly cost / 60",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "requestId",
-        "audience",
-        "channel",
-        "messageSummary",
-        "owner"
-      ],
-      "properties": {
-        "requestId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "audience": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "channel": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "messageSummary": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "owner": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "materialFinancialInfo": {
-          "type": "boolean"
-        },
-        "customerImpact": {
-          "type": "boolean"
-        },
-        "securityIncident": {
-          "type": "boolean"
-        },
-        "legalReviewed": {
-          "type": "boolean"
-        },
-        "executiveApproved": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
-    },
-    "decisions": {
-      "low": "continue_standard_editorial_review",
-      "medium": "require_cross_functional_approval",
-      "high": "hold_for_executive_and_legal_approval"
-    },
-    "adapters": [
-      "content management",
-      "Slack",
-      "Microsoft Teams",
-      "approval tools"
-    ],
-    "path": "workflows/corporate-communications/external-communication-approval",
-    "endpoint": "/webhook/enterprise/corporate-communications/external-communication-approval",
-    "workflow": "workflows/corporate-communications/external-communication-approval/workflow.json",
-    "examples": {
-      "lowRisk": "workflows/corporate-communications/external-communication-approval/examples/low-risk.json",
-      "highRisk": "workflows/corporate-communications/external-communication-approval/examples/high-risk.json",
-      "invalid": "workflows/corporate-communications/external-communication-approval/examples/invalid.json"
-    }
-  },
-  {
-    "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "privacy",
-    "slug": "data-subject-request-triage",
-    "name": "Triage data subject requests",
-    "summary": "Prioritizes privacy requests using identity, deadline, sensitivity, third-party, and legal-hold signals.",
-    "outcome": "A deadline-aware route that keeps identity verification and legal constraints visible before fulfillment.",
-    "owner": "Privacy Operations",
-    "metric": "Data subject requests completed within policy deadline",
-    "roiModel": "annual privacy requests x handling hours saved x privacy operations hourly cost",
-    "inputSchema": {
-      "type": "object",
-      "required": [
-        "requestId",
-        "requestType",
-        "requesterRegion",
-        "receivedAt"
-      ],
-      "properties": {
-        "requestId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "requestType": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "requesterRegion": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "receivedAt": {
+        "incidentClosedAt": {
           "type": "string",
           "format": "date-time",
           "minLength": 1,
-          "maxLength": 64
+          "maxLength": 64,
+          "pattern": "\\S"
         },
-        "identityVerified": {
-          "type": "boolean"
-        },
-        "deadlineDays": {
+        "evidenceArtifactCount": {
           "type": "number",
           "minimum": 0
         },
-        "sensitiveData": {
+        "timelineCoveragePercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "sensitiveDataRedacted": {
           "type": "boolean"
         },
-        "thirdPartyData": {
+        "rootCauseSupported": {
           "type": "boolean"
         },
-        "legalHold": {
+        "remediationOwnersAssigned": {
+          "type": "boolean"
+        },
+        "publicationProposed": {
+          "type": "boolean"
+        },
+        "evidenceGapCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "releaseEvidenceIncluded": {
           "type": "boolean"
         }
       },
       "additionalProperties": true
     },
     "decisions": {
-      "low": "continue_standard_privacy_queue",
-      "medium": "assign_privacy_specialist_review",
-      "high": "hold_for_identity_or_legal_review"
+      "low": "recommend_rca_evidence_for_owner_review",
+      "medium": "route_evidence_gaps_to_incident_owner",
+      "high": "hold_rca_publication_for_approval"
     },
     "adapters": [
-      "privacy management",
-      "CRM",
-      "data catalog",
-      "ticketing",
-      "document storage"
+      "Collaboration",
+      "Observability",
+      "Work tracking",
+      "Source control",
+      "Knowledge base"
     ],
-    "path": "workflows/privacy/data-subject-request-triage",
-    "endpoint": "/webhook/enterprise/privacy/data-subject-request-triage",
-    "workflow": "workflows/privacy/data-subject-request-triage/workflow.json",
+    "path": "workflows/incident-management/incident-rca-evidence-review",
+    "endpoint": "/webhook/enterprise/incident-management/incident-rca-evidence-review",
+    "workflow": "workflows/incident-management/incident-rca-evidence-review/workflow.json",
     "examples": {
-      "lowRisk": "workflows/privacy/data-subject-request-triage/examples/low-risk.json",
-      "highRisk": "workflows/privacy/data-subject-request-triage/examples/high-risk.json",
-      "invalid": "workflows/privacy/data-subject-request-triage/examples/invalid.json"
+      "lowRisk": "workflows/incident-management/incident-rca-evidence-review/examples/low-risk.json",
+      "highRisk": "workflows/incident-management/incident-rca-evidence-review/examples/high-risk.json",
+      "invalid": "workflows/incident-management/incident-rca-evidence-review/examples/invalid.json"
     }
   },
   {
     "schemaVersion": "1.0",
-    "policyVersion": "1.0.4",
-    "department": "risk-and-compliance",
-    "slug": "ai-use-case-risk-intake",
-    "name": "Triage enterprise AI use cases",
-    "summary": "Classifies proposed AI use cases by data sensitivity, customer exposure, decision impact, regulatory scope, provider approval, and human oversight.",
-    "outcome": "A transparent intake decision that accelerates controlled pilots while holding consequential or regulated uses for accountable approval.",
-    "owner": "Enterprise Risk and AI Governance",
-    "metric": "Time from AI use-case submission to accountable decision",
-    "roiModel": "annual AI use cases x review coordination hours saved x loaded reviewer hourly cost",
+    "policyVersion": "1.0.7",
+    "department": "proposal-management",
+    "slug": "rfp-response-evidence-review",
+    "name": "Review RFP response evidence",
+    "summary": "Evaluates evidence coverage, citations, confidence, unsupported claims, sensitive answers, and expert-review readiness.",
+    "outcome": "A response-package recommendation that highlights gaps and keeps sensitive claims and document export behind expert approval.",
+    "owner": "Revenue Engineering",
+    "metric": "Unsupported-claim rate",
+    "roiModel": "questionnaires per month x response review minutes saved x revenue engineering hourly cost / 60",
     "inputSchema": {
       "type": "object",
       "required": [
-        "requestId",
-        "useCaseName",
-        "businessOwner",
-        "businessPurpose"
+        "questionnaireId",
+        "questionCount",
+        "evidenceCoveragePercent",
+        "citedAnswerCount"
       ],
       "properties": {
-        "requestId": {
+        "questionnaireId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
-        "useCaseName": {
+        "questionCount": {
+          "type": "number",
+          "minimum": 1
+        },
+        "evidenceCoveragePercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "citedAnswerCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unsupportedAnswerCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "sensitiveAnswerCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "domainExpertAssigned": {
+          "type": "boolean"
+        },
+        "exportProposed": {
+          "type": "boolean"
+        },
+        "evidenceApproved": {
+          "type": "boolean"
+        },
+        "confidenceScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_response_package_for_expert_review",
+      "medium": "route_evidence_gaps_to_domain_experts",
+      "high": "hold_sensitive_response_or_export_for_approval"
+    },
+    "adapters": [
+      "File processing",
+      "Knowledge base",
+      "Document generation",
+      "CRM",
+      "Review queue"
+    ],
+    "path": "workflows/proposal-management/rfp-response-evidence-review",
+    "endpoint": "/webhook/enterprise/proposal-management/rfp-response-evidence-review",
+    "workflow": "workflows/proposal-management/rfp-response-evidence-review/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/proposal-management/rfp-response-evidence-review/examples/low-risk.json",
+      "highRisk": "workflows/proposal-management/rfp-response-evidence-review/examples/high-risk.json",
+      "invalid": "workflows/proposal-management/rfp-response-evidence-review/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.8",
+    "department": "customer-support",
+    "slug": "support-escalation-command-center",
+    "name": "Review support escalation command-center readiness",
+    "summary": "Prioritizes high-severity escalation evidence, ownership, telemetry, stale actions, timelines, and external-update drafts.",
+    "outcome": "An explainable command-center recommendation that preserves human review for external communication and case closure.",
+    "owner": "Customer Support",
+    "metric": "Time to mobilize",
+    "roiModel": "high-severity escalations per month x mobilization minutes saved x support hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "escalationId",
+        "severity",
+        "customerImpactSummary",
+        "openActionCount"
+      ],
+      "properties": {
+        "escalationId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 500,
+          "pattern": "\\S"
         },
-        "businessOwner": {
+        "severity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        },
+        "customerImpactSummary": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 500
+          "maxLength": 5000,
+          "pattern": "\\S"
         },
-        "businessPurpose": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
+        "openActionCount": {
+          "type": "number",
+          "minimum": 0
         },
-        "handlesSensitiveData": {
+        "telemetryAttached": {
           "type": "boolean"
         },
-        "customerFacing": {
+        "staleActionCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "externalUpdateDrafted": {
           "type": "boolean"
         },
-        "consequentialDecision": {
+        "engineeringOwnerAssigned": {
           "type": "boolean"
         },
-        "regulatedProcess": {
+        "timelineSynchronized": {
           "type": "boolean"
         },
-        "approvedProvider": {
-          "type": "boolean"
-        },
-        "humanReviewPlanned": {
+        "closureProposed": {
           "type": "boolean"
         }
       },
       "additionalProperties": true
     },
     "decisions": {
-      "low": "approve_controlled_pilot",
-      "medium": "require_cross_functional_review",
-      "high": "hold_for_ai_governance_approval"
+      "low": "recommend_command_center_record_for_review",
+      "medium": "route_stale_or_incomplete_actions_to_owners",
+      "high": "hold_external_update_or_closure_for_approval"
     },
     "adapters": [
-      "GRC",
-      "AI inventory",
-      "model registry",
-      "data catalog",
-      "ServiceNow",
-      "Jira"
+      "Support platform",
+      "CRM",
+      "Collaboration",
+      "Engineering tracker",
+      "Telemetry"
     ],
-    "path": "workflows/risk-and-compliance/ai-use-case-risk-intake",
-    "endpoint": "/webhook/enterprise/risk-and-compliance/ai-use-case-risk-intake",
-    "workflow": "workflows/risk-and-compliance/ai-use-case-risk-intake/workflow.json",
+    "path": "workflows/customer-support/support-escalation-command-center",
+    "endpoint": "/webhook/enterprise/customer-support/support-escalation-command-center",
+    "workflow": "workflows/customer-support/support-escalation-command-center/workflow.json",
     "examples": {
-      "lowRisk": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/low-risk.json",
-      "highRisk": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/high-risk.json",
-      "invalid": "workflows/risk-and-compliance/ai-use-case-risk-intake/examples/invalid.json"
+      "lowRisk": "workflows/customer-support/support-escalation-command-center/examples/low-risk.json",
+      "highRisk": "workflows/customer-support/support-escalation-command-center/examples/high-risk.json",
+      "invalid": "workflows/customer-support/support-escalation-command-center/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "people-operations",
+    "slug": "people-operations-case-routing",
+    "name": "Route people operations cases for review",
+    "summary": "Evaluates identity, policy, sensitivity, approval, payroll, workplace, and completion-evidence signals for people cases.",
+    "outcome": "A privacy-aware routing recommendation that leaves employee-impacting decisions and system changes with HR or the accountable manager.",
+    "owner": "People Operations",
+    "metric": "Case cycle time",
+    "roiModel": "people cases per month x routing minutes saved x people operations hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "caseId",
+        "caseType",
+        "requesterVerified",
+        "policyCheckComplete"
+      ],
+      "properties": {
+        "caseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "caseType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "requesterVerified": {
+          "type": "boolean"
+        },
+        "policyCheckComplete": {
+          "type": "boolean"
+        },
+        "sensitiveCase": {
+          "type": "boolean"
+        },
+        "managerApprovalRequired": {
+          "type": "boolean"
+        },
+        "hrApprovalRequired": {
+          "type": "boolean"
+        },
+        "payrollImpact": {
+          "type": "boolean"
+        },
+        "workplaceImpact": {
+          "type": "boolean"
+        },
+        "completionEvidenceComplete": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_standard_people_case_review",
+      "medium": "route_case_to_manager_or_hr_review",
+      "high": "hold_employee_impacting_action_for_hr_approval"
+    },
+    "adapters": [
+      "HRIS",
+      "Identity",
+      "Payroll",
+      "Workplace service systems",
+      "Forms"
+    ],
+    "path": "workflows/people-operations/people-operations-case-routing",
+    "endpoint": "/webhook/enterprise/people-operations/people-operations-case-routing",
+    "workflow": "workflows/people-operations/people-operations-case-routing/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/people-operations/people-operations-case-routing/examples/low-risk.json",
+      "highRisk": "workflows/people-operations/people-operations-case-routing/examples/high-risk.json",
+      "invalid": "workflows/people-operations/people-operations-case-routing/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "customer-success",
+    "slug": "customer-health-action-review",
+    "name": "Review customer health actions",
+    "summary": "Evaluates account signals, health evidence, ownership, billing and support risk, outreach, and commercial-action proposals.",
+    "outcome": "An explainable play recommendation that keeps high-impact outreach and commercial actions with the customer owner.",
+    "owner": "Customer Success",
+    "metric": "Risk coverage",
+    "roiModel": "managed accounts x health-review minutes saved per month x customer success hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "accountId",
+        "lifecycleStage",
+        "signalCount",
+        "healthEvidenceComplete"
+      ],
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "lifecycleStage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "signalCount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "healthEvidenceComplete": {
+          "type": "boolean"
+        },
+        "highImpactOutreachProposed": {
+          "type": "boolean"
+        },
+        "commercialActionProposed": {
+          "type": "boolean"
+        },
+        "billingRisk": {
+          "type": "boolean"
+        },
+        "supportEscalationOpen": {
+          "type": "boolean"
+        },
+        "ownerAssigned": {
+          "type": "boolean"
+        },
+        "outcomeTrackingConfigured": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_customer_play_for_owner_review",
+      "medium": "route_health_risks_to_customer_owner",
+      "high": "hold_outreach_or_commercial_action_for_approval"
+    },
+    "adapters": [
+      "Product usage",
+      "CRM",
+      "Support",
+      "Billing",
+      "Communication",
+      "Data warehouse"
+    ],
+    "path": "workflows/customer-success/customer-health-action-review",
+    "endpoint": "/webhook/enterprise/customer-success/customer-health-action-review",
+    "workflow": "workflows/customer-success/customer-health-action-review/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/customer-success/customer-health-action-review/examples/low-risk.json",
+      "highRisk": "workflows/customer-success/customer-health-action-review/examples/high-risk.json",
+      "invalid": "workflows/customer-success/customer-health-action-review/examples/invalid.json"
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "policyVersion": "1.0.7",
+    "department": "field-operations",
+    "slug": "field-service-completion-review",
+    "name": "Review field service completion evidence",
+    "summary": "Checks evidence, completion criteria, parts and warranty exceptions, and proposed financial, scheduling, or customer actions after field work.",
+    "outcome": "A completion recommendation and exception record that reserves financial, scheduling, customer, and closure actions for human review.",
+    "owner": "Field Operations",
+    "metric": "Documentation completeness",
+    "roiModel": "field visits per month x completion-review minutes saved x field operations hourly cost / 60",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "serviceJobId",
+        "visitCompletedAt",
+        "evidenceComplete",
+        "completionChecklistPercent"
+      ],
+      "properties": {
+        "serviceJobId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "visitCompletedAt": {
+          "type": "string",
+          "format": "date-time",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "\\S"
+        },
+        "evidenceComplete": {
+          "type": "boolean"
+        },
+        "completionChecklistPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "paymentReleaseProposed": {
+          "type": "boolean"
+        },
+        "customerMessageDrafted": {
+          "type": "boolean"
+        },
+        "rescheduleProposed": {
+          "type": "boolean"
+        },
+        "partsException": {
+          "type": "boolean"
+        },
+        "warrantyException": {
+          "type": "boolean"
+        },
+        "humanResolutionRequired": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisions": {
+      "low": "recommend_service_completion_for_owner_review",
+      "medium": "route_service_exceptions_to_field_operations",
+      "high": "hold_financial_customer_or_closure_action_for_approval"
+    },
+    "adapters": [
+      "Field-service system",
+      "Accounting",
+      "Documents",
+      "Inventory and assets",
+      "Messaging"
+    ],
+    "path": "workflows/field-operations/field-service-completion-review",
+    "endpoint": "/webhook/enterprise/field-operations/field-service-completion-review",
+    "workflow": "workflows/field-operations/field-service-completion-review/workflow.json",
+    "examples": {
+      "lowRisk": "workflows/field-operations/field-service-completion-review/examples/low-risk.json",
+      "highRisk": "workflows/field-operations/field-service-completion-review/examples/high-risk.json",
+      "invalid": "workflows/field-operations/field-service-completion-review/examples/invalid.json"
     }
   }
 ]

@@ -11,6 +11,10 @@ human approval points, risk level, and measurable value.
 
 Search the existing catalog first with `npm run catalog -- search <terms>` so proposals extend rather than duplicate an existing policy service.
 
+The public catalog is intentionally limited by the [open-core model](docs/open-core-model.md). A proposal must address all weighted criteria in [`portfolio.json`](portfolio.json): community utility, vendor portability, educational coverage, safe starter behavior, low moat leakage, and maintenance fit. Acceptance is selective; a valid enterprise use case is not automatically a public-source commitment.
+
+Do not implement a new workflow package until its public-portfolio inclusion has been accepted. Contributions that deepen one of the sixteen starters or improve shared safety, testing, documentation, and adoption tooling do not require expanding the allocation.
+
 ## Quality bar
 
 Every workflow must:
@@ -22,6 +26,7 @@ Every workflow must:
 4. Use descriptive workflow and node names.
 5. Explain where a human must approve consequential actions.
 6. Pass `npm run check`.
+7. Build and test without any private repository, service, package, or product artifact.
 
 ## Source of truth
 
@@ -44,6 +49,8 @@ For a policy change:
 10. Add the policy to `policy-lifecycle.json` as a draft with an honest introduction date and owner-approval deadline; do not claim approval based on code review or passing tests.
 
 See [policy authoring](docs/policy-authoring.md) for the scoring and compatibility contract.
+
+Changing the public workflow identities or the 25/75 allocation is a strategy change, not an ordinary catalog edit. It requires an intentional update to `portfolio.json`, its schema and policy tests, documentation and migration notes, plus a versioned release.
 
 For adopter or deployment evidence, run the workflow against a sanitized JSON
 array or JSONL sample with `npm run conformance -- <workflow-slug> <input>`.

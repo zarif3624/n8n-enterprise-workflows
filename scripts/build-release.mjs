@@ -131,7 +131,7 @@ export async function buildRelease() {
   const rootFiles = [
     "CHANGELOG.md", "CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "LICENSE", "README.md", "SECURITY.md",
     "artifact-manifest.json", "catalog.json", "contract-registry.json", "openapi.json", "package-lock.json", "package.json",
-    "policy-lifecycle.json", "policy-lock.json", "policy-snapshot.json", "runtime-compatibility.json"
+    "policy-lifecycle.json", "policy-lock.json", "policy-snapshot.json", "portfolio.json", "runtime-compatibility.json"
   ];
   const schemaFiles = await filesUnder("schemas");
   const sourceFiles = [

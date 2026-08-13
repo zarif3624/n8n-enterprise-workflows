@@ -3,10 +3,28 @@ import { readFile } from "node:fs/promises";
 import { posix, join } from "node:path";
 import test from "node:test";
 import { buildRelease } from "../scripts/build-release.mjs";
+import { scanPublicBoundaryFile } from "../scripts/public-boundary-scan.mjs";
 import { readTarGzip } from "../scripts/release-archive.mjs";
 import { schemaContractIssues } from "../scripts/schema-contract-check.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
+const expectedDepartments = [
+  "artificial-intelligence",
+  "customer-success",
+  "customer-support",
+  "data-operations",
+  "engineering",
+  "field-operations",
+  "finance",
+  "incident-management",
+  "information-technology",
+  "operations",
+  "people-operations",
+  "proposal-management",
+  "revenue-operations",
+  "sales",
+  "security"
+];
 
 function bundleFiles(archive) {
   const entries = readTarGzip(archive);
@@ -26,6 +44,14 @@ function assertInternalMarkdownLinks(files) {
   }
 }
 
+function assertNoPublicBoundaryLeaks(files, archiveName) {
+  assert.deepEqual(
+    [...files].flatMap(([path, content]) => scanPublicBoundaryFile(path, content)),
+    [],
+    `${archiveName}: archive must not contain internal workspace or detailed commercialization planning`
+  );
+}
+
 test("full and department release bundles carry lifecycle and compatibility contracts", async () => {
   const [bundleSchema, releaseSchema] = await Promise.all([
     readFile(join(root, "schemas", "bundle-manifest.schema.json"), "utf8").then(JSON.parse),
@@ -36,16 +62,27 @@ test("full and department release bundles carry lifecycle and compatibility cont
   const full = manifest.archives.find((entry) => entry.scope === "full");
   const departments = manifest.archives.filter((entry) => entry.scope === "department");
   assert.ok(full);
-  assert.equal(departments.length, 16);
+  assert.equal(manifest.archiveCount, 16);
+  assert.equal(manifest.archives.length, 16);
+  assert.equal(full.workflowCount, 16);
+  assert.equal(departments.length, 15);
+  assert.deepEqual(departments.map((entry) => entry.department).sort(), expectedDepartments);
+  const boundaryScannedArchives = [];
 
   const fullFiles = bundleFiles(await readFile(join(root, "dist", full.file)));
   assert.deepEqual(schemaContractIssues(JSON.parse(fullFiles.get("BUNDLE.json").toString("utf8")), bundleSchema, bundleSchema), []);
   assert.ok(fullFiles.has("policy-lifecycle.json"));
+  assert.ok(fullFiles.has("portfolio.json"));
   assert.ok(fullFiles.has("runtime-compatibility.json"));
   assert.ok(fullFiles.has("schemas/policy-lifecycle.schema.json"));
+  assert.ok(fullFiles.has("schemas/portfolio.schema.json"));
+  assertNoPublicBoundaryLeaks(fullFiles, full.file);
+  boundaryScannedArchives.push(full.file);
 
   for (const archive of departments) {
     const files = bundleFiles(await readFile(join(root, "dist", archive.file)));
+    assertNoPublicBoundaryLeaks(files, archive.file);
+    boundaryScannedArchives.push(archive.file);
     assert.deepEqual(schemaContractIssues(JSON.parse(files.get("BUNDLE.json").toString("utf8")), bundleSchema, bundleSchema), []);
     const lifecycle = JSON.parse(files.get("policy-lifecycle.json"));
     const catalog = JSON.parse(files.get("catalog.json"));
@@ -70,4 +107,5 @@ test("full and department release bundles carry lifecycle and compatibility cont
     }
     assertInternalMarkdownLinks(files);
   }
+  assert.equal(boundaryScannedArchives.length, manifest.archives.length, "public-boundary scan must cover every built archive");
 });

@@ -1,0 +1,12 @@
+{
+  "researchId": "researchId-001",
+  "accountId": "accountId-001",
+  "sourceCount": 1,
+  "citationCoveragePercent": 89,
+  "unsupportedClaimCount": 1,
+  "entityMatchConfirmed": false,
+  "sensitiveSignal": true,
+  "crmWriteProposed": true,
+  "outreachProposed": true,
+  "sourceFreshnessDays": 31
+}

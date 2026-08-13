@@ -2,6 +2,49 @@
 
 All notable changes to this project are documented here. The project follows Semantic Versioning for repository releases; individual decision policies carry their own policy version in responses and catalog metadata.
 
+## Unreleased
+
+No changes yet.
+
+## 0.4.0 - 2026-08-12
+
+### Added
+
+- Twelve complete inactive, credential-free starter workflows: agent evaluation release gate, multi-model routing fallback, enterprise data reconciliation control, meeting-to-action review, research to CRM review, closed-won launch readiness, incident RCA evidence review, RFP response evidence review, support escalation command center, people operations case routing, customer health action review, and field service completion review.
+- Typed contracts, normal/review/rejection fixtures, deterministic decision policies, OpenAPI operations, lifecycle entries, field mappings, adoption guidance, ROI models, and security considerations for every new starter.
+- A trusted-base public-continuity command that rejects removal of a previously public workflow unless maintainers provide a separately reviewed approval artifact.
+
+### Changed
+
+- Expanded the evidence-backed portfolio contract to 64 normalized sellable families: 31 evidence-derived category slots and 33 newer named concepts, partitioned into 16 public and 48 commercial-reserve families without publishing the reserved backlog.
+- Expanded the self-contained public collection from four to sixteen workflows across fifteen departments. Public lineage is four evidence-derived families and twelve newer concepts; reserved lineage is 27 evidence-derived and 21 newer concepts.
+- Expanded release output to sixteen reproducible archives: one complete source archive and one archive for each of the fifteen represented public departments.
+- Hardened generated workflow documentation so enum-constrained input contracts render their supported values in README tables.
+
+### Security
+
+- Prevented a contributor from self-authorizing deletion of a published public workflow by modifying the candidate contract and its authorization data in the same change.
+- Sanitized tracked design records and added tracked-tree plus full-source-archive boundary scanning so internal workspace locators and detailed commercialization material cannot enter public releases.
+
+## 0.3.0 - 2026-08-12
+
+### Added
+
+- A machine-readable, schema-validated `portfolio.json` contract that enforces the exact 4-of-16 open-source and 12-of-16 commercial-reserve allocation.
+- A documented open-core model with weighted public selection criteria, a no-private-dependency guarantee, contribution routing, and an explicit historical MIT licensing notice.
+- A portfolio validation CLI and CI gate that bind the allocation to the source definitions, generated catalog, workflow tree, and a code-pinned one-time removal authorization.
+
+### Changed
+
+- Reframed the repository as a focused four-workflow community edition across finance, IT, security, and engineering. The complete contract, policy, lifecycle, conformance, compatibility, and release toolchain remains public and self-contained.
+- Reduced the generated inventory to 43 integrity-checked artifacts, four policy lifecycles, four OpenAPI operations, and five reproducible release archives.
+- Replaced the public workflow-growth quota and vendor-adapter roadmap with quality-driven improvements to the four starters and shared safety/adoption tooling.
+- Users who need a removed template can remain on `0.2.1` or fork its MIT-licensed history. This boundary does not revoke prior rights or make historical Git objects secret.
+
+### Removed
+
+- Twelve never-approved draft workflow implementations from the current public catalog: AI use-case risk intake, employee access request triage, enterprise lead routing, campaign lead compliance gate, customer risk escalation, contract intake routing, vendor risk intake, major incident stakeholder brief, data access request triage, workplace incident routing, external communication approval, and data subject request triage.
+
 ## 0.2.1
 
 ### Added

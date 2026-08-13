@@ -13,6 +13,7 @@ const commands = [
   "policy-lifecycle-cli.mjs",
   "readiness-report-cli.mjs",
   "verify-bundle-cli.mjs",
+  "validate-portfolio.mjs",
   "evaluate-policy.mjs"
 ];
 

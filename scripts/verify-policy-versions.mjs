@@ -24,7 +24,7 @@ try {
   process.exit(0);
 }
 
-const current = JSON.parse(await readFile(join(root, "policy-lock.json"), "utf8"));
+const current = await readFile(join(root, "policy-lock.json"), "utf8").then(JSON.parse);
 const issues = policyLockIssues(previous, current);
 
 if (issues.length) {

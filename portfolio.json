@@ -1,0 +1,70 @@
+{
+  "portfolioVersion": 2,
+  "model": "open-core",
+  "allocation": {
+    "evaluatedWorkflowFamilies": 64,
+    "openSource": 16,
+    "commercialReserve": 48,
+    "openSourcePercent": 25,
+    "commercialReservePercent": 75
+  },
+  "sourceLineage": {
+    "evidenceDerivedFamilies": 31,
+    "newerNamedConcepts": 33
+  },
+  "publicLineage": {
+    "evidenceDerivedFamilies": 4,
+    "newerNamedConcepts": 12
+  },
+  "privateLineage": {
+    "evidenceDerivedFamilies": 27,
+    "newerNamedConcepts": 21
+  },
+  "selectionCriteria": [
+    { "id": "community-utility", "weight": 25, "description": "Solves a common problem for a broad set of enterprise automation teams." },
+    { "id": "vendor-portability", "weight": 20, "description": "Remains useful before an adopter selects specific systems of record or paid adapters." },
+    { "id": "educational-coverage", "weight": 15, "description": "Demonstrates a distinct policy, safety, contract, testing, or release capability." },
+    { "id": "safe-starter-surface", "weight": 15, "description": "Provides value while inactive, credential-free, decision-only, and human-reviewed." },
+    { "id": "low-moat-leakage", "weight": 15, "description": "Teaches the framework without publishing the hardest product integration or operating logic." },
+    { "id": "maintenance-fit", "weight": 10, "description": "Can be kept correct, portable, documented, and supported by a focused community project." }
+  ],
+  "publicWorkflows": [
+    { "department": "engineering", "slug": "production-change-risk-gate", "rationale": "Portable production safety control.", "learningValue": "Policy versioning and reviewable deployment decisions." },
+    { "department": "finance", "slug": "invoice-exception-triage", "rationale": "Clear, portable operations triage.", "learningValue": "A complete adoption example." },
+    { "department": "information-technology", "slug": "service-desk-priority-routing", "rationale": "Vendor-neutral incident prioritization.", "learningValue": "Explainable routing bands." },
+    { "department": "security", "slug": "phishing-report-triage", "rationale": "Safe analyst-led security triage.", "learningValue": "Human approval before consequential action." },
+    { "department": "artificial-intelligence", "slug": "agent-evaluation-release-gate", "rationale": "Safe AI release review.", "learningValue": "Evidence-based release gates." },
+    { "department": "artificial-intelligence", "slug": "multi-model-routing-fallback", "rationale": "Vendor-neutral model routing review.", "learningValue": "Fallback choices with human oversight." },
+    { "department": "data-operations", "slug": "enterprise-data-reconciliation-control", "rationale": "Portable reconciliation control.", "learningValue": "Exception evidence and review." },
+    { "department": "operations", "slug": "meeting-to-action-review", "rationale": "Reviewable action extraction.", "learningValue": "Human-reviewed operational commitments." },
+    { "department": "sales", "slug": "research-to-crm-review", "rationale": "Safe research handoff.", "learningValue": "Evidence before CRM updates." },
+    { "department": "revenue-operations", "slug": "closed-won-launch-readiness", "rationale": "Cross-functional launch readiness.", "learningValue": "Explicit handoff criteria." },
+    { "department": "incident-management", "slug": "incident-rca-evidence-review", "rationale": "Structured incident learning.", "learningValue": "Evidence review before RCA closure." },
+    { "department": "proposal-management", "slug": "rfp-response-evidence-review", "rationale": "Reviewable proposal evidence.", "learningValue": "Human validation for response claims." },
+    { "department": "customer-support", "slug": "support-escalation-command-center", "rationale": "Safe support escalation triage.", "learningValue": "Explainable command-center prioritization." },
+    { "department": "people-operations", "slug": "people-operations-case-routing", "rationale": "Privacy-aware case routing.", "learningValue": "Human authority for employee cases." },
+    { "department": "customer-success", "slug": "customer-health-action-review", "rationale": "Reviewable customer-health actions.", "learningValue": "Decision support without automatic outreach." },
+    { "department": "field-operations", "slug": "field-service-completion-review", "rationale": "Reviewable service completion.", "learningValue": "Evidence checks before closure." }
+  ],
+  "historicalRemovals": [
+    { "department": "risk-and-compliance", "slug": "ai-use-case-risk-intake", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "marketing", "slug": "campaign-lead-compliance-gate", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "legal", "slug": "contract-intake-routing", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "customer-success", "slug": "customer-risk-escalation", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "data-and-analytics", "slug": "data-access-request-triage", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "privacy", "slug": "data-subject-request-triage", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "human-resources", "slug": "employee-access-request-triage", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "sales", "slug": "enterprise-lead-routing", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "corporate-communications", "slug": "external-communication-approval", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "operations", "slug": "major-incident-stakeholder-brief", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "procurement", "slug": "vendor-risk-intake", "status": "never-approved-draft", "removedIn": "0.3.0" },
+    { "department": "facilities", "slug": "workplace-incident-routing", "status": "never-approved-draft", "removedIn": "0.3.0" }
+  ],
+  "communitySurface": ["Importable inactive workflow templates", "Typed contracts and representative fixtures", "Deterministic policy engine and governance tools", "Conformance, drift, readiness, and release verification", "Vendor-neutral adoption and security documentation"],
+  "productBoundary": {
+    "reservedWorkflowFamilies": 48,
+    "implementationLocation": "outside-public-repository",
+    "includes": ["Maintained production adapters", "Multi-step resumable orchestration", "Role-aware approvals and exception operation", "Managed deployment, observability, and evidence retention", "Product control plane, upgrades, support, and operating benchmarks"]
+  },
+  "historicalNotice": "Versions published before this boundary remain available under their existing MIT license. Removing implementations from the current release does not revoke prior rights or make historical Git objects secret."
+}

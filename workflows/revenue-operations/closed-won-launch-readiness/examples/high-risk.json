@@ -1,0 +1,11 @@
+{
+  "opportunityId": "opportunityId-001",
+  "accountId": "accountId-001",
+  "scopeConfirmed": false,
+  "prerequisiteCompletionPercent": 99,
+  "orderValidated": false,
+  "complexScope": true,
+  "provisioningException": true,
+  "entitlementChangeProposed": true,
+  "launchOwnerAssigned": false
+}

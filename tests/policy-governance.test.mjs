@@ -77,6 +77,7 @@ test("policy removal and engine-version regression fail closed", () => {
   const before = lockFor();
   const removed = lockFor(workflows.slice(1));
   assert.ok(policyLockIssues(before, removed).some((issue) => issue.includes("policy was removed")));
+  assert.deepEqual(policyLockIssues(before, removed, { allowedRemovals: [workflows[0].slug] }), []);
 
   const newerEngine = lockFor(workflows, engineSource, "2.0.0");
   assert.ok(policyLockIssues(newerEngine, before).some((issue) => issue.includes("policyEngineVersion regressed")));

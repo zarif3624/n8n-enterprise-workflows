@@ -17,7 +17,7 @@ npm run test:adversarial
 - non-JSON direct-library roots such as symbols, bigints, functions, and dates;
 - source records with missing mappings, wrong mapped types, and private marker fields.
 
-Across all 16 policies, the suite asserts that evaluation:
+Across all sixteen public policies, the suite asserts that evaluation:
 
 - never crashes for an input in the corpus;
 - returns identical output for identical policy, input, time, and execution identity;

@@ -12,7 +12,7 @@ A defensible routing decision with urgency, ownership guidance, and escalation r
 
 - **Primary owner:** IT Service Management
 - **Primary metric:** Mean time to assignment
-- **Policy version:** `1.0.4`
+- **Policy version:** `1.0.7`
 - **ROI starting point:** `incidents per month x minutes faster assignment x outage cost per minute`
 
 ## Five-minute adoption
@@ -37,9 +37,9 @@ The request body must be a JSON object. Unknown fields are accepted for caller c
 
 | Field | Required | Contract |
 | --- | --- | --- |
-| `ticketId` | Yes | string |
-| `category` | Yes | string |
-| `summary` | Yes | string |
+| `ticketId` | Yes | string, pattern \S |
+| `category` | Yes | string, pattern \S |
+| `summary` | Yes | string, pattern \S |
 | `affectedUsers` | Yes | number, min 0 |
 | `serviceDown` | No | boolean |
 | `securityImpact` | No | boolean |
@@ -70,7 +70,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "service-desk-priority-routing",
-  "policyVersion": "1.0.4",
+  "policyVersion": "1.0.7",
   "decision": "route_standard_queue",
   "priorityBand": "low",
   "score": 0,

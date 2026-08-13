@@ -1,0 +1,11 @@
+{
+  "routingRequestId": "routingRequestId-001",
+  "taskType": "taskType-001",
+  "approvedModelAvailable": true,
+  "expectedQualityScore": 80,
+  "policyException": false,
+  "primaryProviderHealthy": true,
+  "costBudgetExceeded": false,
+  "latencyBudgetExceeded": false,
+  "fallbackValidated": true
+}

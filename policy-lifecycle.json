@@ -4,85 +4,58 @@
   "defaultDraftApprovalDays": 30,
   "policies": [
     {
-      "slug": "ai-use-case-risk-intake",
-      "owner": "Enterprise Risk and AI Governance",
+      "slug": "agent-evaluation-release-gate",
+      "owner": "AI Platform & SRE",
       "status": "draft",
-      "introducedOn": "2026-08-10",
-      "reviewDueOn": "2026-09-09",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:4b6c8e0fc469ee6b2b2d89815e97b63a7c7555545a14f57646dabc65c0c46356"
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:bef8e8e2375de1c4c19d1750207e801b3cb1eb5ba5bdc2b7aeb1c92cb119fb1a"
     },
     {
-      "slug": "campaign-lead-compliance-gate",
-      "owner": "Marketing Operations",
-      "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:541b099f3ef285dbe060625d4a05b0bfd79eee090cbc4d82741f01cc94034822"
-    },
-    {
-      "slug": "contract-intake-routing",
-      "owner": "Legal Operations",
-      "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:10aa36610499497f0a32bbad3c29e3b77ff22b46c206dfdcd44d7966de896b13"
-    },
-    {
-      "slug": "customer-risk-escalation",
-      "owner": "Customer Success Operations",
-      "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:eae76dfee6af7b72cb973defaad623403d02beba0907b8464865478a4bd7734f"
-    },
-    {
-      "slug": "data-access-request-triage",
-      "owner": "Data Governance",
-      "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:6567ff8f1d1d84ef94367228a98157b11ef765bb53f1e6edd22bd64cd5de7e91"
-    },
-    {
-      "slug": "data-subject-request-triage",
-      "owner": "Privacy Operations",
-      "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:a87f23a022557aa59256bb5e5ffc695be89f5dcaa43c833071d4419a1d673404"
-    },
-    {
-      "slug": "employee-access-request-triage",
-      "owner": "People Operations and Identity Management",
-      "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:8a69fa582f98fff6c53c2191389be4f5ef05ef816dd3b6979c877aef9ba17818"
-    },
-    {
-      "slug": "enterprise-lead-routing",
+      "slug": "closed-won-launch-readiness",
       "owner": "Revenue Operations",
       "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:aaba8cbcaa4e27e90d32192197825bc1f80418ced47072e2ccaf72685952864d"
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:3278759b975735f0b90dcfa7bcf989256e678a88b85b3553f325a116d786d2b6"
     },
     {
-      "slug": "external-communication-approval",
-      "owner": "Corporate Communications",
+      "slug": "customer-health-action-review",
+      "owner": "Customer Success",
       "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:da470f635422abfa062d3496966070621413fbc7344f329e29bbc3881bc0300b"
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:27e8bbcdb786c3e60970a99f79c0598737ddd48c4820d49312f6caa3383f2c1c"
+    },
+    {
+      "slug": "enterprise-data-reconciliation-control",
+      "owner": "Data & Analytics",
+      "status": "draft",
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:b01c83def479dfff7b3b220b8c93a5e7855662f07443506f21626f10c4e21430"
+    },
+    {
+      "slug": "field-service-completion-review",
+      "owner": "Field Operations",
+      "status": "draft",
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:455936e45b08e011cdee5bafc1833c2b8de9fb9c94225605d6cbbe0820391ae2"
+    },
+    {
+      "slug": "incident-rca-evidence-review",
+      "owner": "Engineering & SRE",
+      "status": "draft",
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:66e1cc13956652247863a3d0cc7e9c8b23cb63d9be6590ddee22559837734cc8"
     },
     {
       "slug": "invoice-exception-triage",
@@ -90,17 +63,35 @@
       "status": "draft",
       "introducedOn": "2026-08-08",
       "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:bf44281b1046fc732589a0d936e04ff1023ae938d68edfe2ffaca42faa4af5c2"
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:c95b79f0c52df43dc91bbdc873fd5f6b5146e6b0b552c7a3f10a99913eb26924"
     },
     {
-      "slug": "major-incident-stakeholder-brief",
-      "owner": "Business Operations and Incident Command",
+      "slug": "meeting-to-action-review",
+      "owner": "Sales & Operations",
       "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:ec22e5a998af6868fabab9842d037db7c81e53123267a21f3e08ac38965be6b5"
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:57b73a5472c6f6dc40523585f243a5abf232026008af4c250e343a055ce2b5ff"
+    },
+    {
+      "slug": "multi-model-routing-fallback",
+      "owner": "AI Platform Engineering",
+      "status": "draft",
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:66c1e1fed19b345f7126800e0c677de1d2810dee8bae801a79b2b5f3fe37f97f"
+    },
+    {
+      "slug": "people-operations-case-routing",
+      "owner": "People Operations",
+      "status": "draft",
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:753aa1d11fff493c04b6a27576b39d0a9e45b13687914413607f63bff40d4529"
     },
     {
       "slug": "phishing-report-triage",
@@ -108,8 +99,8 @@
       "status": "draft",
       "introducedOn": "2026-08-08",
       "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:34f28d9eb4a5a84e9cc387e49c22c695d57065e966872280cab19654b329666e"
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:c36f120415e4101a9271a7afaeda25a0628623c77882c5191702f32eb294e31a"
     },
     {
       "slug": "production-change-risk-gate",
@@ -117,8 +108,26 @@
       "status": "draft",
       "introducedOn": "2026-08-08",
       "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:56322898d103d640ed81377f1f5bd75882169f0e2b517bcd89f4d90537da834b"
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:65f29d5935c2ae68f66ba1674540e9acfc222b026fe851d7d90a00be0de2c1b0"
+    },
+    {
+      "slug": "research-to-crm-review",
+      "owner": "Revenue & Strategy",
+      "status": "draft",
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:8b0f38356de100a46894ad350c465a403699cac6d99b6b87133d03e1b8bb9058"
+    },
+    {
+      "slug": "rfp-response-evidence-review",
+      "owner": "Revenue Engineering",
+      "status": "draft",
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:b456da142738ed2d32c9314990f55c51ffbc95771999290d3842eb00a5e6604d"
     },
     {
       "slug": "service-desk-priority-routing",
@@ -126,26 +135,17 @@
       "status": "draft",
       "introducedOn": "2026-08-08",
       "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:43a4c67f460ab1ed943729624295264f8ee49c3d2fbfc2229146700397656685"
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:d4bef95afeacecf153a6017b64b1f1d71880dfc76098d15764c6b50ed9e2209b"
     },
     {
-      "slug": "vendor-risk-intake",
-      "owner": "Procurement Operations",
+      "slug": "support-escalation-command-center",
+      "owner": "Customer Support",
       "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:7ab1be1b0add1f4a2d3616787338e588ec9b7b2ddf956133e5676951764e2e66"
-    },
-    {
-      "slug": "workplace-incident-routing",
-      "owner": "Workplace Operations",
-      "status": "draft",
-      "introducedOn": "2026-08-08",
-      "reviewDueOn": "2026-09-07",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:2421aadf64ce645d048164ba88c5fc165524b0285c7b6fec9704a176216dbdd6"
+      "introducedOn": "2026-08-12",
+      "reviewDueOn": "2026-09-11",
+      "policyVersion": "1.0.8",
+      "fingerprint": "sha256:9194c7db9751b10a971234bf20160a011c0fadd84c3e1a85ed603d5e4c895b64"
     }
   ]
 }

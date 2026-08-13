@@ -1,3 +1,5 @@
+import { isRfc3339DateTime } from "./policy-engine.mjs";
+
 function typeMatches(value, type) {
   if (type === "null") return value === null;
   if (type === "array") return Array.isArray(value);
@@ -56,7 +58,7 @@ export function schemaContractIssues(value, schema, rootSchema = schema, path = 
     if (schema.maxLength !== undefined && value.length > schema.maxLength) issues.push(`${path}: too long`);
     if (schema.pattern && !(new RegExp(schema.pattern)).test(value)) issues.push(`${path}: pattern mismatch`);
     if (schema.format === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) issues.push(`${path}: invalid email`);
-    if (schema.format === "date-time" && Number.isNaN(Date.parse(value))) issues.push(`${path}: invalid date-time`);
+    if (schema.format === "date-time" && !isRfc3339DateTime(value)) issues.push(`${path}: invalid date-time`);
   }
   if (typeof value === "number") {
     if (schema.minimum !== undefined && value < schema.minimum) issues.push(`${path}: below minimum`);

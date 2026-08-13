@@ -91,9 +91,10 @@ export function compareSemanticVersions(left, right) {
   return 0;
 }
 
-export function policyLockIssues(previous, current) {
+export function policyLockIssues(previous, current, { allowedRemovals = [] } = {}) {
   const issues = [];
   if (!previous || !current) return issues;
+  const allowedRemovalSlugs = new Set(allowedRemovals);
 
   if (previous.lockVersion !== current.lockVersion) {
     issues.push(`policy lock format changed from ${previous.lockVersion} to ${current.lockVersion}`);
@@ -123,7 +124,7 @@ export function policyLockIssues(previous, current) {
   const previousBySlug = new Map((previous.policies ?? []).map((entry) => [entry.slug, entry]));
   const currentBySlug = new Map((current.policies ?? []).map((entry) => [entry.slug, entry]));
   for (const entry of previous.policies ?? []) {
-    if (!currentBySlug.has(entry.slug)) {
+    if (!currentBySlug.has(entry.slug) && !allowedRemovalSlugs.has(entry.slug)) {
       issues.push(`${entry.slug}: policy was removed; deprecate it before deleting its public contract`);
     }
   }

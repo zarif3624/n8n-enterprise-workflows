@@ -1,0 +1,11 @@
+{
+  "incidentId": "incidentId-001",
+  "incidentClosedAt": "2026-08-07T03:00:00Z",
+  "evidenceArtifactCount": 2,
+  "timelineCoveragePercent": 89,
+  "sensitiveDataRedacted": false,
+  "rootCauseSupported": false,
+  "remediationOwnersAssigned": false,
+  "publicationProposed": true,
+  "evidenceGapCount": 1
+}

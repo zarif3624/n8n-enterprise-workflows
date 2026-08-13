@@ -12,7 +12,7 @@ A rapid containment recommendation without automatically taking destructive secu
 
 - **Primary owner:** Security Operations
 - **Primary metric:** Minutes from report to analyst triage
-- **Policy version:** `1.0.4`
+- **Policy version:** `1.0.7`
 - **ROI starting point:** `reports per month x minutes saved in initial triage x analyst hourly cost / 60`
 
 ## Five-minute adoption
@@ -37,10 +37,10 @@ The request body must be a JSON object. Unknown fields are accepted for caller c
 
 | Field | Required | Contract |
 | --- | --- | --- |
-| `reportId` | Yes | string |
-| `reporterId` | Yes | string |
-| `sender` | Yes | string |
-| `subject` | Yes | string |
+| `reportId` | Yes | string, pattern \S |
+| `reporterId` | Yes | string, pattern \S |
+| `sender` | Yes | string, pattern \S |
+| `subject` | Yes | string, pattern \S |
 | `credentialRequested` | No | boolean |
 | `suspiciousAttachment` | No | boolean |
 | `executiveImpersonation` | No | boolean |
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "phishing-report-triage",
-  "policyVersion": "1.0.4",
+  "policyVersion": "1.0.7",
   "decision": "queue_analyst_review",
   "priorityBand": "low",
   "score": 0,

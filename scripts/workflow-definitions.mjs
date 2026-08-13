@@ -2,7 +2,7 @@ export const workflows = [
   {
     department: "finance",
     slug: "invoice-exception-triage",
-    policyVersion: "1.0.4",
+    policyVersion: "1.0.7",
     name: "Triage enterprise invoice exceptions",
     summary: "Scores invoice exceptions and routes clean invoices, finance reviews, and payment holds through a consistent policy.",
     problem: "Accounts payable teams lose time manually interpreting missing purchase orders, duplicate invoices, amount mismatches, and risky vendors.",
@@ -11,6 +11,17 @@ export const workflows = [
     primaryMetric: "Minutes of manual review avoided per invoice",
     required: ["invoiceId", "vendorId", "amount", "currency"],
     optional: ["purchaseOrderId", "duplicateDetected", "amountMismatchPercent", "restrictedVendor", "newBankDetails"],
+    fieldContracts: {
+      invoiceId: { type: "string", minLength: 1, maxLength: 500 },
+      vendorId: { type: "string", minLength: 1, maxLength: 500 },
+      amount: { type: "number", minimum: 0 },
+      currency: { type: "string", pattern: "^[A-Z]{3}$", minLength: 3, maxLength: 3 },
+      purchaseOrderId: { type: "string", minLength: 1, maxLength: 500 },
+      duplicateDetected: { type: "boolean" },
+      amountMismatchPercent: { type: "number", minimum: 0, maximum: 100 },
+      restrictedVendor: { type: "boolean" },
+      newBankDetails: { type: "boolean" }
+    },
     rules: [
       { field: "purchaseOrderId", operator: "missing", points: 25, reason: "Purchase order is missing" },
       { field: "duplicateDetected", operator: "truthy", points: 50, minimumBand: "high", reason: "Potential duplicate invoice" },
@@ -23,32 +34,9 @@ export const workflows = [
     roiExample: "monthly invoice volume x exception rate x minutes saved x loaded hourly cost / 60"
   },
   {
-    department: "human-resources",
-    slug: "employee-access-request-triage",
-    policyVersion: "1.0.4",
-    name: "Triage employee access requests",
-    summary: "Classifies employee access requests using role, privilege, environment, and approval signals before provisioning begins.",
-    problem: "Access requests often arrive through inconsistent channels and reach IT without enough context or the required approvals.",
-    outcome: "A normalized access decision that separates standard fulfillment, security review, and blocked requests.",
-    owner: "People Operations and Identity Management",
-    primaryMetric: "Access-request cycle time",
-    required: ["requestId", "employeeId", "system", "accessLevel"],
-    optional: ["managerApproved", "privilegedAccess", "productionAccess", "contractor", "endDate"],
-    rules: [
-      { field: "managerApproved", operator: "falsy", points: 45, reason: "Manager approval is missing" },
-      { field: "privilegedAccess", operator: "truthy", points: 45, reason: "Privileged access requested" },
-      { field: "productionAccess", operator: "truthy", points: 30, reason: "Production access requested" },
-      { field: "contractor", operator: "truthy", points: 20, reason: "Requester is a contractor" },
-      { field: "endDate", operator: "missing", points: 20, reason: "Time-bound access has no end date" }
-    ],
-    decisions: { low: "queue_standard_fulfillment", medium: "require_security_review", high: "block_until_approved" },
-    actions: ["Create an identity-governance ticket", "Require a named approver for elevated access", "Set an expiration date before provisioning"],
-    roiExample: "monthly access requests x minutes saved x loaded hourly cost / 60"
-  },
-  {
     department: "information-technology",
     slug: "service-desk-priority-routing",
-    policyVersion: "1.0.4",
+    policyVersion: "1.0.7",
     name: "Route enterprise service desk incidents",
     summary: "Assigns incident priority from impact, urgency, affected users, outage state, and executive visibility.",
     problem: "Inconsistent ticket priority creates noisy queues while genuinely disruptive incidents wait too long for the right team.",
@@ -57,6 +45,17 @@ export const workflows = [
     primaryMetric: "Mean time to assignment",
     required: ["ticketId", "category", "summary", "affectedUsers"],
     optional: ["serviceDown", "securityImpact", "executiveAffected", "revenueImpact", "workaroundAvailable"],
+    fieldContracts: {
+      ticketId: { type: "string", minLength: 1, maxLength: 500 },
+      category: { type: "string", minLength: 1, maxLength: 500 },
+      summary: { type: "string", minLength: 1, maxLength: 5000 },
+      affectedUsers: { type: "number", minimum: 0 },
+      serviceDown: { type: "boolean" },
+      securityImpact: { type: "boolean" },
+      executiveAffected: { type: "boolean" },
+      revenueImpact: { type: "boolean" },
+      workaroundAvailable: { type: "boolean" }
+    },
     rules: [
       { field: "serviceDown", operator: "truthy", points: 45, reason: "Business service is unavailable" },
       { field: "securityImpact", operator: "truthy", points: 55, reason: "Potential security impact" },
@@ -72,7 +71,7 @@ export const workflows = [
   {
     department: "security",
     slug: "phishing-report-triage",
-    policyVersion: "1.0.4",
+    policyVersion: "1.0.7",
     name: "Triage employee phishing reports",
     summary: "Scores reported messages using credential theft, attachment, impersonation, click, and campaign indicators.",
     problem: "Security teams receive large volumes of suspicious-email reports with uneven context and limited prioritization.",
@@ -81,6 +80,17 @@ export const workflows = [
     primaryMetric: "Minutes from report to analyst triage",
     required: ["reportId", "reporterId", "sender", "subject"],
     optional: ["credentialRequested", "suspiciousAttachment", "executiveImpersonation", "linkClicked", "multipleRecipients"],
+    fieldContracts: {
+      reportId: { type: "string", minLength: 1, maxLength: 500 },
+      reporterId: { type: "string", minLength: 1, maxLength: 500 },
+      sender: { type: "string", minLength: 1, maxLength: 500 },
+      subject: { type: "string", minLength: 1, maxLength: 500 },
+      credentialRequested: { type: "boolean" },
+      suspiciousAttachment: { type: "boolean" },
+      executiveImpersonation: { type: "boolean" },
+      linkClicked: { type: "boolean" },
+      multipleRecipients: { type: "boolean" }
+    },
     rules: [
       { field: "credentialRequested", operator: "truthy", points: 40, reason: "Message requests credentials" },
       { field: "suspiciousAttachment", operator: "truthy", points: 35, reason: "Suspicious attachment present" },
@@ -93,173 +103,9 @@ export const workflows = [
     roiExample: "reports per month x minutes saved in initial triage x analyst hourly cost / 60"
   },
   {
-    department: "sales",
-    slug: "enterprise-lead-routing",
-    policyVersion: "1.0.4",
-    name: "Route enterprise sales leads",
-    summary: "Scores enterprise leads using account fit, buying intent, geography, engagement, and consent before assignment.",
-    problem: "High-value leads are often delayed or misrouted because qualification logic differs across forms, regions, and teams.",
-    outcome: "A transparent routing recommendation with matched reasons and a clear next action for RevOps.",
-    owner: "Revenue Operations",
-    primaryMetric: "Speed to lead for qualified accounts",
-    required: ["leadId", "company", "email", "region"],
-    optional: ["employeeCount", "targetAccount", "highIntent", "requestedDemo", "marketingConsent"],
-    rules: [
-      { field: "targetAccount", operator: "truthy", points: 35, reason: "Company is a named target account" },
-      { field: "employeeCount", operator: "gte", value: 1000, points: 25, reason: "Enterprise employee threshold met" },
-      { field: "highIntent", operator: "truthy", points: 25, reason: "High-intent behavior detected" },
-      { field: "requestedDemo", operator: "truthy", points: 25, reason: "Buyer requested a demonstration" },
-      { field: "marketingConsent", operator: "falsy", points: -40, reason: "Marketing consent is not present" }
-    ],
-    decisions: { low: "route_to_nurture_or_review", medium: "assign_sdr_queue", high: "assign_enterprise_owner" },
-    actions: ["Upsert the lead in CRM", "Apply regional ownership rules", "Start an SLA timer for qualified handoff"],
-    roiExample: "qualified leads x conversion lift x average contract value"
-  },
-  {
-    department: "marketing",
-    slug: "campaign-lead-compliance-gate",
-    policyVersion: "1.0.4",
-    name: "Gate campaign leads for compliant follow-up",
-    summary: "Checks consent, suppression, geography, engagement, and target-account status before campaign follow-up.",
-    problem: "Campaign handoffs can create compliance risk and wasted spend when suppression and consent checks happen too late.",
-    outcome: "A follow-up decision that keeps compliance facts visible and routes ambiguous records for review.",
-    owner: "Marketing Operations",
-    primaryMetric: "Compliant leads processed per campaign",
-    required: ["leadId", "email", "campaignId", "country"],
-    optional: ["consent", "suppressed", "targetAccount", "engagementScore", "existingCustomer"],
-    rules: [
-      { field: "consent", operator: "falsy", points: 60, minimumBand: "high", reason: "Consent is missing" },
-      { field: "suppressed", operator: "truthy", points: 80, minimumBand: "high", reason: "Contact is on a suppression list" },
-      { field: "targetAccount", operator: "truthy", points: -20, reason: "Contact belongs to a target account" },
-      { field: "engagementScore", operator: "gte", value: 70, points: -15, reason: "Strong engagement signal" },
-      { field: "existingCustomer", operator: "truthy", points: 15, reason: "Customer messaging policy may apply" }
-    ],
-    decisions: { low: "allow_campaign_follow_up", medium: "route_to_compliance_review", high: "suppress_automated_outreach" },
-    actions: ["Record the policy decision", "Send approved contacts to the campaign sequence", "Route uncertain consent records to a human reviewer"],
-    roiExample: "campaign leads x minutes saved in list review x marketing operations hourly cost / 60"
-  },
-  {
-    department: "customer-success",
-    slug: "customer-risk-escalation",
-    policyVersion: "1.0.4",
-    name: "Escalate at-risk enterprise customers",
-    summary: "Combines adoption, support, sentiment, renewal, and stakeholder signals into a customer-risk response.",
-    problem: "Customer risk signals are distributed across systems and often become visible only after renewal conversations deteriorate.",
-    outcome: "An explainable intervention priority and recommended customer-success action plan.",
-    owner: "Customer Success Operations",
-    primaryMetric: "At-risk accounts engaged before renewal",
-    required: ["accountId", "accountName", "arr", "renewalDays"],
-    optional: ["usageDropPercent", "criticalTickets", "negativeSentiment", "championLeft", "execSponsorMissing"],
-    rules: [
-      { field: "usageDropPercent", operator: "gte", value: 30, points: 30, reason: "Usage dropped at least 30%" },
-      { field: "criticalTickets", operator: "gte", value: 2, points: 30, reason: "Multiple critical support tickets" },
-      { field: "negativeSentiment", operator: "truthy", points: 25, reason: "Negative customer sentiment detected" },
-      { field: "championLeft", operator: "truthy", points: 35, reason: "Customer champion departed" },
-      { field: "execSponsorMissing", operator: "truthy", points: 20, reason: "No executive sponsor is mapped" },
-      { field: "renewalDays", operator: "lt", value: 60, points: 20, reason: "Renewal is less than 60 days away" }
-    ],
-    decisions: { low: "continue_success_plan", medium: "open_risk_workstream", high: "launch_executive_save_plan" },
-    actions: ["Update customer health in the CS platform", "Assign a named intervention owner", "Require executive review before commercial concessions"],
-    roiExample: "at-risk ARR x reduction in preventable churn rate"
-  },
-  {
-    department: "legal",
-    slug: "contract-intake-routing",
-    policyVersion: "1.0.4",
-    name: "Route enterprise contract requests",
-    summary: "Routes contract intake using document type, value, jurisdiction, data access, and non-standard terms.",
-    problem: "Legal requests arrive without enough commercial or risk context, creating avoidable back-and-forth and slow review cycles.",
-    outcome: "A normalized legal intake route with risk reasons and required reviewers.",
-    owner: "Legal Operations",
-    primaryMetric: "Contract request time to first review",
-    required: ["requestId", "contractType", "counterparty", "contractValue"],
-    optional: ["nonStandardTerms", "personalData", "crossBorderData", "autoRenewal", "regulatedIndustry"],
-    rules: [
-      { field: "nonStandardTerms", operator: "truthy", points: 30, reason: "Non-standard terms requested" },
-      { field: "personalData", operator: "truthy", points: 25, reason: "Agreement involves personal data" },
-      { field: "crossBorderData", operator: "truthy", points: 30, reason: "Cross-border data transfer involved" },
-      { field: "autoRenewal", operator: "truthy", points: 15, reason: "Automatic renewal clause present" },
-      { field: "regulatedIndustry", operator: "truthy", points: 30, reason: "Counterparty operates in a regulated industry" },
-      { field: "contractValue", operator: "gte", value: 250000, points: 25, reason: "High-value agreement" }
-    ],
-    decisions: { low: "use_standard_legal_queue", medium: "assign_specialist_review", high: "open_cross_functional_review" },
-    actions: ["Create the legal matter", "Attach the structured intake fields", "Require legal approval before signature or redline acceptance"],
-    roiExample: "monthly contracts x reduction in intake rework minutes x legal hourly cost / 60"
-  },
-  {
-    department: "procurement",
-    slug: "vendor-risk-intake",
-    policyVersion: "1.0.4",
-    name: "Triage enterprise vendor risk",
-    summary: "Scores vendor intake using spend, data access, criticality, geography, subcontractors, and security evidence.",
-    problem: "Procurement, security, privacy, and legal reviews often start late because vendor risk is not classified at intake.",
-    outcome: "A coordinated due-diligence route with the reasons each review is required.",
-    owner: "Procurement Operations",
-    primaryMetric: "Vendor request time to correct review path",
-    required: ["requestId", "vendorName", "annualSpend", "businessOwner"],
-    optional: ["handlesPersonalData", "businessCritical", "foreignDataHosting", "subprocessors", "soc2Available"],
-    rules: [
-      { field: "handlesPersonalData", operator: "truthy", points: 30, reason: "Vendor handles personal data" },
-      { field: "businessCritical", operator: "truthy", points: 30, reason: "Vendor supports a critical business process" },
-      { field: "foreignDataHosting", operator: "truthy", points: 25, reason: "Data is hosted in another jurisdiction" },
-      { field: "subprocessors", operator: "truthy", points: 20, reason: "Vendor relies on subprocessors" },
-      { field: "soc2Available", operator: "falsy", points: 25, reason: "SOC 2 evidence is unavailable" },
-      { field: "annualSpend", operator: "gte", value: 100000, points: 20, reason: "High annual spend" }
-    ],
-    decisions: { low: "start_standard_procurement", medium: "add_security_or_privacy_review", high: "open_full_vendor_due_diligence" },
-    actions: ["Create the vendor record", "Assign required control owners", "Block purchase-order creation until mandatory approvals complete"],
-    roiExample: "vendor requests x days removed from routing delay x internal cost per delay day"
-  },
-  {
-    department: "operations",
-    slug: "major-incident-stakeholder-brief",
-    policyVersion: "1.0.4",
-    name: "Prepare major incident stakeholder briefs",
-    summary: "Turns operational incident facts into a severity decision and a consistent stakeholder communication plan.",
-    problem: "During incidents, teams lose time reconciling impact facts and deciding who needs which update cadence.",
-    outcome: "A severity tier, communication cadence, stakeholder list, and next update deadline.",
-    owner: "Business Operations and Incident Command",
-    primaryMetric: "Minutes from incident declaration to first stakeholder brief",
-    required: ["incidentId", "service", "startedAt", "summary"],
-    optional: ["customersAffected", "revenueImpact", "dataRisk", "workaroundAvailable", "regulatoryNotificationPossible"],
-    rules: [
-      { field: "customersAffected", operator: "gte", value: 100, points: 30, reason: "At least 100 customers affected" },
-      { field: "revenueImpact", operator: "truthy", points: 35, reason: "Revenue operations are affected" },
-      { field: "dataRisk", operator: "truthy", points: 50, minimumBand: "high", reason: "Potential data exposure or integrity risk" },
-      { field: "workaroundAvailable", operator: "falsy", points: 20, reason: "No workaround is available" },
-      { field: "regulatoryNotificationPossible", operator: "truthy", points: 45, minimumBand: "high", reason: "Regulatory notification may be required" }
-    ],
-    decisions: { low: "standard_operations_update", medium: "activate_incident_command", high: "activate_executive_and_legal_response" },
-    actions: ["Create the stakeholder brief", "Assign the next-update owner and deadline", "Require incident commander approval before external communication"],
-    roiExample: "major incidents x minutes faster communication x affected staff loaded cost per minute"
-  },
-  {
-    department: "data-and-analytics",
-    slug: "data-access-request-triage",
-    policyVersion: "1.0.4",
-    name: "Triage enterprise data access requests",
-    summary: "Classifies data access requests by sensitivity, environment, sharing intent, retention, and owner approval before access is granted.",
-    problem: "Data teams receive incomplete access requests that obscure privacy risk, production scope, retention needs, and accountable ownership.",
-    outcome: "A transparent governance route that separates standard access from data-owner, privacy, and security review.",
-    owner: "Data Governance",
-    primaryMetric: "Time from request to governed data access",
-    required: ["requestId", "requesterId", "dataset", "purpose"],
-    optional: ["containsSensitiveData", "productionData", "externalSharing", "retentionDays", "ownerApproved"],
-    rules: [
-      { field: "containsSensitiveData", operator: "truthy", points: 35, reason: "Dataset contains sensitive data" },
-      { field: "productionData", operator: "truthy", points: 25, reason: "Request includes production data" },
-      { field: "externalSharing", operator: "truthy", points: 50, minimumBand: "high", reason: "Data may be shared outside the organization" },
-      { field: "retentionDays", operator: "gt", value: 365, points: 25, reason: "Requested retention exceeds one year" },
-      { field: "ownerApproved", operator: "falsy", points: 40, reason: "Dataset owner approval is missing" }
-    ],
-    decisions: { low: "approve_standard_data_access", medium: "require_owner_and_privacy_review", high: "block_until_governance_approval" },
-    actions: ["Create the governed access ticket", "Record purpose and retention", "Require named approval before external sharing"],
-    roiExample: "monthly data requests x review minutes saved x governance hourly cost / 60"
-  },
-  {
     department: "engineering",
     slug: "production-change-risk-gate",
-    policyVersion: "1.0.4",
+    policyVersion: "1.0.7",
     name: "Gate production changes by operational risk",
     summary: "Scores planned production changes using customer, database, rollback, peak-period, and security signals before deployment.",
     problem: "Change approvals become inconsistent when risk context is scattered across pull requests, tickets, and release conversations.",
@@ -268,6 +114,17 @@ export const workflows = [
     primaryMetric: "Change lead time without increasing failure rate",
     required: ["changeId", "service", "changeType", "plannedAt"],
     optional: ["customerImpact", "databaseMigration", "rollbackTested", "duringPeakHours", "securityRelevant"],
+    fieldContracts: {
+      changeId: { type: "string", minLength: 1, maxLength: 500 },
+      service: { type: "string", minLength: 1, maxLength: 500 },
+      changeType: { type: "string", minLength: 1, maxLength: 500 },
+      plannedAt: { type: "string", format: "date-time", minLength: 1, maxLength: 64 },
+      customerImpact: { type: "boolean" },
+      databaseMigration: { type: "boolean" },
+      rollbackTested: { type: "boolean" },
+      duringPeakHours: { type: "boolean" },
+      securityRelevant: { type: "boolean" }
+    },
     rules: [
       { field: "customerImpact", operator: "truthy", points: 30, reason: "Change can affect customers" },
       { field: "databaseMigration", operator: "truthy", points: 25, reason: "Change includes a database migration" },
@@ -280,98 +137,460 @@ export const workflows = [
     roiExample: "monthly changes x approval minutes saved x engineering hourly cost / 60"
   },
   {
-    department: "facilities",
-    slug: "workplace-incident-routing",
-    policyVersion: "1.0.4",
-    name: "Route workplace incidents safely",
-    summary: "Prioritizes workplace incidents using injury, immediate danger, access control, operational disruption, and people-impact signals.",
-    problem: "Facilities incidents arrive through inconsistent channels, delaying the right safety, security, or operations response.",
-    outcome: "A defensible urgency tier with clear escalation reasons and a named human response path.",
-    owner: "Workplace Operations",
-    primaryMetric: "Minutes from report to accountable responder",
-    required: ["incidentId", "site", "category", "description"],
-    optional: ["injuryReported", "immediateDanger", "accessControlImpact", "operationsDisrupted", "peopleAffected"],
+    department: "artificial-intelligence",
+    slug: "agent-evaluation-release-gate",
+    policyVersion: "1.0.7",
+    name: "Gate agent releases with evaluation evidence",
+    summary: "Reviews quality, safety, latency, cost, and evaluation coverage signals before an agent change is considered for release.",
+    problem: "Agent changes can introduce quality, safety, latency, or cost regressions when release evidence is incomplete or compared inconsistently.",
+    outcome: "An explainable release recommendation and evidence route that leaves release approval and deployment with the accountable owner.",
+    owner: "AI Platform & SRE",
+    primaryMetric: "Regression escape rate",
+    required: ["evaluationRunId", "changeType", "evaluationCoveragePercent", "qualityScore"],
+    optional: ["safetyRegression", "latencyRegressionPercent", "costRegressionPercent", "baselineAvailable", "exceptionRequested"],
+    fieldContracts: {
+      evaluationRunId: { type: "string", minLength: 1, maxLength: 500 },
+      changeType: { type: "string", minLength: 1, maxLength: 200 },
+      evaluationCoveragePercent: { type: "number", minimum: 0, maximum: 100 },
+      qualityScore: { type: "number", minimum: 0, maximum: 100 },
+      safetyRegression: { type: "boolean" },
+      latencyRegressionPercent: { type: "number", minimum: 0, maximum: 1000 },
+      costRegressionPercent: { type: "number", minimum: 0, maximum: 1000 },
+      baselineAvailable: { type: "boolean" },
+      exceptionRequested: { type: "boolean" }
+    },
     rules: [
-      { field: "injuryReported", operator: "truthy", points: 55, minimumBand: "high", reason: "An injury has been reported" },
-      { field: "immediateDanger", operator: "truthy", points: 70, minimumBand: "high", reason: "People may face immediate danger" },
-      { field: "accessControlImpact", operator: "truthy", points: 30, reason: "Physical access controls are affected" },
-      { field: "operationsDisrupted", operator: "truthy", points: 25, reason: "Workplace operations are disrupted" },
-      { field: "peopleAffected", operator: "gte", value: 25, points: 25, reason: "At least 25 people are affected" }
+      { field: "evaluationCoveragePercent", operator: "lt", value: 90, points: 30, reason: "Evaluation coverage is below 90%" },
+      { field: "qualityScore", operator: "lt", value: 80, points: 35, reason: "Quality score is below the release target" },
+      { field: "safetyRegression", operator: "truthy", points: 70, minimumBand: "high", reason: "Evaluation detected a safety regression" },
+      { field: "latencyRegressionPercent", operator: "gt", value: 25, points: 25, reason: "Latency regressed by more than 25%" },
+      { field: "costRegressionPercent", operator: "gt", value: 25, points: 20, reason: "Unit cost regressed by more than 25%" },
+      { field: "baselineAvailable", operator: "falsy", points: 40, reason: "No approved baseline is available for comparison" },
+      { field: "exceptionRequested", operator: "truthy", points: 70, minimumBand: "high", reason: "Release requires an owner-approved policy exception" }
     ],
-    decisions: { low: "route_standard_facilities_queue", medium: "dispatch_urgent_workplace_response", high: "activate_safety_and_security_response" },
-    actions: ["Create the facilities incident", "Assign an on-site response owner", "Require human confirmation before closing a safety event"],
-    roiExample: "workplace incidents x minutes faster routing x disruption cost per minute"
+    decisions: { low: "recommend_release_candidate_for_owner_approval", medium: "route_release_evidence_to_owner_review", high: "hold_release_for_owner_exception_review" },
+    actions: ["Present evaluation evidence to the release owner", "Recommend remediation for failed quality, safety, latency, or cost gates", "Keep deployment outside the starter until a release owner approves the evidence"],
+    adapters: ["Evaluation service", "Model providers", "Source control", "Ticketing", "Observability"],
+    roiExample: "agent releases per month x evaluation review minutes saved x engineering hourly cost / 60"
   },
   {
-    department: "corporate-communications",
-    slug: "external-communication-approval",
-    policyVersion: "1.0.4",
-    name: "Approve external enterprise communications",
-    summary: "Routes proposed external communications using financial, customer, security, legal, and executive-approval signals.",
-    problem: "External statements move quickly across teams while material, legal, security, and customer implications remain unclear.",
-    outcome: "A visible approval route that prevents high-risk messages from bypassing accountable reviewers.",
-    owner: "Corporate Communications",
-    primaryMetric: "Time from draft to approved external communication",
-    required: ["requestId", "audience", "channel", "messageSummary", "owner"],
-    optional: ["materialFinancialInfo", "customerImpact", "securityIncident", "legalReviewed", "executiveApproved"],
+    department: "artificial-intelligence",
+    slug: "multi-model-routing-fallback",
+    policyVersion: "1.0.7",
+    name: "Review multi-model routing and fallback",
+    summary: "Evaluates task, policy, provider health, quality, cost, latency, and fallback evidence before recommending an approved model route.",
+    problem: "Model routing can concentrate reliability risk or bypass quality and policy expectations when fallback choices are made without consistent evidence.",
+    outcome: "A vendor-neutral routing recommendation with matched reasons, while policy exceptions and execution remain human-controlled.",
+    owner: "AI Platform Engineering",
+    primaryMetric: "Fallback rate",
+    required: ["routingRequestId", "taskType", "approvedModelAvailable", "expectedQualityScore"],
+    optional: ["policyException", "primaryProviderHealthy", "costBudgetExceeded", "latencyBudgetExceeded", "fallbackValidated"],
+    fieldContracts: {
+      routingRequestId: { type: "string", minLength: 1, maxLength: 500 },
+      taskType: { type: "string", minLength: 1, maxLength: 500 },
+      approvedModelAvailable: { type: "boolean" },
+      expectedQualityScore: { type: "number", minimum: 0, maximum: 100 },
+      policyException: { type: "boolean" },
+      primaryProviderHealthy: { type: "boolean" },
+      costBudgetExceeded: { type: "boolean" },
+      latencyBudgetExceeded: { type: "boolean" },
+      fallbackValidated: { type: "boolean" }
+    },
     rules: [
-      { field: "materialFinancialInfo", operator: "truthy", points: 60, minimumBand: "high", reason: "Message may contain material financial information" },
-      { field: "customerImpact", operator: "truthy", points: 30, reason: "Message addresses customer impact" },
-      { field: "securityIncident", operator: "truthy", points: 60, minimumBand: "high", reason: "Message concerns a security incident" },
-      { field: "legalReviewed", operator: "falsy", points: 35, reason: "Legal review is not recorded" },
-      { field: "executiveApproved", operator: "falsy", points: 25, reason: "Executive approval is not recorded" }
+      { field: "approvedModelAvailable", operator: "falsy", points: 70, minimumBand: "high", reason: "No approved model is available for the task" },
+      { field: "expectedQualityScore", operator: "lt", value: 80, points: 35, reason: "Expected quality is below the routing target" },
+      { field: "policyException", operator: "truthy", points: 70, minimumBand: "high", reason: "The proposed route requires a policy exception" },
+      { field: "primaryProviderHealthy", operator: "falsy", points: 30, reason: "The primary provider is not healthy" },
+      { field: "costBudgetExceeded", operator: "truthy", points: 25, reason: "Estimated unit cost exceeds the task budget" },
+      { field: "latencyBudgetExceeded", operator: "truthy", points: 25, reason: "Estimated latency exceeds the task budget" },
+      { field: "fallbackValidated", operator: "falsy", points: 40, reason: "The fallback route has not been validated" }
     ],
-    decisions: { low: "continue_standard_editorial_review", medium: "require_cross_functional_approval", high: "hold_for_executive_and_legal_approval" },
-    actions: ["Create the communication approval record", "Attach the final approved wording", "Require named approval before publication"],
-    roiExample: "external messages x coordination minutes saved x reviewer hourly cost / 60"
+    decisions: { low: "recommend_approved_primary_model", medium: "recommend_approved_fallback_for_review", high: "hold_route_for_policy_exception_review" },
+    actions: ["Present the recommended approved route and matched policy reasons", "Request owner review before selecting a fallback with unresolved evidence", "Keep model invocation and policy exceptions outside the starter"],
+    adapters: ["Approved model providers", "Policy store", "Observability", "Cost telemetry"],
+    roiExample: "monthly model tasks x routing review minutes saved x platform hourly cost / 60"
   },
   {
-    department: "privacy",
-    slug: "data-subject-request-triage",
-    policyVersion: "1.0.4",
-    name: "Triage data subject requests",
-    summary: "Prioritizes privacy requests using identity, deadline, sensitivity, third-party, and legal-hold signals.",
-    problem: "Privacy requests have strict deadlines and often require coordination across identity, legal, security, and data-owning teams.",
-    outcome: "A deadline-aware route that keeps identity verification and legal constraints visible before fulfillment.",
-    owner: "Privacy Operations",
-    primaryMetric: "Data subject requests completed within policy deadline",
-    required: ["requestId", "requestType", "requesterRegion", "receivedAt"],
-    optional: ["identityVerified", "deadlineDays", "sensitiveData", "thirdPartyData", "legalHold"],
+    department: "data-operations",
+    slug: "enterprise-data-reconciliation-control",
+    policyVersion: "1.0.7",
+    name: "Control enterprise data reconciliation exceptions",
+    summary: "Classifies cross-system variances, duplicates, missing records, ambiguous corrections, and certification evidence for review.",
+    problem: "Cross-system data drift is slow to certify when material variances, duplicates, missing records, and correction authority are not evaluated consistently.",
+    outcome: "A reconciliation recommendation and exception record that reserves material or ambiguous corrections for human review.",
+    owner: "Data & Analytics",
+    primaryMetric: "Variance rate",
+    required: ["reconciliationId", "sourceRecordCount", "targetRecordCount", "varianceRatePercent"],
+    optional: ["duplicateCount", "missingRecordCount", "materialVariance", "ambiguousCorrection", "certificationEvidenceComplete"],
+    fieldContracts: {
+      reconciliationId: { type: "string", minLength: 1, maxLength: 500 },
+      sourceRecordCount: { type: "number", minimum: 0 },
+      targetRecordCount: { type: "number", minimum: 0 },
+      varianceRatePercent: { type: "number", minimum: 0, maximum: 100 },
+      duplicateCount: { type: "number", minimum: 0 },
+      missingRecordCount: { type: "number", minimum: 0 },
+      materialVariance: { type: "boolean" },
+      ambiguousCorrection: { type: "boolean" },
+      certificationEvidenceComplete: { type: "boolean" }
+    },
     rules: [
-      { field: "identityVerified", operator: "falsy", points: 50, minimumBand: "high", reason: "Requester identity is not verified" },
-      { field: "deadlineDays", operator: "lt", value: 7, points: 35, reason: "Fewer than seven days remain" },
-      { field: "sensitiveData", operator: "truthy", points: 30, reason: "Request involves sensitive data" },
-      { field: "thirdPartyData", operator: "truthy", points: 25, reason: "Responsive records may contain third-party data" },
-      { field: "legalHold", operator: "truthy", points: 60, minimumBand: "high", reason: "Responsive data is subject to legal hold" }
+      { field: "varianceRatePercent", operator: "gt", value: 1, points: 30, reason: "Cross-system variance rate exceeds 1%" },
+      { field: "duplicateCount", operator: "gt", value: 0, points: 25, reason: "Duplicate records were detected" },
+      { field: "missingRecordCount", operator: "gt", value: 0, points: 30, reason: "Records are missing from one side of the reconciliation" },
+      { field: "materialVariance", operator: "truthy", points: 70, minimumBand: "high", reason: "The variance is classified as material" },
+      { field: "ambiguousCorrection", operator: "truthy", points: 70, minimumBand: "high", reason: "The proposed correction is ambiguous" },
+      { field: "certificationEvidenceComplete", operator: "falsy", points: 40, reason: "Certification evidence is incomplete" }
     ],
-    decisions: { low: "continue_standard_privacy_queue", medium: "assign_privacy_specialist_review", high: "hold_for_identity_or_legal_review" },
-    actions: ["Create the privacy case", "Record the governing deadline", "Require privacy or legal approval before disclosure or deletion"],
-    roiExample: "annual privacy requests x handling hours saved x privacy operations hourly cost"
+    decisions: { low: "recommend_reconciliation_for_certification", medium: "route_variances_to_data_steward_review", high: "hold_corrections_for_material_exception_review" },
+    actions: ["Present variance evidence to the data steward", "Recommend investigation targets without changing source records", "Keep corrections and certification outside the starter until human approval"],
+    adapters: ["Databases", "Data warehouses", "Spreadsheets", "Case store", "Data quality tools"],
+    roiExample: "reconciliations per month x certification minutes saved x data operations hourly cost / 60"
   },
   {
-    department: "risk-and-compliance",
-    slug: "ai-use-case-risk-intake",
-    policyVersion: "1.0.4",
-    name: "Triage enterprise AI use cases",
-    summary: "Classifies proposed AI use cases by data sensitivity, customer exposure, decision impact, regulatory scope, provider approval, and human oversight.",
-    problem: "AI initiatives move from experiment to production faster than security, privacy, legal, and risk teams can establish a shared review path.",
-    outcome: "A transparent intake decision that accelerates controlled pilots while holding consequential or regulated uses for accountable approval.",
-    owner: "Enterprise Risk and AI Governance",
-    primaryMetric: "Time from AI use-case submission to accountable decision",
-    required: ["requestId", "useCaseName", "businessOwner", "businessPurpose"],
-    optional: ["handlesSensitiveData", "customerFacing", "consequentialDecision", "regulatedProcess", "approvedProvider", "humanReviewPlanned"],
+    department: "operations",
+    slug: "meeting-to-action-review",
+    policyVersion: "1.0.7",
+    name: "Review meeting decisions and actions",
+    summary: "Checks extracted decisions, owners, due dates, approved context, and proposed follow-ups before any task, message, or system update.",
+    problem: "Meeting decisions and commitments are lost or misapplied when extracted actions lack owners, due dates, approved context, or review.",
+    outcome: "A reviewed action package recommendation that keeps external communication and system writes behind human approval.",
+    owner: "Sales & Operations",
+    primaryMetric: "Follow-through rate",
+    required: ["meetingId", "meetingEndedAt", "actionCount", "decisionCount"],
+    optional: ["externalFollowUpDrafted", "crmUpdateProposed", "ownerMissing", "dueDateMissing", "sensitiveContent", "sourceContextApproved"],
+    fieldContracts: {
+      meetingId: { type: "string", minLength: 1, maxLength: 500 },
+      meetingEndedAt: { type: "string", format: "date-time", minLength: 1, maxLength: 64 },
+      actionCount: { type: "number", minimum: 0 },
+      decisionCount: { type: "number", minimum: 0 },
+      externalFollowUpDrafted: { type: "boolean" },
+      crmUpdateProposed: { type: "boolean" },
+      ownerMissing: { type: "boolean" },
+      dueDateMissing: { type: "boolean" },
+      sensitiveContent: { type: "boolean" },
+      sourceContextApproved: { type: "boolean" }
+    },
     rules: [
-      { field: "handlesSensitiveData", operator: "truthy", points: 35, reason: "Use case handles sensitive data" },
-      { field: "customerFacing", operator: "truthy", points: 25, reason: "AI output is customer-facing" },
-      { field: "consequentialDecision", operator: "truthy", points: 70, minimumBand: "high", reason: "AI contributes to a consequential decision" },
-      { field: "regulatedProcess", operator: "truthy", points: 50, minimumBand: "high", reason: "Use case operates within a regulated process" },
-      { field: "approvedProvider", operator: "falsy", points: 45, reason: "Model or service provider is not approved" },
-      { field: "humanReviewPlanned", operator: "falsy", points: 35, reason: "Human review is not part of the operating design" }
+      { field: "ownerMissing", operator: "truthy", points: 35, reason: "At least one action has no accountable owner" },
+      { field: "dueDateMissing", operator: "truthy", points: 25, reason: "At least one action has no due date" },
+      { field: "externalFollowUpDrafted", operator: "truthy", points: 35, reason: "An external follow-up draft requires review" },
+      { field: "crmUpdateProposed", operator: "truthy", points: 30, reason: "A CRM update is proposed" },
+      { field: "sensitiveContent", operator: "truthy", points: 70, minimumBand: "high", reason: "The meeting record contains sensitive content" },
+      { field: "sourceContextApproved", operator: "falsy", points: 45, reason: "The source context has not been approved for action extraction" }
     ],
-    decisions: { low: "approve_controlled_pilot", medium: "require_cross_functional_review", high: "hold_for_ai_governance_approval" },
-    actions: ["Create an entry in the AI use-case inventory", "Assign security, privacy, legal, and risk reviewers from matched policy reasons", "Require a named approver before production or customer-facing use"],
-    roiExample: "annual AI use cases x review coordination hours saved x loaded reviewer hourly cost"
-  }
+    decisions: { low: "recommend_action_package_for_review", medium: "route_draft_actions_to_owner_review", high: "hold_follow_up_for_human_approval" },
+    actions: ["Present extracted decisions, owners, and due dates for review", "Recommend corrections to incomplete action records", "Keep task creation, CRM writes, and external follow-ups outside the starter"],
+    adapters: ["Calendar", "Meeting system", "Document store", "CRM", "Ticketing"],
+    roiExample: "meetings per month x action-review minutes saved x operations hourly cost / 60"
+  },
+  {
+    department: "sales",
+    slug: "research-to-crm-review",
+    policyVersion: "1.0.7",
+    name: "Review source-backed research for CRM action",
+    summary: "Evaluates entity resolution, citations, source freshness, unsupported claims, and proposed CRM or outreach actions.",
+    problem: "Company and market research loses trust when signals are not source-backed or are written to CRM and outreach systems before review.",
+    outcome: "A cited research brief recommendation with unsupported claims and consequential actions routed to human review.",
+    owner: "Revenue & Strategy",
+    primaryMetric: "Signal-to-action conversion",
+    required: ["researchId", "accountId", "sourceCount", "citationCoveragePercent"],
+    optional: ["unsupportedClaimCount", "entityMatchConfirmed", "sensitiveSignal", "crmWriteProposed", "outreachProposed", "sourceFreshnessDays"],
+    fieldContracts: {
+      researchId: { type: "string", minLength: 1, maxLength: 500 },
+      accountId: { type: "string", minLength: 1, maxLength: 500 },
+      sourceCount: { type: "number", minimum: 0 },
+      citationCoveragePercent: { type: "number", minimum: 0, maximum: 100 },
+      unsupportedClaimCount: { type: "number", minimum: 0 },
+      entityMatchConfirmed: { type: "boolean" },
+      sensitiveSignal: { type: "boolean" },
+      crmWriteProposed: { type: "boolean" },
+      outreachProposed: { type: "boolean" },
+      sourceFreshnessDays: { type: "number", minimum: 0 }
+    },
+    rules: [
+      { field: "sourceCount", operator: "lt", value: 2, points: 30, reason: "Research uses fewer than two approved sources" },
+      { field: "citationCoveragePercent", operator: "lt", value: 90, points: 35, reason: "Citation coverage is below 90%" },
+      { field: "unsupportedClaimCount", operator: "gt", value: 0, points: 45, reason: "The brief contains unsupported claims" },
+      { field: "entityMatchConfirmed", operator: "falsy", points: 45, reason: "The account entity match is not confirmed" },
+      { field: "sensitiveSignal", operator: "truthy", points: 70, minimumBand: "high", reason: "The research includes a sensitive signal" },
+      { field: "crmWriteProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "A CRM write is proposed" },
+      { field: "outreachProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "External outreach is proposed" },
+      { field: "sourceFreshnessDays", operator: "gt", value: 30, points: 25, reason: "At least one source is older than 30 days" }
+    ],
+    decisions: { low: "recommend_cited_brief_for_review", medium: "route_research_gaps_to_analyst_review", high: "hold_crm_or_outreach_action_for_approval" },
+    actions: ["Present citations and entity evidence to the account owner", "Recommend research gaps for analyst follow-up", "Keep CRM writes, task creation, and outreach outside the starter"],
+    adapters: ["Research providers", "CRM", "Document store", "Collaboration", "Data enrichment"],
+    roiExample: "research requests per month x research minutes saved x analyst hourly cost / 60"
+  },
+  {
+    department: "revenue-operations",
+    slug: "closed-won-launch-readiness",
+    policyVersion: "1.0.7",
+    name: "Review closed-won launch readiness",
+    summary: "Checks order, scope, prerequisites, ownership, and provisioning exceptions before implementation launch activities are recommended.",
+    problem: "Closed-won handoffs lose scope and delay time to value when order details, prerequisites, owners, and provisioning exceptions are incomplete.",
+    outcome: "An explainable launch-readiness recommendation that keeps provisioning, entitlement changes, and scheduling human-controlled.",
+    owner: "Revenue Operations",
+    primaryMetric: "Time to kickoff",
+    required: ["opportunityId", "accountId", "scopeConfirmed", "prerequisiteCompletionPercent"],
+    optional: ["orderValidated", "complexScope", "provisioningException", "entitlementChangeProposed", "kickoffScheduled", "launchOwnerAssigned"],
+    fieldContracts: {
+      opportunityId: { type: "string", minLength: 1, maxLength: 500 },
+      accountId: { type: "string", minLength: 1, maxLength: 500 },
+      scopeConfirmed: { type: "boolean" },
+      prerequisiteCompletionPercent: { type: "number", minimum: 0, maximum: 100 },
+      orderValidated: { type: "boolean" },
+      complexScope: { type: "boolean" },
+      provisioningException: { type: "boolean" },
+      entitlementChangeProposed: { type: "boolean" },
+      kickoffScheduled: { type: "boolean" },
+      launchOwnerAssigned: { type: "boolean" }
+    },
+    rules: [
+      { field: "scopeConfirmed", operator: "falsy", points: 45, reason: "Implementation scope is not confirmed" },
+      { field: "prerequisiteCompletionPercent", operator: "lt", value: 100, points: 30, reason: "Launch prerequisites are incomplete" },
+      { field: "orderValidated", operator: "falsy", points: 40, reason: "The closed-won order has not been validated" },
+      { field: "complexScope", operator: "truthy", points: 35, reason: "The opportunity has complex implementation scope" },
+      { field: "provisioningException", operator: "truthy", points: 70, minimumBand: "high", reason: "Provisioning requires an exception" },
+      { field: "entitlementChangeProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "An entitlement change is proposed" },
+      { field: "launchOwnerAssigned", operator: "falsy", points: 35, reason: "No accountable launch owner is assigned" }
+    ],
+    decisions: { low: "recommend_launch_checklist_for_owner_review", medium: "route_launch_gaps_to_revenue_operations", high: "hold_provisioning_for_exception_approval" },
+    actions: ["Present scope and prerequisite evidence to the launch owner", "Recommend owners for unresolved launch checklist items", "Keep workspace creation, provisioning, entitlements, and scheduling outside the starter"],
+    adapters: ["CRM", "Project system", "Product APIs", "Calendar", "Document tools"],
+    roiExample: "closed-won launches per month x handoff minutes saved x revenue operations hourly cost / 60"
+  },
+  {
+    department: "incident-management",
+    slug: "incident-rca-evidence-review",
+    policyVersion: "1.0.7",
+    name: "Review incident RCA evidence",
+    summary: "Checks incident artifacts, timeline coverage, redaction, root-cause support, remediation ownership, and publication readiness.",
+    problem: "Incident learning is delayed or unreliable when timelines, evidence, redaction, root-cause support, and remediation ownership are incomplete.",
+    outcome: "A structured RCA evidence recommendation that reserves publication and closure for the incident or release owner.",
+    owner: "Engineering & SRE",
+    primaryMetric: "Evidence completeness",
+    required: ["incidentId", "incidentClosedAt", "evidenceArtifactCount", "timelineCoveragePercent"],
+    optional: ["sensitiveDataRedacted", "rootCauseSupported", "remediationOwnersAssigned", "publicationProposed", "evidenceGapCount", "releaseEvidenceIncluded"],
+    fieldContracts: {
+      incidentId: { type: "string", minLength: 1, maxLength: 500 },
+      incidentClosedAt: { type: "string", format: "date-time", minLength: 1, maxLength: 64 },
+      evidenceArtifactCount: { type: "number", minimum: 0 },
+      timelineCoveragePercent: { type: "number", minimum: 0, maximum: 100 },
+      sensitiveDataRedacted: { type: "boolean" },
+      rootCauseSupported: { type: "boolean" },
+      remediationOwnersAssigned: { type: "boolean" },
+      publicationProposed: { type: "boolean" },
+      evidenceGapCount: { type: "number", minimum: 0 },
+      releaseEvidenceIncluded: { type: "boolean" }
+    },
+    rules: [
+      { field: "evidenceArtifactCount", operator: "lt", value: 3, points: 30, reason: "Fewer than three incident evidence artifacts are attached" },
+      { field: "timelineCoveragePercent", operator: "lt", value: 90, points: 35, reason: "Incident timeline coverage is below 90%" },
+      { field: "sensitiveDataRedacted", operator: "falsy", points: 70, minimumBand: "high", reason: "Sensitive data has not been confirmed as redacted" },
+      { field: "rootCauseSupported", operator: "falsy", points: 40, reason: "The proposed root cause is not supported by evidence" },
+      { field: "remediationOwnersAssigned", operator: "falsy", points: 30, reason: "Remediation actions do not all have owners" },
+      { field: "publicationProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "RCA publication requires owner approval" },
+      { field: "evidenceGapCount", operator: "gt", value: 0, points: 30, reason: "The evidence package contains unresolved gaps" }
+    ],
+    decisions: { low: "recommend_rca_evidence_for_owner_review", medium: "route_evidence_gaps_to_incident_owner", high: "hold_rca_publication_for_approval" },
+    actions: ["Present the redacted timeline and evidence index to the incident owner", "Recommend owners for remediation and evidence gaps", "Keep publication, ticket changes, and RCA closure outside the starter"],
+    adapters: ["Collaboration", "Observability", "Work tracking", "Source control", "Knowledge base"],
+    roiExample: "incidents per month x RCA drafting minutes saved x SRE hourly cost / 60"
+  },
+  {
+    department: "proposal-management",
+    slug: "rfp-response-evidence-review",
+    policyVersion: "1.0.7",
+    name: "Review RFP response evidence",
+    summary: "Evaluates evidence coverage, citations, confidence, unsupported claims, sensitive answers, and expert-review readiness.",
+    problem: "RFP and security questionnaire responses create claim risk when drafts are not cited, supported by approved evidence, or routed to domain experts.",
+    outcome: "A response-package recommendation that highlights gaps and keeps sensitive claims and document export behind expert approval.",
+    owner: "Revenue Engineering",
+    primaryMetric: "Unsupported-claim rate",
+    required: ["questionnaireId", "questionCount", "evidenceCoveragePercent", "citedAnswerCount"],
+    optional: ["unsupportedAnswerCount", "sensitiveAnswerCount", "domainExpertAssigned", "exportProposed", "evidenceApproved", "confidenceScore"],
+    fieldContracts: {
+      questionnaireId: { type: "string", minLength: 1, maxLength: 500 },
+      questionCount: { type: "number", minimum: 1 },
+      evidenceCoveragePercent: { type: "number", minimum: 0, maximum: 100 },
+      citedAnswerCount: { type: "number", minimum: 0 },
+      unsupportedAnswerCount: { type: "number", minimum: 0 },
+      sensitiveAnswerCount: { type: "number", minimum: 0 },
+      domainExpertAssigned: { type: "boolean" },
+      exportProposed: { type: "boolean" },
+      evidenceApproved: { type: "boolean" },
+      confidenceScore: { type: "number", minimum: 0, maximum: 100 }
+    },
+    rules: [
+      { field: "evidenceCoveragePercent", operator: "lt", value: 90, points: 35, reason: "Approved evidence covers less than 90% of questions" },
+      { field: "unsupportedAnswerCount", operator: "gt", value: 0, points: 70, minimumBand: "high", reason: "The draft contains unsupported answers" },
+      { field: "sensitiveAnswerCount", operator: "gt", value: 0, points: 70, minimumBand: "high", reason: "The draft contains sensitive answers requiring expert approval" },
+      { field: "domainExpertAssigned", operator: "falsy", points: 35, reason: "No domain expert is assigned to review gaps" },
+      { field: "exportProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "Questionnaire export is proposed" },
+      { field: "evidenceApproved", operator: "falsy", points: 45, reason: "The supporting evidence has not been approved" },
+      { field: "confidenceScore", operator: "lt", value: 80, points: 25, reason: "Draft confidence is below the review target" }
+    ],
+    decisions: { low: "recommend_response_package_for_expert_review", medium: "route_evidence_gaps_to_domain_experts", high: "hold_sensitive_response_or_export_for_approval" },
+    actions: ["Present cited answers and confidence evidence to domain experts", "Recommend owners for unsupported questions", "Keep document export, CRM writes, and external submission outside the starter"],
+    adapters: ["File processing", "Knowledge base", "Document generation", "CRM", "Review queue"],
+    roiExample: "questionnaires per month x response review minutes saved x revenue engineering hourly cost / 60"
+  },
+  {
+    department: "customer-support",
+    slug: "support-escalation-command-center",
+    policyVersion: "1.0.8",
+    name: "Review support escalation command-center readiness",
+    summary: "Prioritizes high-severity escalation evidence, ownership, telemetry, stale actions, timelines, and external-update drafts.",
+    problem: "High-severity support cases lose time when customer, product, engineering, and telemetry context is incomplete or out of sync.",
+    outcome: "An explainable command-center recommendation that preserves human review for external communication and case closure.",
+    owner: "Customer Support",
+    primaryMetric: "Time to mobilize",
+    required: ["escalationId", "severity", "customerImpactSummary", "openActionCount"],
+    optional: ["telemetryAttached", "staleActionCount", "externalUpdateDrafted", "engineeringOwnerAssigned", "timelineSynchronized", "closureProposed"],
+    fieldContracts: {
+      escalationId: { type: "string", minLength: 1, maxLength: 500 },
+      severity: { type: "string", enum: ["low", "medium", "high", "critical"], minLength: 1, maxLength: 100 },
+      customerImpactSummary: { type: "string", minLength: 1, maxLength: 5000 },
+      openActionCount: { type: "number", minimum: 0 },
+      telemetryAttached: { type: "boolean" },
+      staleActionCount: { type: "number", minimum: 0 },
+      externalUpdateDrafted: { type: "boolean" },
+      engineeringOwnerAssigned: { type: "boolean" },
+      timelineSynchronized: { type: "boolean" },
+      closureProposed: { type: "boolean" }
+    },
+    rules: [
+      { field: "severity", operator: "equals", value: "critical", points: 70, minimumBand: "high", reason: "The escalation is classified as critical" },
+      { field: "telemetryAttached", operator: "falsy", points: 35, reason: "Telemetry evidence is not attached" },
+      { field: "staleActionCount", operator: "gt", value: 0, points: 30, reason: "The escalation has stale actions" },
+      { field: "externalUpdateDrafted", operator: "truthy", points: 70, minimumBand: "high", reason: "An external customer update requires review" },
+      { field: "engineeringOwnerAssigned", operator: "falsy", points: 35, reason: "No engineering owner is assigned" },
+      { field: "timelineSynchronized", operator: "falsy", points: 30, reason: "The escalation timeline is not synchronized" },
+      { field: "closureProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "Escalation closure requires human review" }
+    ],
+    decisions: { low: "recommend_command_center_record_for_review", medium: "route_stale_or_incomplete_actions_to_owners", high: "hold_external_update_or_closure_for_approval" },
+    actions: ["Present the escalation timeline, telemetry, and ownership gaps", "Recommend action owners and evidence follow-ups", "Keep external messages, support-system writes, and closure outside the starter"],
+    adapters: ["Support platform", "CRM", "Collaboration", "Engineering tracker", "Telemetry"],
+    roiExample: "high-severity escalations per month x mobilization minutes saved x support hourly cost / 60"
+  },
+  {
+    department: "people-operations",
+    slug: "people-operations-case-routing",
+    policyVersion: "1.0.7",
+    name: "Route people operations cases for review",
+    summary: "Evaluates identity, policy, sensitivity, approval, payroll, workplace, and completion-evidence signals for people cases.",
+    problem: "People cases span HR, payroll, workplace, and manager responsibilities, creating privacy and completion risk when routing is inconsistent.",
+    outcome: "A privacy-aware routing recommendation that leaves employee-impacting decisions and system changes with HR or the accountable manager.",
+    owner: "People Operations",
+    primaryMetric: "Case cycle time",
+    required: ["caseId", "caseType", "requesterVerified", "policyCheckComplete"],
+    optional: ["sensitiveCase", "managerApprovalRequired", "hrApprovalRequired", "payrollImpact", "workplaceImpact", "completionEvidenceComplete"],
+    fieldContracts: {
+      caseId: { type: "string", minLength: 1, maxLength: 500 },
+      caseType: { type: "string", minLength: 1, maxLength: 500 },
+      requesterVerified: { type: "boolean" },
+      policyCheckComplete: { type: "boolean" },
+      sensitiveCase: { type: "boolean" },
+      managerApprovalRequired: { type: "boolean" },
+      hrApprovalRequired: { type: "boolean" },
+      payrollImpact: { type: "boolean" },
+      workplaceImpact: { type: "boolean" },
+      completionEvidenceComplete: { type: "boolean" }
+    },
+    rules: [
+      { field: "requesterVerified", operator: "falsy", points: 70, minimumBand: "high", reason: "The requester identity is not verified" },
+      { field: "policyCheckComplete", operator: "falsy", points: 45, reason: "The applicable people policy check is incomplete" },
+      { field: "sensitiveCase", operator: "truthy", points: 70, minimumBand: "high", reason: "The case is classified as sensitive" },
+      { field: "managerApprovalRequired", operator: "truthy", points: 35, reason: "Manager approval is required" },
+      { field: "hrApprovalRequired", operator: "truthy", points: 70, minimumBand: "high", reason: "HR approval is required" },
+      { field: "payrollImpact", operator: "truthy", points: 70, minimumBand: "high", reason: "The case can affect payroll" },
+      { field: "workplaceImpact", operator: "truthy", points: 45, reason: "The case requires workplace coordination" },
+      { field: "completionEvidenceComplete", operator: "falsy", points: 30, reason: "Completion evidence is incomplete" }
+    ],
+    decisions: { low: "recommend_standard_people_case_review", medium: "route_case_to_manager_or_hr_review", high: "hold_employee_impacting_action_for_hr_approval" },
+    actions: ["Present only the minimum necessary case evidence to the assigned reviewer", "Recommend manager, HR, payroll, or workplace review based on matched rules", "Keep employee decisions and HRIS, payroll, identity, or messaging changes outside the starter"],
+    adapters: ["HRIS", "Identity", "Payroll", "Workplace service systems", "Forms"],
+    roiExample: "people cases per month x routing minutes saved x people operations hourly cost / 60"
+  },
+  {
+    department: "customer-success",
+    slug: "customer-health-action-review",
+    policyVersion: "1.0.7",
+    name: "Review customer health actions",
+    summary: "Evaluates account signals, health evidence, ownership, billing and support risk, outreach, and commercial-action proposals.",
+    problem: "Customer health signals produce inconsistent onboarding, risk, renewal, or expansion actions when evidence and ownership are scattered.",
+    outcome: "An explainable play recommendation that keeps high-impact outreach and commercial actions with the customer owner.",
+    owner: "Customer Success",
+    primaryMetric: "Risk coverage",
+    required: ["accountId", "lifecycleStage", "signalCount", "healthEvidenceComplete"],
+    optional: ["highImpactOutreachProposed", "commercialActionProposed", "billingRisk", "supportEscalationOpen", "ownerAssigned", "outcomeTrackingConfigured"],
+    fieldContracts: {
+      accountId: { type: "string", minLength: 1, maxLength: 500 },
+      lifecycleStage: { type: "string", minLength: 1, maxLength: 200 },
+      signalCount: { type: "number", minimum: 0 },
+      healthEvidenceComplete: { type: "boolean" },
+      highImpactOutreachProposed: { type: "boolean" },
+      commercialActionProposed: { type: "boolean" },
+      billingRisk: { type: "boolean" },
+      supportEscalationOpen: { type: "boolean" },
+      ownerAssigned: { type: "boolean" },
+      outcomeTrackingConfigured: { type: "boolean" }
+    },
+    rules: [
+      { field: "healthEvidenceComplete", operator: "falsy", points: 45, reason: "Customer health evidence is incomplete" },
+      { field: "signalCount", operator: "lt", value: 2, points: 30, reason: "The recommendation is supported by fewer than two signals" },
+      { field: "highImpactOutreachProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "High-impact customer outreach is proposed" },
+      { field: "commercialActionProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "A renewal, expansion, or other commercial action is proposed" },
+      { field: "billingRisk", operator: "truthy", points: 35, reason: "The account has a billing risk signal" },
+      { field: "supportEscalationOpen", operator: "truthy", points: 40, reason: "The account has an open support escalation" },
+      { field: "ownerAssigned", operator: "falsy", points: 35, reason: "No customer owner is assigned" },
+      { field: "outcomeTrackingConfigured", operator: "falsy", points: 25, reason: "Outcome tracking is not configured" }
+    ],
+    decisions: { low: "recommend_customer_play_for_owner_review", medium: "route_health_risks_to_customer_owner", high: "hold_outreach_or_commercial_action_for_approval" },
+    actions: ["Present the supporting account signals and matched reasons", "Recommend an onboarding, risk, renewal, or expansion play for owner review", "Keep CRM tasks, customer outreach, billing changes, and commercial actions outside the starter"],
+    adapters: ["Product usage", "CRM", "Support", "Billing", "Communication", "Data warehouse"],
+    roiExample: "managed accounts x health-review minutes saved per month x customer success hourly cost / 60"
+  },
+  {
+    department: "field-operations",
+    slug: "field-service-completion-review",
+    policyVersion: "1.0.7",
+    name: "Review field service completion evidence",
+    summary: "Checks evidence, completion criteria, parts and warranty exceptions, and proposed financial, scheduling, or customer actions after field work.",
+    problem: "Field work cannot close reliably when documentation, parts, warranty, scheduling, customer, and billing exceptions are handled inconsistently.",
+    outcome: "A completion recommendation and exception record that reserves financial, scheduling, customer, and closure actions for human review.",
+    owner: "Field Operations",
+    primaryMetric: "Documentation completeness",
+    required: ["serviceJobId", "visitCompletedAt", "evidenceComplete", "completionChecklistPercent"],
+    optional: ["paymentReleaseProposed", "customerMessageDrafted", "rescheduleProposed", "partsException", "warrantyException", "humanResolutionRequired"],
+    fieldContracts: {
+      serviceJobId: { type: "string", minLength: 1, maxLength: 500 },
+      visitCompletedAt: { type: "string", format: "date-time", minLength: 1, maxLength: 64 },
+      evidenceComplete: { type: "boolean" },
+      completionChecklistPercent: { type: "number", minimum: 0, maximum: 100 },
+      paymentReleaseProposed: { type: "boolean" },
+      customerMessageDrafted: { type: "boolean" },
+      rescheduleProposed: { type: "boolean" },
+      partsException: { type: "boolean" },
+      warrantyException: { type: "boolean" },
+      humanResolutionRequired: { type: "boolean" }
+    },
+    rules: [
+      { field: "evidenceComplete", operator: "falsy", points: 45, reason: "Required field-service evidence is incomplete" },
+      { field: "completionChecklistPercent", operator: "lt", value: 100, points: 35, reason: "The completion checklist is incomplete" },
+      { field: "paymentReleaseProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "A financial release is proposed" },
+      { field: "customerMessageDrafted", operator: "truthy", points: 40, reason: "A customer-facing message requires review" },
+      { field: "rescheduleProposed", operator: "truthy", points: 70, minimumBand: "high", reason: "A customer-impacting reschedule is proposed" },
+      { field: "partsException", operator: "truthy", points: 30, reason: "A parts or inventory exception remains open" },
+      { field: "warrantyException", operator: "truthy", points: 35, reason: "A warranty exception remains open" },
+      { field: "humanResolutionRequired", operator: "truthy", points: 70, minimumBand: "high", reason: "The case is explicitly marked for human resolution" }
+    ],
+    decisions: { low: "recommend_service_completion_for_owner_review", medium: "route_service_exceptions_to_field_operations", high: "hold_financial_customer_or_closure_action_for_approval" },
+    actions: ["Present completion evidence and open exceptions to the field-service owner", "Recommend follow-up for documentation, parts, or warranty gaps", "Keep billing, payment, scheduling, customer messaging, inventory writes, and closure outside the starter"],
+    adapters: ["Field-service system", "Accounting", "Documents", "Inventory and assets", "Messaging"],
+    roiExample: "field visits per month x completion-review minutes saved x field operations hourly cost / 60"
+  },
 ];
 
 export const thresholds = {
@@ -379,69 +598,23 @@ export const thresholds = {
   high: 70
 };
 
-const numberContracts = {
-  amount: { type: "number", minimum: 0 },
-  amountMismatchPercent: { type: "number", minimum: 0, maximum: 100 },
-  affectedUsers: { type: "number", minimum: 0 },
-  employeeCount: { type: "number", minimum: 0 },
-  engagementScore: { type: "number", minimum: 0, maximum: 100 },
-  arr: { type: "number", minimum: 0 },
-  renewalDays: { type: "number", minimum: 0 },
-  usageDropPercent: { type: "number", minimum: 0, maximum: 100 },
-  criticalTickets: { type: "number", minimum: 0 },
-  contractValue: { type: "number", minimum: 0 },
-  annualSpend: { type: "number", minimum: 0 },
-  customersAffected: { type: "number", minimum: 0 },
-  retentionDays: { type: "number", minimum: 0 },
-  peopleAffected: { type: "number", minimum: 0 },
-  deadlineDays: { type: "number", minimum: 0 }
-};
-
-const booleanFields = new Set([
-  "duplicateDetected", "restrictedVendor", "newBankDetails", "managerApproved",
-  "privilegedAccess", "productionAccess", "contractor", "serviceDown",
-  "securityImpact", "executiveAffected", "revenueImpact", "workaroundAvailable",
-  "credentialRequested", "suspiciousAttachment", "executiveImpersonation", "linkClicked",
-  "multipleRecipients", "targetAccount", "highIntent", "requestedDemo",
-  "marketingConsent", "consent", "suppressed", "existingCustomer", "negativeSentiment",
-  "championLeft", "execSponsorMissing", "nonStandardTerms", "personalData",
-  "crossBorderData", "autoRenewal", "regulatedIndustry", "handlesPersonalData",
-  "businessCritical", "foreignDataHosting", "subprocessors", "soc2Available", "dataRisk",
-  "regulatoryNotificationPossible", "containsSensitiveData", "productionData", "externalSharing",
-  "ownerApproved", "customerImpact", "databaseMigration", "rollbackTested", "duringPeakHours",
-  "securityRelevant", "injuryReported", "immediateDanger", "accessControlImpact", "operationsDisrupted",
-  "materialFinancialInfo", "securityIncident", "legalReviewed", "executiveApproved", "identityVerified",
-  "sensitiveData", "thirdPartyData", "legalHold", "handlesSensitiveData", "customerFacing",
-  "consequentialDecision", "regulatedProcess", "approvedProvider", "humanReviewPlanned"
-]);
-
 const adaptersByDepartment = {
   finance: ["SAP", "Oracle", "NetSuite", "Coupa", "Slack"],
-  "human-resources": ["Workday", "Okta", "Microsoft Entra ID", "ServiceNow"],
   "information-technology": ["ServiceNow", "Jira Service Management", "PagerDuty"],
   security: ["Microsoft 365", "Google Workspace", "SIEM", "SOAR"],
-  sales: ["Salesforce", "HubSpot", "enrichment and routing tools"],
-  marketing: ["marketing automation", "CRM", "consent platform"],
-  "customer-success": ["customer success platform", "CRM", "support desk"],
-  legal: ["CLM", "e-signature", "ticketing", "document storage"],
-  procurement: ["procurement suite", "GRC", "security questionnaires"],
-  operations: ["incident management", "Slack", "Microsoft Teams", "status page"],
-  "data-and-analytics": ["Snowflake", "Databricks", "BigQuery", "data catalog", "ticketing"],
-  engineering: ["GitHub", "GitLab", "Jira", "change management", "incident management"],
-  facilities: ["facilities management", "physical security", "Slack", "Microsoft Teams"],
-  "corporate-communications": ["content management", "Slack", "Microsoft Teams", "approval tools"],
-  privacy: ["privacy management", "CRM", "data catalog", "ticketing", "document storage"],
-  "risk-and-compliance": ["GRC", "AI inventory", "model registry", "data catalog", "ServiceNow", "Jira"]
+  engineering: ["GitHub", "GitLab", "Jira", "change management", "incident management"]
 };
 
-function contractFor(field) {
-  if (numberContracts[field]) return numberContracts[field];
-  if (booleanFields.has(field)) return { type: "boolean" };
-  if (field === "email") return { type: "string", format: "email", minLength: 3, maxLength: 320 };
-  if (["startedAt", "endDate", "plannedAt", "receivedAt"].includes(field)) return { type: "string", format: "date-time", minLength: 1, maxLength: 64 };
-  if (field === "currency") return { type: "string", pattern: "^[A-Z]{3}$", minLength: 3, maxLength: 3 };
-  if (field === "summary") return { type: "string", minLength: 1, maxLength: 5000 };
+function contractFor(definition, field) {
+  if (definition.fieldContracts?.[field]) return definition.fieldContracts[field];
   return { type: "string", minLength: 1, maxLength: 500 };
+}
+
+function schemaContractFor(definition, field) {
+  const contract = { ...contractFor(definition, field) };
+  if (!definition.required.includes(field) || contract.type !== "string") return contract;
+  if (contract.pattern) return { ...contract, allOf: [...(contract.allOf ?? []), { pattern: "\\S" }] };
+  return { ...contract, pattern: "\\S" };
 }
 
 export function inputSchemaFor(definition) {
@@ -449,7 +622,7 @@ export function inputSchemaFor(definition) {
     type: "object",
     required: [...definition.required],
     properties: Object.fromEntries(
-      [...definition.required, ...definition.optional].map((field) => [field, contractFor(field)])
+      [...definition.required, ...definition.optional].map((field) => [field, schemaContractFor(definition, field)])
     ),
     additionalProperties: true
   };
@@ -468,5 +641,5 @@ export function policyFor(definition) {
 }
 
 export function adaptersFor(definition) {
-  return adaptersByDepartment[definition.department] ?? [];
+  return definition.adapters ?? adaptersByDepartment[definition.department] ?? [];
 }

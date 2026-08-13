@@ -1,0 +1,12 @@
+{
+  "meetingId": "meetingId-001",
+  "meetingEndedAt": "2026-08-07T03:00:00Z",
+  "actionCount": 1,
+  "decisionCount": 1,
+  "ownerMissing": true,
+  "dueDateMissing": true,
+  "externalFollowUpDrafted": true,
+  "crmUpdateProposed": true,
+  "sensitiveContent": true,
+  "sourceContextApproved": false
+}

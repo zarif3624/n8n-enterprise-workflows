@@ -1,5 +1,26 @@
 export const policySchemaVersion = "1.0";
-export const policyEngineVersion = "1.0.4";
+export const policyEngineVersion = "1.0.7";
+
+export function isRfc3339DateTime(value) {
+  if (typeof value !== "string") return false;
+  const match = /^(\d{4})-(\d{2})-(\d{2})[Tt](\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:[Zz]|[+-](\d{2}):(\d{2}))$/.exec(value);
+  if (!match) return false;
+
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText, offsetHourText, offsetMinuteText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const hour = Number(hourText);
+  const minute = Number(minuteText);
+  const second = Number(secondText);
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+  if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) return false;
+  if (hour > 23 || minute > 59 || second > 59) return false;
+  if (offsetHourText !== undefined && (Number(offsetHourText) > 23 || Number(offsetMinuteText) > 59)) return false;
+  return true;
+}
 
 function hasValue(value) {
   return value !== undefined && value !== null && !(typeof value === "string" && value.trim() === "");
@@ -32,23 +53,22 @@ function validateValue(field, value, contract) {
   }
 
   if (typeof value === "string") {
-    const normalized = value.trim();
-    if (contract.minLength !== undefined && normalized.length < contract.minLength) {
+    if (contract.minLength !== undefined && value.length < contract.minLength) {
       violations.push({ field, code: "too_short", message: `${field} must contain at least ${contract.minLength} character(s)`, expected: `minLength:${contract.minLength}` });
     }
-    if (contract.maxLength !== undefined && normalized.length > contract.maxLength) {
+    if (contract.maxLength !== undefined && value.length > contract.maxLength) {
       violations.push({ field, code: "too_long", message: `${field} must contain at most ${contract.maxLength} characters`, expected: `maxLength:${contract.maxLength}` });
     }
-    if (contract.format === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+    if (contract.format === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       violations.push({ field, code: "invalid_format", message: `${field} must be a valid email address`, expected: "email" });
     }
-    if (contract.format === "date-time" && Number.isNaN(Date.parse(normalized))) {
-      violations.push({ field, code: "invalid_format", message: `${field} must be an ISO 8601 date-time`, expected: "date-time" });
+    if (contract.format === "date-time" && !isRfc3339DateTime(value)) {
+      violations.push({ field, code: "invalid_format", message: `${field} must be an RFC 3339 date-time`, expected: "date-time" });
     }
-    if (contract.pattern && !(new RegExp(contract.pattern)).test(normalized)) {
+    if (contract.pattern && !(new RegExp(contract.pattern)).test(value)) {
       violations.push({ field, code: "invalid_format", message: `${field} has an invalid format`, expected: contract.pattern });
     }
-    if (contract.enum && !contract.enum.includes(normalized)) {
+    if (contract.enum && !contract.enum.includes(value)) {
       violations.push({ field, code: "invalid_value", message: `${field} must be one of the supported values`, expected: contract.enum.join("|") });
     }
   }
@@ -59,6 +79,18 @@ function validateValue(field, value, contract) {
     }
     if (contract.maximum !== undefined && value > contract.maximum) {
       violations.push({ field, code: "above_maximum", message: `${field} must be at most ${contract.maximum}`, expected: `maximum:${contract.maximum}` });
+    }
+  }
+
+  if (Array.isArray(value)) {
+    if (contract.minItems !== undefined && value.length < contract.minItems) {
+      violations.push({ field, code: "too_short", message: `${field} must contain at least ${contract.minItems} item(s)`, expected: `minItems:${contract.minItems}` });
+    }
+    if (contract.maxItems !== undefined && value.length > contract.maxItems) {
+      violations.push({ field, code: "too_long", message: `${field} must contain at most ${contract.maxItems} item(s)`, expected: `maxItems:${contract.maxItems}` });
+    }
+    if (contract.items) {
+      value.forEach((item, index) => violations.push(...validateValue(`${field}[${index}]`, item, contract.items)));
     }
   }
 
@@ -156,6 +188,7 @@ export function buildPolicyExpression(policy, triggerName) {
   const matcherSource = matchesRule.toString();
   const hasValueSource = hasValue.toString();
   const requestIdSource = normalizeRequestId.toString();
+  const dateTimeValidatorSource = isRfc3339DateTime.toString();
   const validatorSource = validateValue.toString();
   const serializedPolicy = JSON.stringify(policy, null, 2);
 
@@ -166,6 +199,7 @@ export function buildPolicyExpression(policy, triggerName) {
   return `={{ (() => {
     const hasValue = ${hasValueSource};
     const normalizeRequestId = ${requestIdSource};
+    const isRfc3339DateTime = ${dateTimeValidatorSource};
     const validateValue = ${validatorSource};
     const matchesRule = ${matcherSource};
     const evaluatePolicy = ${evaluatorSource};

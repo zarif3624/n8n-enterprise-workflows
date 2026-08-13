@@ -12,18 +12,23 @@ const [document, catalog, policyLock] = await Promise.all([readJson("policy-life
 test("every catalog policy has an honest draft, owner, and approval deadline", () => {
   assert.deepEqual(policyLifecycleIssues(document, { catalog, policyLock }), []);
   const report = buildPolicyLifecycleReport(document, { asOf: "2026-08-08" });
-  assert.deepEqual(report.summary, { policyCount: 16, draft: 16, active: 0, deprecated: 0, current: 1, dueSoon: 15, overdue: 0 });
-  assert.equal(report.policies.filter((entry) => entry.daysUntilReview === 30).length, 15);
-  assert.equal(report.policies.filter((entry) => entry.daysUntilReview === 32).length, 1);
+  assert.deepEqual(report.summary, { policyCount: 16, draft: 16, active: 0, deprecated: 0, current: 12, dueSoon: 4, overdue: 0 });
+  assert.deepEqual(report.policies.filter((entry) => entry.daysUntilReview === 30).map((entry) => entry.slug).sort(), [
+    "invoice-exception-triage",
+    "phishing-report-triage",
+    "production-change-risk-gate",
+    "service-desk-priority-routing"
+  ]);
+  assert.equal(report.policies.filter((entry) => entry.daysUntilReview === 34).length, 12);
   assert.ok(report.policies.every((entry) => entry.lastReviewedOn === undefined));
 });
 
 test("review reports distinguish due-soon and overdue policies deterministically", () => {
   const dueSoon = buildPolicyLifecycleReport(document, { asOf: "2026-08-20" });
   assert.equal(dueSoon.summary.dueSoon, 16);
-  const overdue = buildPolicyLifecycleReport(document, { asOf: "2026-09-08" });
-  assert.equal(overdue.summary.overdue, 15);
-  assert.match(renderPolicyLifecycleReport(overdue), /15 overdue/);
+  const overdue = buildPolicyLifecycleReport(document, { asOf: "2026-09-12" });
+  assert.equal(overdue.summary.overdue, 16);
+  assert.match(renderPolicyLifecycleReport(overdue), /16 overdue/);
 });
 
 test("lifecycle validation rejects drifted owners, unsafe intervals, duplicates, and incomplete deprecation", () => {
@@ -45,9 +50,9 @@ test("lifecycle CLI reserves exit 2 for overdue review gates", () => {
   const current = spawnSync(process.execPath, ["scripts/policy-lifecycle-cli.mjs", "validate", "--as-of", "2026-08-08"], { cwd: root, encoding: "utf8" });
   assert.equal(current.status, 0, current.stderr);
   assert.match(current.stdout, /no reviews are overdue/);
-  const overdue = spawnSync(process.execPath, ["scripts/policy-lifecycle-cli.mjs", "validate", "--as-of", "2026-09-08"], { cwd: root, encoding: "utf8" });
+  const overdue = spawnSync(process.execPath, ["scripts/policy-lifecycle-cli.mjs", "validate", "--as-of", "2026-09-12"], { cwd: root, encoding: "utf8" });
   assert.equal(overdue.status, 2);
-  assert.match(overdue.stderr, /15 policy review\(s\) are overdue/);
+  assert.match(overdue.stderr, /16 policy review\(s\) are overdue/);
 });
 
 test("lifecycle CLI rejects ambiguous or ignored governance options", () => {

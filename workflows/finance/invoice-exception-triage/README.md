@@ -12,7 +12,7 @@ A structured decision with a risk score, matched policy reasons, and the next re
 
 - **Primary owner:** Accounts Payable Operations
 - **Primary metric:** Minutes of manual review avoided per invoice
-- **Policy version:** `1.0.4`
+- **Policy version:** `1.0.7`
 - **ROI starting point:** `monthly invoice volume x exception rate x minutes saved x loaded hourly cost / 60`
 
 ## Five-minute adoption
@@ -37,8 +37,8 @@ The request body must be a JSON object. Unknown fields are accepted for caller c
 
 | Field | Required | Contract |
 | --- | --- | --- |
-| `invoiceId` | Yes | string |
-| `vendorId` | Yes | string |
+| `invoiceId` | Yes | string, pattern \S |
+| `vendorId` | Yes | string, pattern \S |
 | `amount` | Yes | number, min 0 |
 | `currency` | Yes | string, pattern ^[A-Z]{3}$ |
 | `purchaseOrderId` | No | string |
@@ -69,7 +69,7 @@ Successful requests return HTTP 200 with a request ID, policy version, decision,
   "httpStatus": 200,
   "requestId": "example-request-001",
   "workflow": "invoice-exception-triage",
-  "policyVersion": "1.0.4",
+  "policyVersion": "1.0.7",
   "decision": "continue_standard_processing",
   "priorityBand": "low",
   "score": 0,

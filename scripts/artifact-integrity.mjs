@@ -19,6 +19,7 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "policy-lifecycle.json", kind: "policy-lifecycle" },
     { path: "policy-lock.json", kind: "policy-lock" },
     { path: "policy-snapshot.json", kind: "policy-snapshot" },
+    { path: "portfolio.json", kind: "portfolio" },
     { path: "runtime-compatibility.json", kind: "runtime-compatibility" },
     { path: "schemas/catalog.schema.json", kind: "json-schema" },
     { path: "schemas/conformance-comparison.schema.json", kind: "json-schema" },
@@ -28,6 +29,7 @@ export function generatedArtifactDescriptors(catalog) {
     { path: "schemas/policy-lifecycle.schema.json", kind: "json-schema" },
     { path: "schemas/policy-lock.schema.json", kind: "json-schema" },
     { path: "schemas/policy-snapshot.schema.json", kind: "json-schema" },
+    { path: "schemas/portfolio.schema.json", kind: "json-schema" },
     { path: "schemas/release-manifest.schema.json", kind: "json-schema" },
     { path: "schemas/readiness-report.schema.json", kind: "json-schema" },
     { path: "schemas/runtime-compatibility.schema.json", kind: "json-schema" }

@@ -1,0 +1,12 @@
+{
+  "escalationId": "escalationId-001",
+  "severity": "critical",
+  "customerImpactSummary": "customerImpactSummary-001",
+  "openActionCount": 1,
+  "telemetryAttached": false,
+  "staleActionCount": 1,
+  "externalUpdateDrafted": true,
+  "engineeringOwnerAssigned": false,
+  "timelineSynchronized": false,
+  "closureProposed": true
+}

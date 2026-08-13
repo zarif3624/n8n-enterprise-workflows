@@ -1,0 +1,11 @@
+{
+  "evaluationRunId": "evaluationRunId-001",
+  "changeType": "changeType-001",
+  "evaluationCoveragePercent": 89,
+  "qualityScore": 79,
+  "safetyRegression": true,
+  "latencyRegressionPercent": 26,
+  "costRegressionPercent": 26,
+  "baselineAvailable": false,
+  "exceptionRequested": true
+}

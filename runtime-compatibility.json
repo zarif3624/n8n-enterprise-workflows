@@ -1,6 +1,6 @@
 {
   "compatibilityVersion": 1,
-  "policyEngineVersion": "1.0.4",
+  "policyEngineVersion": "1.0.7",
   "nodeVersion": "22",
   "minimumSupportedN8nVersion": "2.13.0",
   "scheduledN8nVersions": [

@@ -1,0 +1,12 @@
+{
+  "caseId": "caseId-001",
+  "caseType": "caseType-001",
+  "requesterVerified": true,
+  "policyCheckComplete": true,
+  "sensitiveCase": false,
+  "managerApprovalRequired": false,
+  "hrApprovalRequired": false,
+  "payrollImpact": false,
+  "workplaceImpact": false,
+  "completionEvidenceComplete": true
+}

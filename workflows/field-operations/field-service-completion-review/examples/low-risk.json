@@ -1,0 +1,12 @@
+{
+  "serviceJobId": "serviceJobId-001",
+  "visitCompletedAt": "2026-08-07T03:00:00Z",
+  "evidenceComplete": true,
+  "completionChecklistPercent": 100,
+  "paymentReleaseProposed": false,
+  "customerMessageDrafted": false,
+  "rescheduleProposed": false,
+  "partsException": false,
+  "warrantyException": false,
+  "humanResolutionRequired": false
+}

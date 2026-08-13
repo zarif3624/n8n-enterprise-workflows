@@ -1,234 +1,134 @@
 {
   "snapshotVersion": 1,
   "policySchemaVersion": "1.0",
-  "policyEngineVersion": "1.0.4",
-  "policyEngineFingerprint": "sha256:fc01eed19014b378a76413c5e93d3c4d2af37e92cbcae2602a75f55b353bc91b",
+  "policyEngineVersion": "1.0.7",
+  "policyEngineFingerprint": "sha256:f22d8491449cd331fb543f238772ddc92095b60b22a9b05b9713a091ce284605",
   "policies": [
     {
-      "department": "risk-and-compliance",
-      "slug": "ai-use-case-risk-intake",
-      "name": "Triage enterprise AI use cases",
-      "owner": "Enterprise Risk and AI Governance",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:4b6c8e0fc469ee6b2b2d89815e97b63a7c7555545a14f57646dabc65c0c46356",
+      "department": "artificial-intelligence",
+      "slug": "agent-evaluation-release-gate",
+      "name": "Gate agent releases with evaluation evidence",
+      "owner": "AI Platform & SRE",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:bef8e8e2375de1c4c19d1750207e801b3cb1eb5ba5bdc2b7aeb1c92cb119fb1a",
       "behavior": {
         "actions": [
-          "Create an entry in the AI use-case inventory",
-          "Assign security, privacy, legal, and risk reviewers from matched policy reasons",
-          "Require a named approver before production or customer-facing use"
+          "Present evaluation evidence to the release owner",
+          "Recommend remediation for failed quality, safety, latency, or cost gates",
+          "Keep deployment outside the starter until a release owner approves the evidence"
         ],
         "decisions": {
-          "high": "hold_for_ai_governance_approval",
-          "low": "approve_controlled_pilot",
-          "medium": "require_cross_functional_review"
+          "high": "hold_release_for_owner_exception_review",
+          "low": "recommend_release_candidate_for_owner_approval",
+          "medium": "route_release_evidence_to_owner_review"
         },
-        "department": "risk-and-compliance",
+        "department": "artificial-intelligence",
         "inputSchema": {
           "additionalProperties": true,
           "properties": {
-            "approvedProvider": {
+            "baselineAvailable": {
               "type": "boolean"
             },
-            "businessOwner": {
-              "maxLength": 500,
+            "changeType": {
+              "maxLength": 200,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "businessPurpose": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
+            "costRegressionPercent": {
+              "maximum": 1000,
+              "minimum": 0,
+              "type": "number"
             },
-            "consequentialDecision": {
-              "type": "boolean"
-            },
-            "customerFacing": {
-              "type": "boolean"
-            },
-            "handlesSensitiveData": {
-              "type": "boolean"
-            },
-            "humanReviewPlanned": {
-              "type": "boolean"
-            },
-            "regulatedProcess": {
-              "type": "boolean"
-            },
-            "requestId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "useCaseName": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            }
-          },
-          "required": [
-            "requestId",
-            "useCaseName",
-            "businessOwner",
-            "businessPurpose"
-          ],
-          "type": "object"
-        },
-        "policyEngineVersion": "1.0.4",
-        "policySchemaVersion": "1.0",
-        "rules": [
-          {
-            "field": "handlesSensitiveData",
-            "operator": "truthy",
-            "points": 35,
-            "reason": "Use case handles sensitive data"
-          },
-          {
-            "field": "customerFacing",
-            "operator": "truthy",
-            "points": 25,
-            "reason": "AI output is customer-facing"
-          },
-          {
-            "field": "consequentialDecision",
-            "minimumBand": "high",
-            "operator": "truthy",
-            "points": 70,
-            "reason": "AI contributes to a consequential decision"
-          },
-          {
-            "field": "regulatedProcess",
-            "minimumBand": "high",
-            "operator": "truthy",
-            "points": 50,
-            "reason": "Use case operates within a regulated process"
-          },
-          {
-            "field": "approvedProvider",
-            "operator": "falsy",
-            "points": 45,
-            "reason": "Model or service provider is not approved"
-          },
-          {
-            "field": "humanReviewPlanned",
-            "operator": "falsy",
-            "points": 35,
-            "reason": "Human review is not part of the operating design"
-          }
-        ],
-        "slug": "ai-use-case-risk-intake",
-        "thresholds": {
-          "high": 70,
-          "medium": 30
-        }
-      }
-    },
-    {
-      "department": "marketing",
-      "slug": "campaign-lead-compliance-gate",
-      "name": "Gate campaign leads for compliant follow-up",
-      "owner": "Marketing Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:541b099f3ef285dbe060625d4a05b0bfd79eee090cbc4d82741f01cc94034822",
-      "behavior": {
-        "actions": [
-          "Record the policy decision",
-          "Send approved contacts to the campaign sequence",
-          "Route uncertain consent records to a human reviewer"
-        ],
-        "decisions": {
-          "high": "suppress_automated_outreach",
-          "low": "allow_campaign_follow_up",
-          "medium": "route_to_compliance_review"
-        },
-        "department": "marketing",
-        "inputSchema": {
-          "additionalProperties": true,
-          "properties": {
-            "campaignId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "consent": {
-              "type": "boolean"
-            },
-            "country": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "email": {
-              "format": "email",
-              "maxLength": 320,
-              "minLength": 3,
-              "type": "string"
-            },
-            "engagementScore": {
+            "evaluationCoveragePercent": {
               "maximum": 100,
               "minimum": 0,
               "type": "number"
             },
-            "existingCustomer": {
-              "type": "boolean"
-            },
-            "leadId": {
+            "evaluationRunId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "suppressed": {
+            "exceptionRequested": {
               "type": "boolean"
             },
-            "targetAccount": {
+            "latencyRegressionPercent": {
+              "maximum": 1000,
+              "minimum": 0,
+              "type": "number"
+            },
+            "qualityScore": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "safetyRegression": {
               "type": "boolean"
             }
           },
           "required": [
-            "leadId",
-            "email",
-            "campaignId",
-            "country"
+            "evaluationRunId",
+            "changeType",
+            "evaluationCoveragePercent",
+            "qualityScore"
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
-            "field": "consent",
+            "field": "evaluationCoveragePercent",
+            "operator": "lt",
+            "points": 30,
+            "reason": "Evaluation coverage is below 90%",
+            "value": 90
+          },
+          {
+            "field": "qualityScore",
+            "operator": "lt",
+            "points": 35,
+            "reason": "Quality score is below the release target",
+            "value": 80
+          },
+          {
+            "field": "safetyRegression",
             "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "Evaluation detected a safety regression"
+          },
+          {
+            "field": "latencyRegressionPercent",
+            "operator": "gt",
+            "points": 25,
+            "reason": "Latency regressed by more than 25%",
+            "value": 25
+          },
+          {
+            "field": "costRegressionPercent",
+            "operator": "gt",
+            "points": 20,
+            "reason": "Unit cost regressed by more than 25%",
+            "value": 25
+          },
+          {
+            "field": "baselineAvailable",
             "operator": "falsy",
-            "points": 60,
-            "reason": "Consent is missing"
+            "points": 40,
+            "reason": "No approved baseline is available for comparison"
           },
           {
-            "field": "suppressed",
+            "field": "exceptionRequested",
             "minimumBand": "high",
             "operator": "truthy",
-            "points": 80,
-            "reason": "Contact is on a suppression list"
-          },
-          {
-            "field": "targetAccount",
-            "operator": "truthy",
-            "points": -20,
-            "reason": "Contact belongs to a target account"
-          },
-          {
-            "field": "engagementScore",
-            "operator": "gte",
-            "points": -15,
-            "reason": "Strong engagement signal",
-            "value": 70
-          },
-          {
-            "field": "existingCustomer",
-            "operator": "truthy",
-            "points": 15,
-            "reason": "Customer messaging policy may apply"
+            "points": 70,
+            "reason": "Release requires an owner-approved policy exception"
           }
         ],
-        "slug": "campaign-lead-compliance-gate",
+        "slug": "agent-evaluation-release-gate",
         "thresholds": {
           "high": 70,
           "medium": 30
@@ -236,112 +136,124 @@
       }
     },
     {
-      "department": "legal",
-      "slug": "contract-intake-routing",
-      "name": "Route enterprise contract requests",
-      "owner": "Legal Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:10aa36610499497f0a32bbad3c29e3b77ff22b46c206dfdcd44d7966de896b13",
+      "department": "revenue-operations",
+      "slug": "closed-won-launch-readiness",
+      "name": "Review closed-won launch readiness",
+      "owner": "Revenue Operations",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:3278759b975735f0b90dcfa7bcf989256e678a88b85b3553f325a116d786d2b6",
       "behavior": {
         "actions": [
-          "Create the legal matter",
-          "Attach the structured intake fields",
-          "Require legal approval before signature or redline acceptance"
+          "Present scope and prerequisite evidence to the launch owner",
+          "Recommend owners for unresolved launch checklist items",
+          "Keep workspace creation, provisioning, entitlements, and scheduling outside the starter"
         ],
         "decisions": {
-          "high": "open_cross_functional_review",
-          "low": "use_standard_legal_queue",
-          "medium": "assign_specialist_review"
+          "high": "hold_provisioning_for_exception_approval",
+          "low": "recommend_launch_checklist_for_owner_review",
+          "medium": "route_launch_gaps_to_revenue_operations"
         },
-        "department": "legal",
+        "department": "revenue-operations",
         "inputSchema": {
           "additionalProperties": true,
           "properties": {
-            "autoRenewal": {
-              "type": "boolean"
-            },
-            "contractType": {
+            "accountId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "contractValue": {
+            "complexScope": {
+              "type": "boolean"
+            },
+            "entitlementChangeProposed": {
+              "type": "boolean"
+            },
+            "kickoffScheduled": {
+              "type": "boolean"
+            },
+            "launchOwnerAssigned": {
+              "type": "boolean"
+            },
+            "opportunityId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "orderValidated": {
+              "type": "boolean"
+            },
+            "prerequisiteCompletionPercent": {
+              "maximum": 100,
               "minimum": 0,
               "type": "number"
             },
-            "counterparty": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "crossBorderData": {
+            "provisioningException": {
               "type": "boolean"
             },
-            "nonStandardTerms": {
+            "scopeConfirmed": {
               "type": "boolean"
-            },
-            "personalData": {
-              "type": "boolean"
-            },
-            "regulatedIndustry": {
-              "type": "boolean"
-            },
-            "requestId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
             }
           },
           "required": [
-            "requestId",
-            "contractType",
-            "counterparty",
-            "contractValue"
+            "opportunityId",
+            "accountId",
+            "scopeConfirmed",
+            "prerequisiteCompletionPercent"
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
-            "field": "nonStandardTerms",
-            "operator": "truthy",
+            "field": "scopeConfirmed",
+            "operator": "falsy",
+            "points": 45,
+            "reason": "Implementation scope is not confirmed"
+          },
+          {
+            "field": "prerequisiteCompletionPercent",
+            "operator": "lt",
             "points": 30,
-            "reason": "Non-standard terms requested"
+            "reason": "Launch prerequisites are incomplete",
+            "value": 100
           },
           {
-            "field": "personalData",
+            "field": "orderValidated",
+            "operator": "falsy",
+            "points": 40,
+            "reason": "The closed-won order has not been validated"
+          },
+          {
+            "field": "complexScope",
             "operator": "truthy",
-            "points": 25,
-            "reason": "Agreement involves personal data"
+            "points": 35,
+            "reason": "The opportunity has complex implementation scope"
           },
           {
-            "field": "crossBorderData",
+            "field": "provisioningException",
+            "minimumBand": "high",
             "operator": "truthy",
-            "points": 30,
-            "reason": "Cross-border data transfer involved"
+            "points": 70,
+            "reason": "Provisioning requires an exception"
           },
           {
-            "field": "autoRenewal",
+            "field": "entitlementChangeProposed",
+            "minimumBand": "high",
             "operator": "truthy",
-            "points": 15,
-            "reason": "Automatic renewal clause present"
+            "points": 70,
+            "reason": "An entitlement change is proposed"
           },
           {
-            "field": "regulatedIndustry",
-            "operator": "truthy",
-            "points": 30,
-            "reason": "Counterparty operates in a regulated industry"
-          },
-          {
-            "field": "contractValue",
-            "operator": "gte",
-            "points": 25,
-            "reason": "High-value agreement",
-            "value": 250000
+            "field": "launchOwnerAssigned",
+            "operator": "falsy",
+            "points": 35,
+            "reason": "No accountable launch owner is assigned"
           }
         ],
-        "slug": "contract-intake-routing",
+        "slug": "closed-won-launch-readiness",
         "thresholds": {
           "high": 70,
           "medium": 30
@@ -350,21 +262,21 @@
     },
     {
       "department": "customer-success",
-      "slug": "customer-risk-escalation",
-      "name": "Escalate at-risk enterprise customers",
-      "owner": "Customer Success Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:eae76dfee6af7b72cb973defaad623403d02beba0907b8464865478a4bd7734f",
+      "slug": "customer-health-action-review",
+      "name": "Review customer health actions",
+      "owner": "Customer Success",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:27e8bbcdb786c3e60970a99f79c0598737ddd48c4820d49312f6caa3383f2c1c",
       "behavior": {
         "actions": [
-          "Update customer health in the CS platform",
-          "Assign a named intervention owner",
-          "Require executive review before commercial concessions"
+          "Present the supporting account signals and matched reasons",
+          "Recommend an onboarding, risk, renewal, or expansion play for owner review",
+          "Keep CRM tasks, customer outreach, billing changes, and commercial actions outside the starter"
         ],
         "decisions": {
-          "high": "launch_executive_save_plan",
-          "low": "continue_success_plan",
-          "medium": "open_risk_workstream"
+          "high": "hold_outreach_or_commercial_action_for_approval",
+          "low": "recommend_customer_play_for_owner_review",
+          "medium": "route_health_risks_to_customer_owner"
         },
         "department": "customer-success",
         "inputSchema": {
@@ -373,202 +285,224 @@
             "accountId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "accountName": {
+            "billingRisk": {
+              "type": "boolean"
+            },
+            "commercialActionProposed": {
+              "type": "boolean"
+            },
+            "healthEvidenceComplete": {
+              "type": "boolean"
+            },
+            "highImpactOutreachProposed": {
+              "type": "boolean"
+            },
+            "lifecycleStage": {
+              "maxLength": 200,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "outcomeTrackingConfigured": {
+              "type": "boolean"
+            },
+            "ownerAssigned": {
+              "type": "boolean"
+            },
+            "signalCount": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "supportEscalationOpen": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "accountId",
+            "lifecycleStage",
+            "signalCount",
+            "healthEvidenceComplete"
+          ],
+          "type": "object"
+        },
+        "policyEngineVersion": "1.0.7",
+        "policySchemaVersion": "1.0",
+        "rules": [
+          {
+            "field": "healthEvidenceComplete",
+            "operator": "falsy",
+            "points": 45,
+            "reason": "Customer health evidence is incomplete"
+          },
+          {
+            "field": "signalCount",
+            "operator": "lt",
+            "points": 30,
+            "reason": "The recommendation is supported by fewer than two signals",
+            "value": 2
+          },
+          {
+            "field": "highImpactOutreachProposed",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "High-impact customer outreach is proposed"
+          },
+          {
+            "field": "commercialActionProposed",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "A renewal, expansion, or other commercial action is proposed"
+          },
+          {
+            "field": "billingRisk",
+            "operator": "truthy",
+            "points": 35,
+            "reason": "The account has a billing risk signal"
+          },
+          {
+            "field": "supportEscalationOpen",
+            "operator": "truthy",
+            "points": 40,
+            "reason": "The account has an open support escalation"
+          },
+          {
+            "field": "ownerAssigned",
+            "operator": "falsy",
+            "points": 35,
+            "reason": "No customer owner is assigned"
+          },
+          {
+            "field": "outcomeTrackingConfigured",
+            "operator": "falsy",
+            "points": 25,
+            "reason": "Outcome tracking is not configured"
+          }
+        ],
+        "slug": "customer-health-action-review",
+        "thresholds": {
+          "high": 70,
+          "medium": 30
+        }
+      }
+    },
+    {
+      "department": "data-operations",
+      "slug": "enterprise-data-reconciliation-control",
+      "name": "Control enterprise data reconciliation exceptions",
+      "owner": "Data & Analytics",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:b01c83def479dfff7b3b220b8c93a5e7855662f07443506f21626f10c4e21430",
+      "behavior": {
+        "actions": [
+          "Present variance evidence to the data steward",
+          "Recommend investigation targets without changing source records",
+          "Keep corrections and certification outside the starter until human approval"
+        ],
+        "decisions": {
+          "high": "hold_corrections_for_material_exception_review",
+          "low": "recommend_reconciliation_for_certification",
+          "medium": "route_variances_to_data_steward_review"
+        },
+        "department": "data-operations",
+        "inputSchema": {
+          "additionalProperties": true,
+          "properties": {
+            "ambiguousCorrection": {
+              "type": "boolean"
+            },
+            "certificationEvidenceComplete": {
+              "type": "boolean"
+            },
+            "duplicateCount": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "materialVariance": {
+              "type": "boolean"
+            },
+            "missingRecordCount": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "reconciliationId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "arr": {
+            "sourceRecordCount": {
               "minimum": 0,
               "type": "number"
             },
-            "championLeft": {
-              "type": "boolean"
-            },
-            "criticalTickets": {
+            "targetRecordCount": {
               "minimum": 0,
               "type": "number"
             },
-            "execSponsorMissing": {
-              "type": "boolean"
-            },
-            "negativeSentiment": {
-              "type": "boolean"
-            },
-            "renewalDays": {
-              "minimum": 0,
-              "type": "number"
-            },
-            "usageDropPercent": {
+            "varianceRatePercent": {
               "maximum": 100,
               "minimum": 0,
               "type": "number"
             }
           },
           "required": [
-            "accountId",
-            "accountName",
-            "arr",
-            "renewalDays"
+            "reconciliationId",
+            "sourceRecordCount",
+            "targetRecordCount",
+            "varianceRatePercent"
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
-            "field": "usageDropPercent",
-            "operator": "gte",
+            "field": "varianceRatePercent",
+            "operator": "gt",
             "points": 30,
-            "reason": "Usage dropped at least 30%",
-            "value": 30
+            "reason": "Cross-system variance rate exceeds 1%",
+            "value": 1
           },
           {
-            "field": "criticalTickets",
-            "operator": "gte",
-            "points": 30,
-            "reason": "Multiple critical support tickets",
-            "value": 2
-          },
-          {
-            "field": "negativeSentiment",
-            "operator": "truthy",
-            "points": 25,
-            "reason": "Negative customer sentiment detected"
-          },
-          {
-            "field": "championLeft",
-            "operator": "truthy",
-            "points": 35,
-            "reason": "Customer champion departed"
-          },
-          {
-            "field": "execSponsorMissing",
-            "operator": "truthy",
-            "points": 20,
-            "reason": "No executive sponsor is mapped"
-          },
-          {
-            "field": "renewalDays",
-            "operator": "lt",
-            "points": 20,
-            "reason": "Renewal is less than 60 days away",
-            "value": 60
-          }
-        ],
-        "slug": "customer-risk-escalation",
-        "thresholds": {
-          "high": 70,
-          "medium": 30
-        }
-      }
-    },
-    {
-      "department": "data-and-analytics",
-      "slug": "data-access-request-triage",
-      "name": "Triage enterprise data access requests",
-      "owner": "Data Governance",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:6567ff8f1d1d84ef94367228a98157b11ef765bb53f1e6edd22bd64cd5de7e91",
-      "behavior": {
-        "actions": [
-          "Create the governed access ticket",
-          "Record purpose and retention",
-          "Require named approval before external sharing"
-        ],
-        "decisions": {
-          "high": "block_until_governance_approval",
-          "low": "approve_standard_data_access",
-          "medium": "require_owner_and_privacy_review"
-        },
-        "department": "data-and-analytics",
-        "inputSchema": {
-          "additionalProperties": true,
-          "properties": {
-            "containsSensitiveData": {
-              "type": "boolean"
-            },
-            "dataset": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "externalSharing": {
-              "type": "boolean"
-            },
-            "ownerApproved": {
-              "type": "boolean"
-            },
-            "productionData": {
-              "type": "boolean"
-            },
-            "purpose": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "requestId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "requesterId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "retentionDays": {
-              "minimum": 0,
-              "type": "number"
-            }
-          },
-          "required": [
-            "requestId",
-            "requesterId",
-            "dataset",
-            "purpose"
-          ],
-          "type": "object"
-        },
-        "policyEngineVersion": "1.0.4",
-        "policySchemaVersion": "1.0",
-        "rules": [
-          {
-            "field": "containsSensitiveData",
-            "operator": "truthy",
-            "points": 35,
-            "reason": "Dataset contains sensitive data"
-          },
-          {
-            "field": "productionData",
-            "operator": "truthy",
-            "points": 25,
-            "reason": "Request includes production data"
-          },
-          {
-            "field": "externalSharing",
-            "minimumBand": "high",
-            "operator": "truthy",
-            "points": 50,
-            "reason": "Data may be shared outside the organization"
-          },
-          {
-            "field": "retentionDays",
+            "field": "duplicateCount",
             "operator": "gt",
             "points": 25,
-            "reason": "Requested retention exceeds one year",
-            "value": 365
+            "reason": "Duplicate records were detected",
+            "value": 0
           },
           {
-            "field": "ownerApproved",
+            "field": "missingRecordCount",
+            "operator": "gt",
+            "points": 30,
+            "reason": "Records are missing from one side of the reconciliation",
+            "value": 0
+          },
+          {
+            "field": "materialVariance",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "The variance is classified as material"
+          },
+          {
+            "field": "ambiguousCorrection",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "The proposed correction is ambiguous"
+          },
+          {
+            "field": "certificationEvidenceComplete",
             "operator": "falsy",
             "points": 40,
-            "reason": "Dataset owner approval is missing"
+            "reason": "Certification evidence is incomplete"
           }
         ],
-        "slug": "data-access-request-triage",
+        "slug": "enterprise-data-reconciliation-control",
         "thresholds": {
           "high": 70,
           "medium": 30
@@ -576,221 +510,132 @@
       }
     },
     {
-      "department": "privacy",
-      "slug": "data-subject-request-triage",
-      "name": "Triage data subject requests",
-      "owner": "Privacy Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:a87f23a022557aa59256bb5e5ffc695be89f5dcaa43c833071d4419a1d673404",
+      "department": "field-operations",
+      "slug": "field-service-completion-review",
+      "name": "Review field service completion evidence",
+      "owner": "Field Operations",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:455936e45b08e011cdee5bafc1833c2b8de9fb9c94225605d6cbbe0820391ae2",
       "behavior": {
         "actions": [
-          "Create the privacy case",
-          "Record the governing deadline",
-          "Require privacy or legal approval before disclosure or deletion"
+          "Present completion evidence and open exceptions to the field-service owner",
+          "Recommend follow-up for documentation, parts, or warranty gaps",
+          "Keep billing, payment, scheduling, customer messaging, inventory writes, and closure outside the starter"
         ],
         "decisions": {
-          "high": "hold_for_identity_or_legal_review",
-          "low": "continue_standard_privacy_queue",
-          "medium": "assign_privacy_specialist_review"
+          "high": "hold_financial_customer_or_closure_action_for_approval",
+          "low": "recommend_service_completion_for_owner_review",
+          "medium": "route_service_exceptions_to_field_operations"
         },
-        "department": "privacy",
+        "department": "field-operations",
         "inputSchema": {
           "additionalProperties": true,
           "properties": {
-            "deadlineDays": {
+            "completionChecklistPercent": {
+              "maximum": 100,
               "minimum": 0,
               "type": "number"
             },
-            "identityVerified": {
+            "customerMessageDrafted": {
               "type": "boolean"
             },
-            "legalHold": {
+            "evidenceComplete": {
               "type": "boolean"
             },
-            "receivedAt": {
+            "humanResolutionRequired": {
+              "type": "boolean"
+            },
+            "partsException": {
+              "type": "boolean"
+            },
+            "paymentReleaseProposed": {
+              "type": "boolean"
+            },
+            "rescheduleProposed": {
+              "type": "boolean"
+            },
+            "serviceJobId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "visitCompletedAt": {
               "format": "date-time",
               "maxLength": 64,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "requestId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "requestType": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "requesterRegion": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "sensitiveData": {
-              "type": "boolean"
-            },
-            "thirdPartyData": {
+            "warrantyException": {
               "type": "boolean"
             }
           },
           "required": [
-            "requestId",
-            "requestType",
-            "requesterRegion",
-            "receivedAt"
+            "serviceJobId",
+            "visitCompletedAt",
+            "evidenceComplete",
+            "completionChecklistPercent"
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
-            "field": "identityVerified",
-            "minimumBand": "high",
+            "field": "evidenceComplete",
             "operator": "falsy",
-            "points": 50,
-            "reason": "Requester identity is not verified"
+            "points": 45,
+            "reason": "Required field-service evidence is incomplete"
           },
           {
-            "field": "deadlineDays",
+            "field": "completionChecklistPercent",
             "operator": "lt",
             "points": 35,
-            "reason": "Fewer than seven days remain",
-            "value": 7
+            "reason": "The completion checklist is incomplete",
+            "value": 100
           },
           {
-            "field": "sensitiveData",
-            "operator": "truthy",
-            "points": 30,
-            "reason": "Request involves sensitive data"
-          },
-          {
-            "field": "thirdPartyData",
-            "operator": "truthy",
-            "points": 25,
-            "reason": "Responsive records may contain third-party data"
-          },
-          {
-            "field": "legalHold",
+            "field": "paymentReleaseProposed",
             "minimumBand": "high",
             "operator": "truthy",
-            "points": 60,
-            "reason": "Responsive data is subject to legal hold"
-          }
-        ],
-        "slug": "data-subject-request-triage",
-        "thresholds": {
-          "high": 70,
-          "medium": 30
-        }
-      }
-    },
-    {
-      "department": "human-resources",
-      "slug": "employee-access-request-triage",
-      "name": "Triage employee access requests",
-      "owner": "People Operations and Identity Management",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:8a69fa582f98fff6c53c2191389be4f5ef05ef816dd3b6979c877aef9ba17818",
-      "behavior": {
-        "actions": [
-          "Create an identity-governance ticket",
-          "Require a named approver for elevated access",
-          "Set an expiration date before provisioning"
-        ],
-        "decisions": {
-          "high": "block_until_approved",
-          "low": "queue_standard_fulfillment",
-          "medium": "require_security_review"
-        },
-        "department": "human-resources",
-        "inputSchema": {
-          "additionalProperties": true,
-          "properties": {
-            "accessLevel": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "contractor": {
-              "type": "boolean"
-            },
-            "employeeId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "endDate": {
-              "format": "date-time",
-              "maxLength": 64,
-              "minLength": 1,
-              "type": "string"
-            },
-            "managerApproved": {
-              "type": "boolean"
-            },
-            "privilegedAccess": {
-              "type": "boolean"
-            },
-            "productionAccess": {
-              "type": "boolean"
-            },
-            "requestId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "system": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            }
-          },
-          "required": [
-            "requestId",
-            "employeeId",
-            "system",
-            "accessLevel"
-          ],
-          "type": "object"
-        },
-        "policyEngineVersion": "1.0.4",
-        "policySchemaVersion": "1.0",
-        "rules": [
-          {
-            "field": "managerApproved",
-            "operator": "falsy",
-            "points": 45,
-            "reason": "Manager approval is missing"
+            "points": 70,
+            "reason": "A financial release is proposed"
           },
           {
-            "field": "privilegedAccess",
+            "field": "customerMessageDrafted",
             "operator": "truthy",
-            "points": 45,
-            "reason": "Privileged access requested"
+            "points": 40,
+            "reason": "A customer-facing message requires review"
           },
           {
-            "field": "productionAccess",
+            "field": "rescheduleProposed",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "A customer-impacting reschedule is proposed"
+          },
+          {
+            "field": "partsException",
             "operator": "truthy",
             "points": 30,
-            "reason": "Production access requested"
+            "reason": "A parts or inventory exception remains open"
           },
           {
-            "field": "contractor",
+            "field": "warrantyException",
             "operator": "truthy",
-            "points": 20,
-            "reason": "Requester is a contractor"
+            "points": 35,
+            "reason": "A warranty exception remains open"
           },
           {
-            "field": "endDate",
-            "operator": "missing",
-            "points": 20,
-            "reason": "Time-bound access has no end date"
+            "field": "humanResolutionRequired",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "The case is explicitly marked for human resolution"
           }
         ],
-        "slug": "employee-access-request-triage",
+        "slug": "field-service-completion-review",
         "thresholds": {
           "high": 70,
           "medium": 30
@@ -798,224 +643,129 @@
       }
     },
     {
-      "department": "sales",
-      "slug": "enterprise-lead-routing",
-      "name": "Route enterprise sales leads",
-      "owner": "Revenue Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:aaba8cbcaa4e27e90d32192197825bc1f80418ced47072e2ccaf72685952864d",
+      "department": "incident-management",
+      "slug": "incident-rca-evidence-review",
+      "name": "Review incident RCA evidence",
+      "owner": "Engineering & SRE",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:66e1cc13956652247863a3d0cc7e9c8b23cb63d9be6590ddee22559837734cc8",
       "behavior": {
         "actions": [
-          "Upsert the lead in CRM",
-          "Apply regional ownership rules",
-          "Start an SLA timer for qualified handoff"
+          "Present the redacted timeline and evidence index to the incident owner",
+          "Recommend owners for remediation and evidence gaps",
+          "Keep publication, ticket changes, and RCA closure outside the starter"
         ],
         "decisions": {
-          "high": "assign_enterprise_owner",
-          "low": "route_to_nurture_or_review",
-          "medium": "assign_sdr_queue"
+          "high": "hold_rca_publication_for_approval",
+          "low": "recommend_rca_evidence_for_owner_review",
+          "medium": "route_evidence_gaps_to_incident_owner"
         },
-        "department": "sales",
+        "department": "incident-management",
         "inputSchema": {
           "additionalProperties": true,
           "properties": {
-            "company": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "email": {
-              "format": "email",
-              "maxLength": 320,
-              "minLength": 3,
-              "type": "string"
-            },
-            "employeeCount": {
+            "evidenceArtifactCount": {
               "minimum": 0,
               "type": "number"
             },
-            "highIntent": {
-              "type": "boolean"
+            "evidenceGapCount": {
+              "minimum": 0,
+              "type": "number"
             },
-            "leadId": {
-              "maxLength": 500,
+            "incidentClosedAt": {
+              "format": "date-time",
+              "maxLength": 64,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "marketingConsent": {
-              "type": "boolean"
-            },
-            "region": {
+            "incidentId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "requestedDemo": {
+            "publicationProposed": {
               "type": "boolean"
             },
-            "targetAccount": {
+            "releaseEvidenceIncluded": {
               "type": "boolean"
+            },
+            "remediationOwnersAssigned": {
+              "type": "boolean"
+            },
+            "rootCauseSupported": {
+              "type": "boolean"
+            },
+            "sensitiveDataRedacted": {
+              "type": "boolean"
+            },
+            "timelineCoveragePercent": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
             }
           },
           "required": [
-            "leadId",
-            "company",
-            "email",
-            "region"
+            "incidentId",
+            "incidentClosedAt",
+            "evidenceArtifactCount",
+            "timelineCoveragePercent"
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
-            "field": "targetAccount",
-            "operator": "truthy",
-            "points": 35,
-            "reason": "Company is a named target account"
-          },
-          {
-            "field": "employeeCount",
-            "operator": "gte",
-            "points": 25,
-            "reason": "Enterprise employee threshold met",
-            "value": 1000
-          },
-          {
-            "field": "highIntent",
-            "operator": "truthy",
-            "points": 25,
-            "reason": "High-intent behavior detected"
-          },
-          {
-            "field": "requestedDemo",
-            "operator": "truthy",
-            "points": 25,
-            "reason": "Buyer requested a demonstration"
-          },
-          {
-            "field": "marketingConsent",
-            "operator": "falsy",
-            "points": -40,
-            "reason": "Marketing consent is not present"
-          }
-        ],
-        "slug": "enterprise-lead-routing",
-        "thresholds": {
-          "high": 70,
-          "medium": 30
-        }
-      }
-    },
-    {
-      "department": "corporate-communications",
-      "slug": "external-communication-approval",
-      "name": "Approve external enterprise communications",
-      "owner": "Corporate Communications",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:da470f635422abfa062d3496966070621413fbc7344f329e29bbc3881bc0300b",
-      "behavior": {
-        "actions": [
-          "Create the communication approval record",
-          "Attach the final approved wording",
-          "Require named approval before publication"
-        ],
-        "decisions": {
-          "high": "hold_for_executive_and_legal_approval",
-          "low": "continue_standard_editorial_review",
-          "medium": "require_cross_functional_approval"
-        },
-        "department": "corporate-communications",
-        "inputSchema": {
-          "additionalProperties": true,
-          "properties": {
-            "audience": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "channel": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "customerImpact": {
-              "type": "boolean"
-            },
-            "executiveApproved": {
-              "type": "boolean"
-            },
-            "legalReviewed": {
-              "type": "boolean"
-            },
-            "materialFinancialInfo": {
-              "type": "boolean"
-            },
-            "messageSummary": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "owner": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "requestId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "securityIncident": {
-              "type": "boolean"
-            }
-          },
-          "required": [
-            "requestId",
-            "audience",
-            "channel",
-            "messageSummary",
-            "owner"
-          ],
-          "type": "object"
-        },
-        "policyEngineVersion": "1.0.4",
-        "policySchemaVersion": "1.0",
-        "rules": [
-          {
-            "field": "materialFinancialInfo",
-            "minimumBand": "high",
-            "operator": "truthy",
-            "points": 60,
-            "reason": "Message may contain material financial information"
-          },
-          {
-            "field": "customerImpact",
-            "operator": "truthy",
+            "field": "evidenceArtifactCount",
+            "operator": "lt",
             "points": 30,
-            "reason": "Message addresses customer impact"
+            "reason": "Fewer than three incident evidence artifacts are attached",
+            "value": 3
           },
           {
-            "field": "securityIncident",
+            "field": "timelineCoveragePercent",
+            "operator": "lt",
+            "points": 35,
+            "reason": "Incident timeline coverage is below 90%",
+            "value": 90
+          },
+          {
+            "field": "sensitiveDataRedacted",
+            "minimumBand": "high",
+            "operator": "falsy",
+            "points": 70,
+            "reason": "Sensitive data has not been confirmed as redacted"
+          },
+          {
+            "field": "rootCauseSupported",
+            "operator": "falsy",
+            "points": 40,
+            "reason": "The proposed root cause is not supported by evidence"
+          },
+          {
+            "field": "remediationOwnersAssigned",
+            "operator": "falsy",
+            "points": 30,
+            "reason": "Remediation actions do not all have owners"
+          },
+          {
+            "field": "publicationProposed",
             "minimumBand": "high",
             "operator": "truthy",
-            "points": 60,
-            "reason": "Message concerns a security incident"
+            "points": 70,
+            "reason": "RCA publication requires owner approval"
           },
           {
-            "field": "legalReviewed",
-            "operator": "falsy",
-            "points": 35,
-            "reason": "Legal review is not recorded"
-          },
-          {
-            "field": "executiveApproved",
-            "operator": "falsy",
-            "points": 25,
-            "reason": "Executive approval is not recorded"
+            "field": "evidenceGapCount",
+            "operator": "gt",
+            "points": 30,
+            "reason": "The evidence package contains unresolved gaps",
+            "value": 0
           }
         ],
-        "slug": "external-communication-approval",
+        "slug": "incident-rca-evidence-review",
         "thresholds": {
           "high": 70,
           "medium": 30
@@ -1027,8 +777,8 @@
       "slug": "invoice-exception-triage",
       "name": "Triage enterprise invoice exceptions",
       "owner": "Accounts Payable Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:bf44281b1046fc732589a0d936e04ff1023ae938d68edfe2ffaca42faa4af5c2",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:c95b79f0c52df43dc91bbdc873fd5f6b5146e6b0b552c7a3f10a99913eb26924",
       "behavior": {
         "actions": [
           "Persist the decision in the ERP or AP queue",
@@ -1054,6 +804,11 @@
               "type": "number"
             },
             "currency": {
+              "allOf": [
+                {
+                  "pattern": "\\S"
+                }
+              ],
               "maxLength": 3,
               "minLength": 3,
               "pattern": "^[A-Z]{3}$",
@@ -1065,6 +820,7 @@
             "invoiceId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "newBankDetails": {
@@ -1081,6 +837,7 @@
             "vendorId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             }
           },
@@ -1092,7 +849,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1138,110 +895,368 @@
     },
     {
       "department": "operations",
-      "slug": "major-incident-stakeholder-brief",
-      "name": "Prepare major incident stakeholder briefs",
-      "owner": "Business Operations and Incident Command",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:ec22e5a998af6868fabab9842d037db7c81e53123267a21f3e08ac38965be6b5",
+      "slug": "meeting-to-action-review",
+      "name": "Review meeting decisions and actions",
+      "owner": "Sales & Operations",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:57b73a5472c6f6dc40523585f243a5abf232026008af4c250e343a055ce2b5ff",
       "behavior": {
         "actions": [
-          "Create the stakeholder brief",
-          "Assign the next-update owner and deadline",
-          "Require incident commander approval before external communication"
+          "Present extracted decisions, owners, and due dates for review",
+          "Recommend corrections to incomplete action records",
+          "Keep task creation, CRM writes, and external follow-ups outside the starter"
         ],
         "decisions": {
-          "high": "activate_executive_and_legal_response",
-          "low": "standard_operations_update",
-          "medium": "activate_incident_command"
+          "high": "hold_follow_up_for_human_approval",
+          "low": "recommend_action_package_for_review",
+          "medium": "route_draft_actions_to_owner_review"
         },
         "department": "operations",
         "inputSchema": {
           "additionalProperties": true,
           "properties": {
-            "customersAffected": {
+            "actionCount": {
               "minimum": 0,
               "type": "number"
             },
-            "dataRisk": {
+            "crmUpdateProposed": {
               "type": "boolean"
             },
-            "incidentId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
+            "decisionCount": {
+              "minimum": 0,
+              "type": "number"
             },
-            "regulatoryNotificationPossible": {
+            "dueDateMissing": {
               "type": "boolean"
             },
-            "revenueImpact": {
+            "externalFollowUpDrafted": {
               "type": "boolean"
             },
-            "service": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "startedAt": {
+            "meetingEndedAt": {
               "format": "date-time",
               "maxLength": 64,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "summary": {
-              "maxLength": 5000,
+            "meetingId": {
+              "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "workaroundAvailable": {
+            "ownerMissing": {
+              "type": "boolean"
+            },
+            "sensitiveContent": {
+              "type": "boolean"
+            },
+            "sourceContextApproved": {
               "type": "boolean"
             }
           },
           "required": [
-            "incidentId",
-            "service",
-            "startedAt",
-            "summary"
+            "meetingId",
+            "meetingEndedAt",
+            "actionCount",
+            "decisionCount"
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
-            "field": "customersAffected",
-            "operator": "gte",
-            "points": 30,
-            "reason": "At least 100 customers affected",
-            "value": 100
-          },
-          {
-            "field": "revenueImpact",
+            "field": "ownerMissing",
             "operator": "truthy",
             "points": 35,
-            "reason": "Revenue operations are affected"
+            "reason": "At least one action has no accountable owner"
           },
           {
-            "field": "dataRisk",
+            "field": "dueDateMissing",
+            "operator": "truthy",
+            "points": 25,
+            "reason": "At least one action has no due date"
+          },
+          {
+            "field": "externalFollowUpDrafted",
+            "operator": "truthy",
+            "points": 35,
+            "reason": "An external follow-up draft requires review"
+          },
+          {
+            "field": "crmUpdateProposed",
+            "operator": "truthy",
+            "points": 30,
+            "reason": "A CRM update is proposed"
+          },
+          {
+            "field": "sensitiveContent",
             "minimumBand": "high",
             "operator": "truthy",
-            "points": 50,
-            "reason": "Potential data exposure or integrity risk"
+            "points": 70,
+            "reason": "The meeting record contains sensitive content"
           },
           {
-            "field": "workaroundAvailable",
+            "field": "sourceContextApproved",
             "operator": "falsy",
-            "points": 20,
-            "reason": "No workaround is available"
-          },
-          {
-            "field": "regulatoryNotificationPossible",
-            "minimumBand": "high",
-            "operator": "truthy",
             "points": 45,
-            "reason": "Regulatory notification may be required"
+            "reason": "The source context has not been approved for action extraction"
           }
         ],
-        "slug": "major-incident-stakeholder-brief",
+        "slug": "meeting-to-action-review",
+        "thresholds": {
+          "high": 70,
+          "medium": 30
+        }
+      }
+    },
+    {
+      "department": "artificial-intelligence",
+      "slug": "multi-model-routing-fallback",
+      "name": "Review multi-model routing and fallback",
+      "owner": "AI Platform Engineering",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:66c1e1fed19b345f7126800e0c677de1d2810dee8bae801a79b2b5f3fe37f97f",
+      "behavior": {
+        "actions": [
+          "Present the recommended approved route and matched policy reasons",
+          "Request owner review before selecting a fallback with unresolved evidence",
+          "Keep model invocation and policy exceptions outside the starter"
+        ],
+        "decisions": {
+          "high": "hold_route_for_policy_exception_review",
+          "low": "recommend_approved_primary_model",
+          "medium": "recommend_approved_fallback_for_review"
+        },
+        "department": "artificial-intelligence",
+        "inputSchema": {
+          "additionalProperties": true,
+          "properties": {
+            "approvedModelAvailable": {
+              "type": "boolean"
+            },
+            "costBudgetExceeded": {
+              "type": "boolean"
+            },
+            "expectedQualityScore": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "fallbackValidated": {
+              "type": "boolean"
+            },
+            "latencyBudgetExceeded": {
+              "type": "boolean"
+            },
+            "policyException": {
+              "type": "boolean"
+            },
+            "primaryProviderHealthy": {
+              "type": "boolean"
+            },
+            "routingRequestId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "taskType": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            }
+          },
+          "required": [
+            "routingRequestId",
+            "taskType",
+            "approvedModelAvailable",
+            "expectedQualityScore"
+          ],
+          "type": "object"
+        },
+        "policyEngineVersion": "1.0.7",
+        "policySchemaVersion": "1.0",
+        "rules": [
+          {
+            "field": "approvedModelAvailable",
+            "minimumBand": "high",
+            "operator": "falsy",
+            "points": 70,
+            "reason": "No approved model is available for the task"
+          },
+          {
+            "field": "expectedQualityScore",
+            "operator": "lt",
+            "points": 35,
+            "reason": "Expected quality is below the routing target",
+            "value": 80
+          },
+          {
+            "field": "policyException",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "The proposed route requires a policy exception"
+          },
+          {
+            "field": "primaryProviderHealthy",
+            "operator": "falsy",
+            "points": 30,
+            "reason": "The primary provider is not healthy"
+          },
+          {
+            "field": "costBudgetExceeded",
+            "operator": "truthy",
+            "points": 25,
+            "reason": "Estimated unit cost exceeds the task budget"
+          },
+          {
+            "field": "latencyBudgetExceeded",
+            "operator": "truthy",
+            "points": 25,
+            "reason": "Estimated latency exceeds the task budget"
+          },
+          {
+            "field": "fallbackValidated",
+            "operator": "falsy",
+            "points": 40,
+            "reason": "The fallback route has not been validated"
+          }
+        ],
+        "slug": "multi-model-routing-fallback",
+        "thresholds": {
+          "high": 70,
+          "medium": 30
+        }
+      }
+    },
+    {
+      "department": "people-operations",
+      "slug": "people-operations-case-routing",
+      "name": "Route people operations cases for review",
+      "owner": "People Operations",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:753aa1d11fff493c04b6a27576b39d0a9e45b13687914413607f63bff40d4529",
+      "behavior": {
+        "actions": [
+          "Present only the minimum necessary case evidence to the assigned reviewer",
+          "Recommend manager, HR, payroll, or workplace review based on matched rules",
+          "Keep employee decisions and HRIS, payroll, identity, or messaging changes outside the starter"
+        ],
+        "decisions": {
+          "high": "hold_employee_impacting_action_for_hr_approval",
+          "low": "recommend_standard_people_case_review",
+          "medium": "route_case_to_manager_or_hr_review"
+        },
+        "department": "people-operations",
+        "inputSchema": {
+          "additionalProperties": true,
+          "properties": {
+            "caseId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "caseType": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "completionEvidenceComplete": {
+              "type": "boolean"
+            },
+            "hrApprovalRequired": {
+              "type": "boolean"
+            },
+            "managerApprovalRequired": {
+              "type": "boolean"
+            },
+            "payrollImpact": {
+              "type": "boolean"
+            },
+            "policyCheckComplete": {
+              "type": "boolean"
+            },
+            "requesterVerified": {
+              "type": "boolean"
+            },
+            "sensitiveCase": {
+              "type": "boolean"
+            },
+            "workplaceImpact": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "caseId",
+            "caseType",
+            "requesterVerified",
+            "policyCheckComplete"
+          ],
+          "type": "object"
+        },
+        "policyEngineVersion": "1.0.7",
+        "policySchemaVersion": "1.0",
+        "rules": [
+          {
+            "field": "requesterVerified",
+            "minimumBand": "high",
+            "operator": "falsy",
+            "points": 70,
+            "reason": "The requester identity is not verified"
+          },
+          {
+            "field": "policyCheckComplete",
+            "operator": "falsy",
+            "points": 45,
+            "reason": "The applicable people policy check is incomplete"
+          },
+          {
+            "field": "sensitiveCase",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "The case is classified as sensitive"
+          },
+          {
+            "field": "managerApprovalRequired",
+            "operator": "truthy",
+            "points": 35,
+            "reason": "Manager approval is required"
+          },
+          {
+            "field": "hrApprovalRequired",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "HR approval is required"
+          },
+          {
+            "field": "payrollImpact",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "The case can affect payroll"
+          },
+          {
+            "field": "workplaceImpact",
+            "operator": "truthy",
+            "points": 45,
+            "reason": "The case requires workplace coordination"
+          },
+          {
+            "field": "completionEvidenceComplete",
+            "operator": "falsy",
+            "points": 30,
+            "reason": "Completion evidence is incomplete"
+          }
+        ],
+        "slug": "people-operations-case-routing",
         "thresholds": {
           "high": 70,
           "medium": 30
@@ -1253,8 +1268,8 @@
       "slug": "phishing-report-triage",
       "name": "Triage employee phishing reports",
       "owner": "Security Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:34f28d9eb4a5a84e9cc387e49c22c695d57065e966872280cab19654b329666e",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:c36f120415e4101a9271a7afaeda25a0628623c77882c5191702f32eb294e31a",
       "behavior": {
         "actions": [
           "Create a case in the security queue",
@@ -1285,21 +1300,25 @@
             "reportId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "reporterId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "sender": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "subject": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "suspiciousAttachment": {
@@ -1314,7 +1333,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1361,8 +1380,8 @@
       "slug": "production-change-risk-gate",
       "name": "Gate production changes by operational risk",
       "owner": "Engineering Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:56322898d103d640ed81377f1f5bd75882169f0e2b517bcd89f4d90537da834b",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:65f29d5935c2ae68f66ba1674540e9acfc222b026fe851d7d90a00be0de2c1b0",
       "behavior": {
         "actions": [
           "Update the change record",
@@ -1381,11 +1400,13 @@
             "changeId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "changeType": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "customerImpact": {
@@ -1401,6 +1422,7 @@
               "format": "date-time",
               "maxLength": 64,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "rollbackTested": {
@@ -1412,6 +1434,7 @@
             "service": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             }
           },
@@ -1423,7 +1446,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1466,12 +1489,282 @@
       }
     },
     {
+      "department": "sales",
+      "slug": "research-to-crm-review",
+      "name": "Review source-backed research for CRM action",
+      "owner": "Revenue & Strategy",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:8b0f38356de100a46894ad350c465a403699cac6d99b6b87133d03e1b8bb9058",
+      "behavior": {
+        "actions": [
+          "Present citations and entity evidence to the account owner",
+          "Recommend research gaps for analyst follow-up",
+          "Keep CRM writes, task creation, and outreach outside the starter"
+        ],
+        "decisions": {
+          "high": "hold_crm_or_outreach_action_for_approval",
+          "low": "recommend_cited_brief_for_review",
+          "medium": "route_research_gaps_to_analyst_review"
+        },
+        "department": "sales",
+        "inputSchema": {
+          "additionalProperties": true,
+          "properties": {
+            "accountId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "citationCoveragePercent": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "crmWriteProposed": {
+              "type": "boolean"
+            },
+            "entityMatchConfirmed": {
+              "type": "boolean"
+            },
+            "outreachProposed": {
+              "type": "boolean"
+            },
+            "researchId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "sensitiveSignal": {
+              "type": "boolean"
+            },
+            "sourceCount": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "sourceFreshnessDays": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "unsupportedClaimCount": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "researchId",
+            "accountId",
+            "sourceCount",
+            "citationCoveragePercent"
+          ],
+          "type": "object"
+        },
+        "policyEngineVersion": "1.0.7",
+        "policySchemaVersion": "1.0",
+        "rules": [
+          {
+            "field": "sourceCount",
+            "operator": "lt",
+            "points": 30,
+            "reason": "Research uses fewer than two approved sources",
+            "value": 2
+          },
+          {
+            "field": "citationCoveragePercent",
+            "operator": "lt",
+            "points": 35,
+            "reason": "Citation coverage is below 90%",
+            "value": 90
+          },
+          {
+            "field": "unsupportedClaimCount",
+            "operator": "gt",
+            "points": 45,
+            "reason": "The brief contains unsupported claims",
+            "value": 0
+          },
+          {
+            "field": "entityMatchConfirmed",
+            "operator": "falsy",
+            "points": 45,
+            "reason": "The account entity match is not confirmed"
+          },
+          {
+            "field": "sensitiveSignal",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "The research includes a sensitive signal"
+          },
+          {
+            "field": "crmWriteProposed",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "A CRM write is proposed"
+          },
+          {
+            "field": "outreachProposed",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "External outreach is proposed"
+          },
+          {
+            "field": "sourceFreshnessDays",
+            "operator": "gt",
+            "points": 25,
+            "reason": "At least one source is older than 30 days",
+            "value": 30
+          }
+        ],
+        "slug": "research-to-crm-review",
+        "thresholds": {
+          "high": 70,
+          "medium": 30
+        }
+      }
+    },
+    {
+      "department": "proposal-management",
+      "slug": "rfp-response-evidence-review",
+      "name": "Review RFP response evidence",
+      "owner": "Revenue Engineering",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:b456da142738ed2d32c9314990f55c51ffbc95771999290d3842eb00a5e6604d",
+      "behavior": {
+        "actions": [
+          "Present cited answers and confidence evidence to domain experts",
+          "Recommend owners for unsupported questions",
+          "Keep document export, CRM writes, and external submission outside the starter"
+        ],
+        "decisions": {
+          "high": "hold_sensitive_response_or_export_for_approval",
+          "low": "recommend_response_package_for_expert_review",
+          "medium": "route_evidence_gaps_to_domain_experts"
+        },
+        "department": "proposal-management",
+        "inputSchema": {
+          "additionalProperties": true,
+          "properties": {
+            "citedAnswerCount": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "confidenceScore": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "domainExpertAssigned": {
+              "type": "boolean"
+            },
+            "evidenceApproved": {
+              "type": "boolean"
+            },
+            "evidenceCoveragePercent": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "exportProposed": {
+              "type": "boolean"
+            },
+            "questionCount": {
+              "minimum": 1,
+              "type": "number"
+            },
+            "questionnaireId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "sensitiveAnswerCount": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "unsupportedAnswerCount": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "questionnaireId",
+            "questionCount",
+            "evidenceCoveragePercent",
+            "citedAnswerCount"
+          ],
+          "type": "object"
+        },
+        "policyEngineVersion": "1.0.7",
+        "policySchemaVersion": "1.0",
+        "rules": [
+          {
+            "field": "evidenceCoveragePercent",
+            "operator": "lt",
+            "points": 35,
+            "reason": "Approved evidence covers less than 90% of questions",
+            "value": 90
+          },
+          {
+            "field": "unsupportedAnswerCount",
+            "minimumBand": "high",
+            "operator": "gt",
+            "points": 70,
+            "reason": "The draft contains unsupported answers",
+            "value": 0
+          },
+          {
+            "field": "sensitiveAnswerCount",
+            "minimumBand": "high",
+            "operator": "gt",
+            "points": 70,
+            "reason": "The draft contains sensitive answers requiring expert approval",
+            "value": 0
+          },
+          {
+            "field": "domainExpertAssigned",
+            "operator": "falsy",
+            "points": 35,
+            "reason": "No domain expert is assigned to review gaps"
+          },
+          {
+            "field": "exportProposed",
+            "minimumBand": "high",
+            "operator": "truthy",
+            "points": 70,
+            "reason": "Questionnaire export is proposed"
+          },
+          {
+            "field": "evidenceApproved",
+            "operator": "falsy",
+            "points": 45,
+            "reason": "The supporting evidence has not been approved"
+          },
+          {
+            "field": "confidenceScore",
+            "operator": "lt",
+            "points": 25,
+            "reason": "Draft confidence is below the review target",
+            "value": 80
+          }
+        ],
+        "slug": "rfp-response-evidence-review",
+        "thresholds": {
+          "high": 70,
+          "medium": 30
+        }
+      }
+    },
+    {
       "department": "information-technology",
       "slug": "service-desk-priority-routing",
       "name": "Route enterprise service desk incidents",
       "owner": "IT Service Management",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:43a4c67f460ab1ed943729624295264f8ee49c3d2fbfc2229146700397656685",
+      "policyVersion": "1.0.7",
+      "fingerprint": "sha256:d4bef95afeacecf153a6017b64b1f1d71880dfc76098d15764c6b50ed9e2209b",
       "behavior": {
         "actions": [
           "Create or update the ITSM incident",
@@ -1494,6 +1787,7 @@
             "category": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "executiveAffected": {
@@ -1511,11 +1805,13 @@
             "summary": {
               "maxLength": 5000,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "ticketId": {
               "maxLength": 500,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
             "workaroundAvailable": {
@@ -1530,7 +1826,7 @@
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
@@ -1579,223 +1875,135 @@
       }
     },
     {
-      "department": "procurement",
-      "slug": "vendor-risk-intake",
-      "name": "Triage enterprise vendor risk",
-      "owner": "Procurement Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:7ab1be1b0add1f4a2d3616787338e588ec9b7b2ddf956133e5676951764e2e66",
+      "department": "customer-support",
+      "slug": "support-escalation-command-center",
+      "name": "Review support escalation command-center readiness",
+      "owner": "Customer Support",
+      "policyVersion": "1.0.8",
+      "fingerprint": "sha256:9194c7db9751b10a971234bf20160a011c0fadd84c3e1a85ed603d5e4c895b64",
       "behavior": {
         "actions": [
-          "Create the vendor record",
-          "Assign required control owners",
-          "Block purchase-order creation until mandatory approvals complete"
+          "Present the escalation timeline, telemetry, and ownership gaps",
+          "Recommend action owners and evidence follow-ups",
+          "Keep external messages, support-system writes, and closure outside the starter"
         ],
         "decisions": {
-          "high": "open_full_vendor_due_diligence",
-          "low": "start_standard_procurement",
-          "medium": "add_security_or_privacy_review"
+          "high": "hold_external_update_or_closure_for_approval",
+          "low": "recommend_command_center_record_for_review",
+          "medium": "route_stale_or_incomplete_actions_to_owners"
         },
-        "department": "procurement",
+        "department": "customer-support",
         "inputSchema": {
           "additionalProperties": true,
           "properties": {
-            "annualSpend": {
+            "closureProposed": {
+              "type": "boolean"
+            },
+            "customerImpactSummary": {
+              "maxLength": 5000,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "engineeringOwnerAssigned": {
+              "type": "boolean"
+            },
+            "escalationId": {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "externalUpdateDrafted": {
+              "type": "boolean"
+            },
+            "openActionCount": {
               "minimum": 0,
               "type": "number"
             },
-            "businessCritical": {
-              "type": "boolean"
-            },
-            "businessOwner": {
-              "maxLength": 500,
+            "severity": {
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ],
+              "maxLength": 100,
               "minLength": 1,
+              "pattern": "\\S",
               "type": "string"
             },
-            "foreignDataHosting": {
-              "type": "boolean"
-            },
-            "handlesPersonalData": {
-              "type": "boolean"
-            },
-            "requestId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "soc2Available": {
-              "type": "boolean"
-            },
-            "subprocessors": {
-              "type": "boolean"
-            },
-            "vendorName": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            }
-          },
-          "required": [
-            "requestId",
-            "vendorName",
-            "annualSpend",
-            "businessOwner"
-          ],
-          "type": "object"
-        },
-        "policyEngineVersion": "1.0.4",
-        "policySchemaVersion": "1.0",
-        "rules": [
-          {
-            "field": "handlesPersonalData",
-            "operator": "truthy",
-            "points": 30,
-            "reason": "Vendor handles personal data"
-          },
-          {
-            "field": "businessCritical",
-            "operator": "truthy",
-            "points": 30,
-            "reason": "Vendor supports a critical business process"
-          },
-          {
-            "field": "foreignDataHosting",
-            "operator": "truthy",
-            "points": 25,
-            "reason": "Data is hosted in another jurisdiction"
-          },
-          {
-            "field": "subprocessors",
-            "operator": "truthy",
-            "points": 20,
-            "reason": "Vendor relies on subprocessors"
-          },
-          {
-            "field": "soc2Available",
-            "operator": "falsy",
-            "points": 25,
-            "reason": "SOC 2 evidence is unavailable"
-          },
-          {
-            "field": "annualSpend",
-            "operator": "gte",
-            "points": 20,
-            "reason": "High annual spend",
-            "value": 100000
-          }
-        ],
-        "slug": "vendor-risk-intake",
-        "thresholds": {
-          "high": 70,
-          "medium": 30
-        }
-      }
-    },
-    {
-      "department": "facilities",
-      "slug": "workplace-incident-routing",
-      "name": "Route workplace incidents safely",
-      "owner": "Workplace Operations",
-      "policyVersion": "1.0.4",
-      "fingerprint": "sha256:2421aadf64ce645d048164ba88c5fc165524b0285c7b6fec9704a176216dbdd6",
-      "behavior": {
-        "actions": [
-          "Create the facilities incident",
-          "Assign an on-site response owner",
-          "Require human confirmation before closing a safety event"
-        ],
-        "decisions": {
-          "high": "activate_safety_and_security_response",
-          "low": "route_standard_facilities_queue",
-          "medium": "dispatch_urgent_workplace_response"
-        },
-        "department": "facilities",
-        "inputSchema": {
-          "additionalProperties": true,
-          "properties": {
-            "accessControlImpact": {
-              "type": "boolean"
-            },
-            "category": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "description": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "immediateDanger": {
-              "type": "boolean"
-            },
-            "incidentId": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
-            },
-            "injuryReported": {
-              "type": "boolean"
-            },
-            "operationsDisrupted": {
-              "type": "boolean"
-            },
-            "peopleAffected": {
+            "staleActionCount": {
               "minimum": 0,
               "type": "number"
             },
-            "site": {
-              "maxLength": 500,
-              "minLength": 1,
-              "type": "string"
+            "telemetryAttached": {
+              "type": "boolean"
+            },
+            "timelineSynchronized": {
+              "type": "boolean"
             }
           },
           "required": [
-            "incidentId",
-            "site",
-            "category",
-            "description"
+            "escalationId",
+            "severity",
+            "customerImpactSummary",
+            "openActionCount"
           ],
           "type": "object"
         },
-        "policyEngineVersion": "1.0.4",
+        "policyEngineVersion": "1.0.7",
         "policySchemaVersion": "1.0",
         "rules": [
           {
-            "field": "injuryReported",
+            "field": "severity",
             "minimumBand": "high",
-            "operator": "truthy",
-            "points": 55,
-            "reason": "An injury has been reported"
+            "operator": "equals",
+            "points": 70,
+            "reason": "The escalation is classified as critical",
+            "value": "critical"
           },
           {
-            "field": "immediateDanger",
+            "field": "telemetryAttached",
+            "operator": "falsy",
+            "points": 35,
+            "reason": "Telemetry evidence is not attached"
+          },
+          {
+            "field": "staleActionCount",
+            "operator": "gt",
+            "points": 30,
+            "reason": "The escalation has stale actions",
+            "value": 0
+          },
+          {
+            "field": "externalUpdateDrafted",
             "minimumBand": "high",
             "operator": "truthy",
             "points": 70,
-            "reason": "People may face immediate danger"
+            "reason": "An external customer update requires review"
           },
           {
-            "field": "accessControlImpact",
-            "operator": "truthy",
+            "field": "engineeringOwnerAssigned",
+            "operator": "falsy",
+            "points": 35,
+            "reason": "No engineering owner is assigned"
+          },
+          {
+            "field": "timelineSynchronized",
+            "operator": "falsy",
             "points": 30,
-            "reason": "Physical access controls are affected"
+            "reason": "The escalation timeline is not synchronized"
           },
           {
-            "field": "operationsDisrupted",
+            "field": "closureProposed",
+            "minimumBand": "high",
             "operator": "truthy",
-            "points": 25,
-            "reason": "Workplace operations are disrupted"
-          },
-          {
-            "field": "peopleAffected",
-            "operator": "gte",
-            "points": 25,
-            "reason": "At least 25 people are affected",
-            "value": 25
+            "points": 70,
+            "reason": "Escalation closure requires human review"
           }
         ],
-        "slug": "workplace-incident-routing",
+        "slug": "support-escalation-command-center",
         "thresholds": {
           "high": 70,
           "medium": 30

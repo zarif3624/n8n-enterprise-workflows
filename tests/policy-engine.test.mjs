@@ -36,6 +36,72 @@ function matchingValue(rule) {
   throw new Error(`Unsupported rule operator: ${rule.operator}`);
 }
 
+function capabilityDefinition() {
+  return {
+    department: "synthetic",
+    slug: "runtime-contract-capability-probe",
+    policyVersion: "1.0.4",
+    required: ["tier", "tags"],
+    optional: [],
+    fieldContracts: {
+      tier: { type: "string", enum: ["standard", "expedited"], minLength: 1, maxLength: 20 },
+      tags: { type: "array", minItems: 1, maxItems: 3, items: { type: "string", minLength: 2, maxLength: 12 } }
+    },
+    rules: [{ field: "tier", operator: "equals", value: "expedited", points: 70, reason: "Expedited work needs review" }],
+    decisions: { low: "continue", medium: "review", high: "hold" },
+    actions: ["Route to review"]
+  };
+}
+
+test("array contracts reject too few, too many, and invalid item values", () => {
+  const definition = capabilityDefinition();
+  const cases = [
+    [[], "tags", "too_short"],
+    [["ops", "risk", "data", "more"], "tags", "too_long"],
+    [[42], "tags[0]", "invalid_type"],
+    [["x"], "tags[0]", "too_short"],
+    [["x".repeat(13)], "tags[0]", "too_long"]
+  ];
+
+  for (const [tags, field, code] of cases) {
+    const result = run(definition, { tier: "standard", tags });
+    assert.equal(result.httpStatus, 400, JSON.stringify(tags));
+    assert.ok(result.details.violations.some((violation) => violation.field === field && violation.code === code), JSON.stringify(tags));
+  }
+});
+
+test("whitespace-padded enum values fail validation before their decision rule can run", () => {
+  const valid = run(capabilityDefinition(), { tier: "expedited", tags: ["ops"] });
+  const result = run(capabilityDefinition(), { tier: " expedited ", tags: ["ops"] });
+
+  assert.equal(valid.decision, "hold");
+  assert.equal(result.httpStatus, 400);
+  assert.equal(result.error, "validation_error");
+  assert.ok(result.details.violations.some((violation) => violation.field === "tier" && violation.code === "invalid_value"));
+  assert.equal("decision" in result, false);
+});
+
+test("string length constraints use raw values while whitespace-only required values stay absent", () => {
+  const definition = {
+    department: "synthetic",
+    slug: "raw-string-length-probe",
+    policyVersion: "1.0.5",
+    required: ["code"],
+    optional: [],
+    fieldContracts: { code: { type: "string", minLength: 3, maxLength: 3 } },
+    rules: [],
+    decisions: { low: "continue", medium: "review", high: "hold" },
+    actions: []
+  };
+
+  assert.equal(run(definition, { code: " A " }).ok, true);
+  const whitespaceOnly = run(definition, { code: "   " });
+  assert.equal(whitespaceOnly.httpStatus, 400);
+  assert.deepEqual(whitespaceOnly.details.violations.map(({ field, code }) => ({ field, code })), [
+    { field: "code", code: "required" }
+  ]);
+});
+
 test("every workflow has a complete typed contract", () => {
   for (const definition of workflows) {
     const schema = inputSchemaFor(definition);
@@ -105,9 +171,9 @@ test("all supported rule operators match their documented boundary", () => {
 test("format and range constraints fail closed", async () => {
   const cases = [
     ["invoice-exception-triage", "currency", "usd", "invalid_format"],
-    ["enterprise-lead-routing", "email", "not-an-email", "invalid_format"],
-    ["customer-risk-escalation", "arr", -1, "below_minimum"],
-    ["campaign-lead-compliance-gate", "engagementScore", 101, "above_maximum"]
+    ["invoice-exception-triage", "amount", -1, "below_minimum"],
+    ["invoice-exception-triage", "amountMismatchPercent", 101, "above_maximum"],
+    ["production-change-risk-gate", "plannedAt", "not-a-date", "invalid_format"]
   ];
   for (const [slug, field, value, code] of cases) {
     const definition = workflows.find((item) => item.slug === slug);
@@ -120,17 +186,23 @@ test("format and range constraints fail closed", async () => {
 });
 
 test("hard risk gates cannot be canceled by negative scoring signals", async () => {
-  const definition = workflows.find((item) => item.slug === "campaign-lead-compliance-gate");
+  const source = workflows.find((item) => item.slug === "invoice-exception-triage");
+  const definition = {
+    ...source,
+    rules: [
+      ...source.rules,
+      { field: "currency", operator: "equals", value: "USD", points: -100, reason: "Synthetic negative scoring signal" }
+    ]
+  };
   const lowPath = join(root, "workflows", definition.department, definition.slug, "examples", "low-risk.json");
   const low = JSON.parse(await readFile(lowPath, "utf8"));
   const result = run(definition, {
     ...low,
-    consent: false,
-    targetAccount: true,
-    engagementScore: 100
+    duplicateDetected: true,
+    currency: "USD"
   });
   assert.equal(result.priorityBand, "high");
-  assert.equal(result.decision, "suppress_automated_outreach");
+  assert.equal(result.decision, "hold_payment_and_escalate");
 });
 
 test("request IDs propagate without echoing caller input", () => {

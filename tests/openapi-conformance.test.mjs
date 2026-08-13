@@ -4,6 +4,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { evaluatePolicy } from "../scripts/policy-engine.mjs";
 import { schemaContractIssues } from "../scripts/schema-contract-check.mjs";
+import { inputSchemaFor } from "../scripts/workflow-definitions.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const [catalog, openApi, snapshot] = await Promise.all([
@@ -24,6 +25,94 @@ function evaluate(snapshotPolicy, body, requestId, contentType) {
     evaluatedAt: "2026-08-08T00:00:00.000Z"
   });
 }
+
+test("definition-level contracts produce an OpenAPI-compatible request schema", () => {
+  const definition = {
+    department: "synthetic",
+    slug: "contract-capability-probe",
+    policyVersion: "1.0.4",
+    required: ["quantity", "approved", "tier", "tags", "scheduledAt", "title"],
+    optional: [],
+    fieldContracts: {
+      quantity: { type: "number", minimum: 1, maximum: 25 },
+      approved: { type: "boolean" },
+      tier: { type: "string", enum: ["standard", "expedited"], minLength: 1, maxLength: 20 },
+      tags: { type: "array", minItems: 1, maxItems: 3, items: { type: "string", minLength: 2, maxLength: 12 } },
+      scheduledAt: { type: "string", format: "date-time", minLength: 1, maxLength: 64 },
+      title: { type: "string", minLength: 3, maxLength: 80 }
+    }
+  };
+  const schema = inputSchemaFor(definition);
+
+  assert.deepEqual(schemaContractIssues({
+    quantity: 4,
+    approved: true,
+    tier: "expedited",
+    tags: ["ops", "risk"],
+    scheduledAt: "2026-08-12T00:00:00.000Z",
+    title: "Review"
+  }, schema), []);
+  assert.ok(schemaContractIssues({
+    quantity: 0,
+    approved: "true",
+    tier: "unsupported",
+    tags: ["x", "valid", "also-valid", "too-many"],
+    scheduledAt: "not-a-date",
+    title: "no"
+  }, schema).length >= 6);
+});
+
+test("runtime and schema validation agree on raw patterns and strict RFC 3339 date-times", async () => {
+  const invoiceEntry = catalog.find((entry) => entry.slug === "invoice-exception-triage");
+  const changeEntry = catalog.find((entry) => entry.slug === "production-change-risk-gate");
+  const invoicePolicy = snapshot.policies.find((policy) => policy.slug === invoiceEntry.slug);
+  const changePolicy = snapshot.policies.find((policy) => policy.slug === changeEntry.slug);
+  const [invoiceLow, changeLow] = await Promise.all([
+    readFile(join(root, invoiceEntry.examples.lowRisk), "utf8").then(JSON.parse),
+    readFile(join(root, changeEntry.examples.lowRisk), "utf8").then(JSON.parse)
+  ]);
+  const invoiceSchema = openApi.paths[invoiceEntry.endpoint].post.requestBody.content["application/json"].schema;
+  const changeSchema = openApi.paths[changeEntry.endpoint].post.requestBody.content["application/json"].schema;
+
+  const paddedCurrency = { ...invoiceLow, currency: " USD " };
+  assert.ok(schemaContractIssues(paddedCurrency, invoiceSchema, openApi).some((issue) => issue.includes("pattern mismatch")));
+  assert.equal(evaluate(invoicePolicy, paddedCurrency, "raw-pattern").httpStatus, 400);
+
+  const whitespaceRequired = { ...invoiceLow, invoiceId: " \t " };
+  assert.ok(schemaContractIssues(whitespaceRequired, invoiceSchema, openApi).some((issue) => issue.includes("pattern mismatch")));
+  assert.equal(evaluate(invoicePolicy, whitespaceRequired, "whitespace-required").httpStatus, 400);
+
+  const whitespaceOptional = { ...invoiceLow, purchaseOrderId: " \t " };
+  assert.deepEqual(schemaContractIssues(whitespaceOptional, invoiceSchema, openApi), []);
+  assert.equal(evaluate(invoicePolicy, whitespaceOptional, "whitespace-optional").ok, true);
+
+  const whitespaceConstrained = { ...invoiceLow, currency: " \t " };
+  assert.ok(schemaContractIssues(whitespaceConstrained, invoiceSchema, openApi).some((issue) => issue.includes("pattern mismatch")));
+  assert.equal(evaluate(invoicePolicy, whitespaceConstrained, "whitespace-constrained").httpStatus, 400);
+
+  for (const plannedAt of [
+    "August 12, 2026 09:30 UTC",
+    "2026-08-12",
+    "2026-02-30T09:30:45Z",
+    "2026-08-12T09:30:60Z",
+    "2026-08-12T09:30:60+07:00"
+  ]) {
+    const body = { ...changeLow, plannedAt };
+    assert.ok(schemaContractIssues(body, changeSchema, openApi).some((issue) => issue.includes("invalid date-time")), plannedAt);
+    assert.equal(evaluate(changePolicy, body, `invalid-date-${plannedAt}`).httpStatus, 400, plannedAt);
+  }
+
+  for (const plannedAt of [
+    "2026-08-12T09:30:45.123456+07:00",
+    "2026-08-12t02:30:45z",
+    "2026-08-12T09:30:59Z",
+    "2026-08-12T09:30:59-04:30"
+  ]) {
+    const body = { ...changeLow, plannedAt };
+    assert.deepEqual(schemaContractIssues(body, changeSchema, openApi), [], plannedAt);
+    assert.equal(evaluate(changePolicy, body, `valid-date-${plannedAt}`).ok, true, plannedAt);
+  }
+});
 
 for (const entry of catalog) {
   test(`${entry.slug}: fixtures and observable responses conform to the published OpenAPI operation`, async () => {
